@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: pac.8,v 1.12 2012/04/08 22:00:41 wiz Exp $
+  
+   Copyright (c) 1983, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       @(#)pac.8	8.1 (Berkeley) 6/6/93
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>PAC(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">PAC(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">PAC(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">pac</code> &#x2014;
+<div class="Nd">printer/plotter accounting information</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">pac</code></td>
+    <td>[<code class="Fl">-cmrs</code>] [<code class="Fl">-P</code>
+      <var class="Ar">printer</var>] [<code class="Fl">-p</code>
+      <var class="Ar">price</var>] [<var class="Ar">name ...</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">pac</code> reads the printer/plotter accounting files,
+  accumulating the number of pages (the usual case) or feet (for raster devices)
+  of paper consumed by each user, and printing out how much each user consumed
+  in pages or feet and dollars.
+<p class="Pp">Options and operands available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#P"><code class="Fl" id="P">-P</code></a><var class="Ar">printer</var></dt>
+  <dd>Accounting is done for the named printer. Normally, accounting is done for
+      the default printer (site dependent) or the value of the environment
+      variable <code class="Ev">PRINTER</code> is used.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>flag causes the output to be sorted by cost; usually the output is sorted
+      alphabetically by name.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a></dt>
+  <dd>flag causes the host name to be ignored in the accounting file. This
+      allows for a user on multiple machines to have all of his printing charges
+      grouped together.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a><var class="Ar">price</var></dt>
+  <dd>The value <var class="Ar">price</var> is used for the cost in dollars
+      instead of the default value of 0.02 or the price specified in
+      <span class="Pa">/etc/printcap</span>.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a></dt>
+  <dd>Reverse the sorting order.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Accounting information is summarized on the summary accounting file; this
+      summarization is necessary since on a busy system, the accounting file can
+      grow by several lines per day.</dd>
+  <dt><var class="Ar">names</var></dt>
+  <dd>Statistics are only printed for user(s) <var class="Ar">name</var>;
+      usually, statistics are printed for every user who has used any
+    paper.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OUTPUT_FORMAT"><a class="permalink" href="#OUTPUT_FORMAT">OUTPUT
+  FORMAT</a></h1>
+<code class="Nm">pac</code> formats the output into simple table, using four
+  columns - number of feets or pages (column &quot;pages/feet&quot;), how many
+  copies were made (column &quot;runs&quot;), total price for this print (column
+  &quot;price&quot;) and user login with host name (column &quot;login&quot; or
+  &quot;host name and login&quot;). If argument <var class="Ar">name</var> was
+  not used and hence <code class="Nm">pac</code> is printing information for all
+  users, a summary line with print totals (runs, pages, price) is appended.
+<p class="Pp">Note that <code class="Nm">pac</code> on other system might print
+    the price as price per copy.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/var/account/?acct</span></dt>
+  <dd>raw accounting files</dd>
+  <dt><span class="Pa">/var/account/?_sum</span></dt>
+  <dd>summary accounting files</dd>
+  <dt><span class="Pa">/etc/printcap</span></dt>
+  <dd>printer capability data base</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html5/printcap.html">printcap(5)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">pac</code> command appeared in
+  <span class="Ux">4.0BSD</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+The relationship between the computed price and reality is as yet unknown.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">June 6, 1993</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

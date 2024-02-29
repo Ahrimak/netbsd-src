@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: syslog.conf.5,v 1.26 2021/09/01 13:44:02 andvar Exp $
+  
+   Copyright (c) 1990, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       from: @(#)syslog.conf.5	8.1 (Berkeley) 6/9/93
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>SYSLOG.CONF(5)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">SYSLOG.CONF(5)</td>
+    <td class="head-vol">File Formats Manual</td>
+    <td class="head-rtitle">SYSLOG.CONF(5)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">syslog.conf</code> &#x2014;
+<div class="Nd"><a class="Xr" href="../html8/syslogd.html">syslogd(8)</a>
+  configuration file</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">syslog.conf</code> file is the configuration file for the
+  <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a> program. It consists
+  of extended options (lines with one key=&quot;value&quot; assignment) and
+  blocks of lines separated by <i class="Em">program</i> and
+  <i class="Em">hostname</i> specifications, with each line containing two
+  fields: the <i class="Em">selector</i> field which specifies the types of
+  messages and priorities to which the line applies, and an
+  <i class="Em">action</i> field which specifies the action to be taken if a
+  message <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a> receives
+  matches the selection criteria. The <i class="Em">selector</i> field is
+  separated from the <i class="Em">action</i> field by one or more tab
+  characters.
+<p class="Pp">The <i class="Em">Selectors</i> function are encoded as a
+    <i class="Em">facility</i>, a period (&#x2018;.&#x2019;), an optional set of
+    comparison flags ([!] [&lt;=&gt;]), and a <i class="Em">level</i>, with no
+    intervening white-space. Both the <i class="Em">facility</i> and the
+    <i class="Em">level</i> are case insensitive.</p>
+<p class="Pp">The <i class="Em">facility</i> describes the part of the system
+    generating the message, and is one of the following keywords: auth,
+    authpriv, cron, ftp, daemon, kern, lpr, mail, mark, news, syslog, user, uucp
+    and local0 through local7. These keywords (with the exception of mark)
+    correspond to the similar &#x201C;<code class="Dv">LOG_</code>&#x201D;
+    values specified to the
+    <a class="Xr" href="../html3/openlog.html">openlog(3)</a> and
+    <a class="Xr" href="../html3/syslog.html">syslog(3)</a> library
+  routines.</p>
+<p class="Pp">The <i class="Em">comparison flags</i> may be used to specify
+    exactly what levels are logged. If unspecified, the default comparison is
+    &#x2018;&gt;=&#x2019; (greater than or equal to), or, if the
+    <code class="Fl">-U</code> option is passed to
+    <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a>, &#x2018;=&#x2019;
+    (equal to). Comparison flags beginning with &#x2018;!&#x2019; will have
+    their logical sense inverted. Thus, &#x2018;!=info&#x2019; means all levels
+    except info and &#x2018;!notice&#x2019; has the same meaning as
+    &#x2018;&lt;notice&#x2019;.</p>
+<p class="Pp">The <i class="Em">level</i> describes the severity of the message,
+    and is a keyword from the following ordered list (higher to lower): emerg,
+    alert, crit, err, warning, notice, info and debug. These keywords correspond
+    to the similar (<code class="Dv">LOG_</code>) values specified to the
+    <a class="Xr" href="../html3/syslog.html">syslog(3)</a> library routine.</p>
+<p class="Pp">Each block of lines is separated from the previous block by a
+    <i class="Em">program</i> or <i class="Em">hostname</i> specification. A
+    block will only log messages corresponding to the most recent
+    <i class="Em">program</i> and <i class="Em">hostname</i> specifications
+    given. Consider the case of a block that selects
+    &#x2018;<code class="Li">pppd</code>&#x2019; as the
+    <i class="Em">program</i>, directly followed by a block that selects
+    messages from the <i class="Em">hostname</i>
+    &#x2018;<code class="Li">dialhost</code>&#x2019;. The second block will log
+    only messages from the <a class="Xr" href="../html8/pppd.html">pppd(8)</a>
+    program from the host &#x2018;dialhost&#x2019;.</p>
+<p class="Pp">A <i class="Em">program</i> specification of the form
+    &#x2018;<code class="Li">#!+prog1,prog2</code>&#x2019; or
+    &#x2018;<code class="Li">!+prog1,prog2</code>&#x2019; will cause subsequent
+    blocks to be applied to messages logged by the specified programs. A
+    <i class="Em">program</i> specification of the form
+    &#x2018;<code class="Li">#!-prog1,prog2</code>&#x2019; or
+    &#x2018;<code class="Li">!-prog1,prog2</code>&#x2019; will cause subsequent
+    blocks to be applied to messages logged by programs other than the ones
+    specified. A <i class="Em">program</i> specification of the form
+    &#x2018;<code class="Li">#!prog1,prog2</code>&#x2019; or
+    &#x2018;<code class="Li">!prog1,prog2</code>&#x2019; is equivalent to
+    &#x2018;<code class="Li">!+prog1,prog2</code>&#x2019;. Program selectors may
+    also match kernel-generated messages. For example, a program specification
+    of &#x2018;<code class="Li">!+subsys</code>&#x2019; will match
+    kernel-generated messages of the form &#x2018;<code class="Li">subsys: here
+    is a message</code>&#x2019;. The special specification
+    &#x2018;<code class="Li">!*</code>&#x2019; will cause subsequent blocks to
+    apply to all programs.</p>
+<p class="Pp">A <i class="Em">hostname</i> specification of the form
+    &#x2018;<code class="Li">#+host1,host2</code>&#x2019; or
+    &#x2018;<code class="Li">+host1,host2</code>&#x2019; will cause subsequent
+    blocks to be applied to messages received from the specified hosts. A
+    <i class="Em">hostname</i> specification of the form
+    &#x2018;<code class="Li">#-host1,host2</code>&#x2019; or
+    &#x2018;<code class="Li">-host1,host2</code>&#x2019; will cause subsequent
+    blocks to be applied to messages from hosts other than the ones specified.
+    If the hostname is given as &#x2018;<code class="Li">@</code>&#x2019;, the
+    local hostname will be used. The special specification
+    &#x2018;<code class="Li">+*</code>&#x2019; will cause subsequent blocks to
+    apply to all hosts.</p>
+<p class="Pp">See <a class="Xr" href="../html3/syslog.html">syslog(3)</a> for a
+    further descriptions of both the <i class="Em">facility</i> and
+    <i class="Em">level</i> keywords and their significance. It is preferred
+    that selections be made based on <i class="Em">facility</i> rather than
+    <i class="Em">program</i>, since the latter can vary in a networked
+    environment. However, there are cases where a <i class="Em">facility</i> may
+    be too broadly defined.</p>
+<p class="Pp">If a received message matches the specified
+    <i class="Em">facility</i>, and the specified <i class="Em">level</i>
+    comparison is true, and the first word in the message after the date matches
+    the <i class="Em">program</i>, the action specified in the
+    <i class="Em">action</i> field will be taken.</p>
+<p class="Pp">Multiple <i class="Em">selectors</i> may be specified for a single
+    <i class="Em">action</i> by separating them with semicolon
+    (&#x2018;;&#x2019;) characters. It is important to note, however, that each
+    <i class="Em">selector</i> can modify the ones preceding it.</p>
+<p class="Pp">Multiple <i class="Em">facilities</i> may be specified for a
+    single <i class="Em">level</i> by separating them with comma
+    (&#x2018;,&#x2019;) characters.</p>
+<p class="Pp">An asterisk (&#x2018;*&#x2019;) can be used to specify all
+    <i class="Em">facilities</i> or all <i class="Em">levels</i>.</p>
+<p class="Pp">The special <i class="Em">facility</i> &#x201C;mark&#x201D;
+    receives a message at priority &#x201C;info&#x201D; every 20 minutes (see
+    <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a>). This is not
+    enabled by a <i class="Em">facility</i> field containing an asterisk.</p>
+<p class="Pp">The special <i class="Em">level</i> &#x201C;none&#x201D; disables
+    a particular <i class="Em">facility</i>.</p>
+<p class="Pp">The <i class="Em">action</i> field of each line specifies the
+    action to be taken when the <i class="Em">selector</i> field selects a
+    message. There are five forms:</p>
+<ul class="Bl-bullet">
+  <li>A pathname (beginning with a leading slash). Selected messages are
+      appended to the file, unless pathname points to an existing FIFO special
+      file. <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a> treats
+      FIFO specially by opening them in non-blocking mode and discarding
+      messages sent when no reader is listening on the other side.
+    <p class="Pp">To ensure that kernel messages are written to disk promptly,
+        <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a> calls
+        <a class="Xr" href="../html2/fsync.html">fsync(2)</a> after writing
+        messages from the kernel. Other messages are not synced explicitly. You
+        may disable syncing of files specified to receive kernel messages by
+        prefixing the pathname with a minus sign
+        &#x2018;<code class="Li">-</code>&#x2019;. Note that use of this option
+        may cause the loss of log information in the event of a system crash
+        immediately following the write attempt. However, using this option may
+        prove to be useful if your system's kernel is logging many messages.</p>
+    <p class="Pp">Normally the priority and version is not written to file. In
+        order to use syslog-sign you may prefix a pathname with the plus sign
+        &#x2018;<code class="Li">+</code>&#x2019;. If both switches are used the
+        order has to be &#x2018;<code class="Li">+-</code>&#x2019;.</p>
+  </li>
+  <li>A hostname (preceded by an at (&#x2018;@&#x2019;) sign). Selected messages
+      are forwarded to the
+      <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a> program on the
+      named host with UDP.</li>
+  <li>A hostname preceded by an at (&#x2018;@&#x2019;) sign and enclosed in
+      brackets (&#x2018;[]&#x2019;) Selected messages are forwarded with TLS to
+      the <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a> program on
+      the named host. After the closing bracket a colon (&#x2018;:&#x2019;) and
+      a port or service name may be appended. Additional options are configured
+      in parentheses in the form of key=&quot;value&quot;. Recognized keywords
+      are <var class="Ar">subject</var>, <var class="Ar">fingerprint</var>,
+      <var class="Ar">cert</var>, and <var class="Ar">verify</var>.</li>
+  <li>A comma separated list of users. Selected messages are written to those
+      users if they are logged in.</li>
+  <li>An asterisk. Selected messages are written to all logged-in users.</li>
+  <li>A vertical bar (&#x2018;|&#x2019;) followed by a command to which to pipe
+      the selected messages. The command string is passed to
+      <span class="Pa">/bin/sh</span> for evaluation, so the usual shell
+      metacharacters or input/output redirection can occur. (Note that
+      redirecting <a class="Xr" href="../html3/stdio.html">stdio(3)</a> buffered
+      output from the invoked command can cause additional delays, or even lost
+      output data in case a logging subprocess exits with a signal.) The command
+      itself runs with <i class="Em">stdout</i> and <i class="Em">stderr</i>
+      redirected to <span class="Pa">/dev/null</span>. Upon receipt of a
+      <code class="Dv">SIGHUP</code>,
+      <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a> will close the
+      pipe to the process. If the process does not exit voluntarily, it will be
+      sent a <code class="Dv">SIGTERM</code> signal after a grace period of up
+      to 60 seconds.
+    <p class="Pp">The command will only be started once data arrives that should
+        be piped to it. If the command exits, it will be restarted as
+      necessary.</p>
+    <p class="Pp">If it is desired that the subprocess should receive exactly
+        one line of input, this can be achieved by exiting after reading and
+        processing the single line. A wrapper script can be used to achieve this
+        effect, if necessary. Note that this method can be very
+        resource-intensive if many log messages are being piped through the
+        filter.</p>
+    <p class="Pp">Unless the command is a full pipeline, it may be useful to
+        start the command with <i class="Em">exec</i> so that the invoking shell
+        process does not wait for the command to complete. Note that the command
+        is started with the UID of the
+        <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a> process,
+        normally the superuser.</p>
+    <p class="Pp">Just like with files a plus sign
+        &#x2018;<code class="Li">+</code>&#x2019; will leave the priority and
+        version information intact.</p>
+  </li>
+</ul>
+<p class="Pp">Blank lines and lines whose first non-blank character is a hash
+    (&#x2018;#&#x2019;) character are ignored.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="TLS_OPTIONS"><a class="permalink" href="#TLS_OPTIONS">TLS
+  OPTIONS</a></h1>
+Additional options are used for TLS configuration:
+<dl class="Bl-ohang">
+  <dt><i class="Em">tls_server</i></dt>
+  <dd>Enables TLS server mode.</dd>
+  <dt><i class="Em">tls_bindport</i></dt>
+  <dd>Service name or port number to bind to. Default is &#x2018;syslog&#x2019;.
+      <i class="Em">As long as no official port is assigned this option is
+      required</i> <i class="Em">for TLS servers.</i></dd>
+  <dt><i class="Em">tls_bindhost</i></dt>
+  <dd>Hostname or IP to bind to.</dd>
+  <dt><i class="Em">tls_gen_cert</i></dt>
+  <dd>Automatically generate a private key and certificate.</dd>
+  <dt><i class="Em">tls_key</i></dt>
+  <dd>File with private key. Default is
+    &#x2018;/etc/openssl/default.key&#x2019;</dd>
+  <dt><i class="Em">tls_cert</i></dt>
+  <dd>File with certificate to use. Default is
+      &#x2018;/etc/openssl/default.crt&#x2019;</dd>
+  <dt><i class="Em">tls_ca</i></dt>
+  <dd>File with CA certificate to use.</dd>
+  <dt><i class="Em">tls_cadir</i></dt>
+  <dd>Directory containing CA certificates.</dd>
+  <dt><i class="Em">tls_verify</i></dt>
+  <dd>If set to &#x2018;off&#x2019; then certificate authentication is
+    skipped.</dd>
+  <dt><i class="Em">tls_allow_fingerprints</i></dt>
+  <dd>List of fingerprints of trusted client certificates.</dd>
+  <dt><i class="Em">tls_allow_clientcerts</i></dt>
+  <dd>List of filenames with trusted client certificates.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="TLS_AUTHENTICATION"><a class="permalink" href="#TLS_AUTHENTICATION">TLS
+  AUTHENTICATION</a></h1>
+One function of TLS is mutual authentication of client and server. Unless
+  authentication is disabled by setting &#x2018;tls_verify=off&#x2019; the
+  following rules are used:
+<section class="Ss">
+<h2 class="Ss" id="As_client:"><a class="permalink" href="#As_client:">As
+  client:</a></h2>
+A client can be configured not to check a server's certificate by setting the
+  parameter <var class="Ar">verify</var> to &#x2018;off&#x2019;. If the server's
+  certificate is signed by a trusted CA then it is checked if its hostname or IP
+  is given in its certificate (as a CommonName, as a DNS SubjectAltName, or as
+  an IP SubjectAltName). If any match is found then the server is authenticated.
+  If a <var class="Ar">subject</var> parameter is given then it is can satisfy
+  this test as well. This allows DNS-independent configurations using the
+  server's IP address in the destination and adding its hostname as
+  <var class="Ar">subject</var> to authenticate the TLS connection without
+  having to add the IP to the X.509 certificate.
+<p class="Pp">If no CA is used or no trust path between CA and server
+    certificate exists, then hash value of the server's certificate is compared
+    with the hash given in <var class="Ar">fingerprint</var> and the hash of the
+    certificate in <var class="Ar">cert</var>. If the hashes are equal then the
+    server is authenticated.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="As_server:"><a class="permalink" href="#As_server:">As
+  server:</a></h2>
+If using a CA and the client's certificate is signed by it then the client is
+  authenticated. Otherwise the hash of the client's certificate is compared with
+  the hashes given in <var class="Ar">tls_allow_fingerprints</var> and the
+  hashes of the certificates given in
+  <var class="Ar">tls_allow_clientcerts</var>. On any match the client is
+  authenticated.
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUFFERING"><a class="permalink" href="#BUFFERING">BUFFERING</a></h1>
+<a class="Xr" href="../html8/syslogd.html">syslogd(8)</a> is able to buffer
+  temporary not writable messages in memory. To limit the memory consumed for
+  this buffering the following options may be given:
+<dl class="Bl-ohang">
+  <dt><i class="Em">file_queue_length</i></dt>
+  <dd></dd>
+  <dt><i class="Em">pipe_queue_length</i></dt>
+  <dd></dd>
+  <dt><i class="Em">tls_queue_length</i></dt>
+  <dd>The maximum number of messages buffered for one destination of type tls,
+      file, or pipe respectively. Defaults are &#x2018;1024&#x2019;,
+      &#x2018;1024&#x2019;, and &#x2018;-1&#x2019; (no limit).</dd>
+  <dt><i class="Em">file_queue_size</i></dt>
+  <dd></dd>
+  <dt><i class="Em">pipe_queue_size</i></dt>
+  <dd></dd>
+  <dt><i class="Em">tls_queue_size</i></dt>
+  <dd>The maximum memory usage in bytes of messages buffered for one
+      destination. Defaults are &#x2018;1M&#x2019;, &#x2018;1M&#x2019;, and
+      &#x2018;16M&#x2019;.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SIGNING"><a class="permalink" href="#SIGNING">SIGNING</a></h1>
+<a class="Xr" href="../html8/syslogd.html">syslogd(8)</a> is able to digitally
+  sign all processed messages. The used protocol is defined by RFC 5848
+  (syslog-sign): at the start of a session the signing sender sends so called
+  certificate blocks containing its public key; after that it periodically sends
+  a signed message containing hashes of previous messages.
+<p class="Pp">To detect later manipulation one has to keep a copy of the key
+    used for signing (otherwise an attacker could alter the logs and sign them
+    with his own key). If TLS is used with a DSA key then the same key will be
+    used for signing. This is the recommended setup because it makes it easy to
+    have copies of the certificate (with the public key) in backups. Otherwise
+    new keys are generated on every restart and for certain verification it is
+    necessary to have copies of all used keys. So logging only to a local file
+    is not secure; at least the used keys should be logged to another host.</p>
+<dl class="Bl-ohang">
+  <dt><i class="Em">sign_sg</i></dt>
+  <dd>Enables signing. Set this option to enable syslog-sign and select how to
+      assign messages to signature groups (subsets of messages that are signed
+      together). To enable later signature verification and detection of lost
+      messages the assignment should be chosen such that all messages of one
+      signature group are written to the same file. Four possible values for
+      this option are:
+    <dl class="Bl-hang Bd-indent">
+      <dt><i class="Em">0</i></dt>
+      <dd>Use one global signature group for all messages.</dd>
+      <dt><i class="Em">1</i></dt>
+      <dd>Use one signature group per priority.</dd>
+      <dt><i class="Em">2</i></dt>
+      <dd>Use signature groups for ranges of priorities.</dd>
+      <dt><i class="Em">3</i></dt>
+      <dd>Use one signature group per destination. This is a custom strategy not
+          defined by the standard. With this setting one signature group is set
+          up for every file and network action.</dd>
+    </dl>
+  </dd>
+  <dt><i class="Em">sign_delim_sg2</i></dt>
+  <dd>This option is only evaluated with &#x2018;sign_sg=2&#x2019; and allows to
+      configure the priority ranges for signature groups. The parameters are
+      numerical values used as the maximum priority for one group. The default
+      is to use one signature groups per facility, which is equal to setting
+      &#x2018;sign_delim_sg2=7 15 23 31 39 ...&#x2019;.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/syslog.conf</span></dt>
+  <dd>The <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a>
+      configuration file.</dd>
+  <dt><span class="Pa">/usr/share/examples/syslogd/verify.pl</span></dt>
+  <dd>Example script to verify message signatures. (Requires Perl and modules
+      not part of NetBSD.)</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+A configuration file might appear as follows:
+<div class="Bd Pp">
+<pre>
+# Log all kernel messages, authentication messages of
+# level notice or higher and anything of level err or
+# higher to the console.
+# Don't log private authentication messages!
+*.err;kern.*;auth.notice;authpriv.none	/dev/console
+
+# Log anything (except mail) of level info or higher.
+# Don't log private authentication messages!
+*.info;mail.none;authpriv.none		/var/log/messages
+
+# Log daemon messages at debug level only
+daemon.=debug				/var/log/daemon.debug
+
+# The authpriv file has restricted access.
+# Write logs with priority for later verification with syslog-sign.
+authpriv.*				+/var/log/secure
+
+# Log all the mail messages in one place.
+mail.*					/var/log/maillog
+
+# Everybody gets emergency messages, plus log them on another
+# machine.
+*.emerg					*
+*.emerg					@arpa.berkeley.edu
+
+# Log all messages of level info or higher to another
+# machine using TLS with an alternative portname and a
+# fingerprint for authentication
+*.info			@[logserver]:1234(fingerprint=&quot;SHA1:01:02:...&quot;)
+
+# Root and Eric get alert and higher messages.
+*.alert					root,eric
+
+# Save mail and news errors of level err and higher in a
+# special file.
+mail,news.err				/var/log/spoolerr
+
+# Pipe all authentication messages to a filter.
+auth.*					|exec /usr/local/sbin/authfilter
+
+# Log kernel messages to a separate file without syncing each message.
+kern.*					-/var/log/kernlog
+
+# Save ftpd transactions along with mail and news.
+!ftpd
+*.*					/var/log/spoolerr
+
+# Send all error messages from a RAID array through a filter.
+!raid0
+kern.err				|exec /usr/local/sbin/raidfilter
+
+# Save pppd messages from dialhost to a separate file.
+!pppd
++dialhost
+*.*					/var/log/dialhost-pppd
+
+# Save non-local log messages from all programs to a separate file.
+!*
+-@
+*.*					/var/log/foreign
+
+# Generate digital signatures for all messages
+# to each file or network destination.
+sign_sg=3
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/syslog.html">syslog(3)</a>,
+  <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">syslog.conf</code> file appeared in
+  <span class="Ux">4.3BSD</span>, along with
+  <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+The effects of multiple selectors are sometimes not intuitive. For example
+  &#x201C;mail.crit;*.err&#x201D; will select &#x201C;mail&#x201D; facility
+  messages at the level of &#x201C;err&#x201D; or higher, not at the level of
+  &#x201C;crit&#x201D; or higher.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">November 9, 2013</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

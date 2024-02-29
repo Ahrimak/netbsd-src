@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: postinstall.8,v 1.21 2022/01/08 23:57:32 lukem Exp $
+  
+   Copyright (c) 2005-2022 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Thomas Klausner.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>POSTINSTALL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">POSTINSTALL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">POSTINSTALL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">postinstall</code> &#x2014;
+<div class="Nd">check and fix installation after system upgrades</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">postinstall</code></td>
+    <td>[<code class="Fl">-a</code> <var class="Ar">arch</var>]
+      [<code class="Fl">-d</code> <var class="Ar">destdir</var>]
+      [<code class="Fl">-m</code> <var class="Ar">machine</var>]
+      [<code class="Fl">-s</code> (<var class="Ar">srcdir</var> |
+      <var class="Ar">tgzdir</var> | <var class="Ar">tgzfile</var>)]
+      [<code class="Fl">-x</code> <var class="Ar">xsrcdir</var>]
+      <var class="Ar">operation</var> <var class="Ar">...</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">postinstall</code></td>
+    <td><code class="Fl">-?</code></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">postinstall</code> utility performs post-installation
+  checks and/or fixes on a system's configuration files. It is especially useful
+  after system upgrades, e.g. after updating from <span class="Ux">NetBSD
+  1.6.2</span> to <span class="Ux">NetBSD 2.0</span>. The items to check or fix
+  are divided in two groups: enabled by default and disabled by default. The
+  latter are items that are dangerous for some reason, for example because they
+  remove files which may be still in use. If no <var class="Ar">items</var> are
+  provided, the default checks or fixes are applied. Those which are disabled by
+  default must be provided explicitly.
+<p class="Pp">Supported options:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a>
+    <var class="Ar">arch</var></dt>
+  <dd>MACHINE_ARCH. Defaults to machine of the host operating system.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">destdir</var></dt>
+  <dd>Destination directory to check. Defaults to
+    <span class="Pa">/</span>.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a>
+    <var class="Ar">machine</var></dt>
+  <dd>MACHINE. Defaults to machine of the host operating system.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a>
+    (<var class="Ar">srcdir</var> | <var class="Ar">tgzdir</var> |
+    <var class="Ar">tgzfile</var>)</dt>
+  <dd>The location of the reference files, or the <span class="Ux">NetBSD</span>
+      source files used to create the reference files. This may be specified in
+      one of three ways:
+    <dl class="Bl-tag">
+      <dt><a class="permalink" href="#s_2"><code class="Fl" id="s_2">-s</code></a>
+        <var class="Ar">srcdir</var></dt>
+      <dd>The top level directory of the <span class="Ux">NetBSD</span> source
+          tree. By default this is <span class="Pa">/usr/src</span>.</dd>
+      <dt><a class="permalink" href="#s_3"><code class="Fl" id="s_3">-s</code></a>
+        <var class="Ar">tgzdir</var></dt>
+      <dd>A directory in which reference files have been extracted from a binary
+          distribution of <span class="Ux">NetBSD</span>. The files that are
+          distributed in the &#x201C;<span class="Pa">etc.tgz</span>&#x201D; or
+          &#x201C;<span class="Pa">etc.tar.xz</span>&#x201D; set file must be
+          present. The files that are distributed in the
+          &#x201C;<span class="Pa">xetc.tgz</span>&#x201D; or
+          &#x201C;<span class="Pa">xetc.tar.xz</span>&#x201D; set file are
+          optional.</dd>
+      <dt><a class="permalink" href="#s_4"><code class="Fl" id="s_4">-s</code></a>
+        <var class="Ar">tgzfile</var></dt>
+      <dd>The location of a set file (or &#x201C;tgz file&#x201D; or
+          &#x201C;tar.xz file&#x201D;) such as
+          &#x201C;<span class="Pa">etc.tgz</span>&#x201D; or
+          &#x201C;<span class="Pa">xetc.tgz</span>&#x201D; from a binary
+          distribution of <span class="Ux">NetBSD</span>. Each set file is a
+          compressed archive containing reference files, which will be extracted
+          to the <span class="Pa">temproot</span> directory. Multiple
+          <code class="Fl">-s</code> options may be used to specify multiple set
+          files. The &#x201C;<span class="Pa">etc.tgz</span>&#x201D; set file
+          must be specified. The
+          &#x201C;<span class="Pa">xetc.tgz</span>&#x201D; set file is
+        optional.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#x"><code class="Fl" id="x">-x</code></a>
+    <var class="Ar">xsrcdir</var></dt>
+  <dd>Location of the X11 source files. This must be a directory that contains a
+      <span class="Ux">NetBSD</span> xsrc tree.</dd>
+  <dt><a class="permalink" href="#?"><code class="Fl" id="?">-?</code></a></dt>
+  <dd>Display help to stdout, and exit.</dd>
+</dl>
+</div>
+<p class="Pp">The <var class="Ar">operation</var> argument may be one of:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#check"><code class="Cm" id="check">check</code></a>
+    <var class="Ar">item</var> <var class="Ar">...</var></dt>
+  <dd>Perform post-installation checks on items.</dd>
+  <dt><a class="permalink" href="#diff"><code class="Cm" id="diff">diff</code></a>
+    [<code class="Fl">-</code><var class="Ar">bcenpuw</var>]
+    <var class="Ar">item</var> <var class="Ar">...</var></dt>
+  <dd>Similar to <code class="Cm">check</code>, but also show the differences
+      between the files.</dd>
+  <dt><a class="permalink" href="#fix"><code class="Cm" id="fix">fix</code></a>
+    <var class="Ar">item</var> <var class="Ar">...</var></dt>
+  <dd>Apply fixes that <code class="Cm">check</code> determines need to be
+      applied. Not all items can be automatically fixed by
+      <code class="Nm">postinstall</code>, and in some cases an error will be
+      reported, after which manual intervention will be required.
+    <p class="Pp">Conflicts between existing files in the target file system and
+        new files from the <span class="Ux">NetBSD</span> distribution are
+        resolved by replacing the existing file with the new file; there is no
+        attempt to merge the files. See
+        <a class="Xr" href="../html8/etcupdate.html">etcupdate(8)</a> for an
+        alternative update method that is able to merge files.</p>
+  </dd>
+  <dt><a class="permalink" href="#help"><code class="Cm" id="help">help</code></a></dt>
+  <dd>Display help to stdout, and exit.</dd>
+  <dt><a class="permalink" href="#list"><code class="Cm" id="list">list</code></a></dt>
+  <dd>List available <var class="Ar">items</var>, showing if they are enabled or
+      disabled by default.</dd>
+  <dt><a class="permalink" href="#usage"><code class="Cm" id="usage">usage</code></a></dt>
+  <dd>Display help to stdout, and exit.</dd>
+</dl>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXIT_STATUS"><a class="permalink" href="#EXIT_STATUS">EXIT
+  STATUS</a></h1>
+The <code class="Nm">postinstall</code> utility exits 0 on success, and &gt;0 if
+  an error occurs or a problem was found.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html8/etcupdate.html">etcupdate(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">postinstall</code> utility first appeared in
+  <span class="Ux">NetBSD 1.6</span>.
+<p class="Pp">In <span class="Ux">NetBSD 4.0</span>, the
+    <code class="Fl">-s</code> <var class="Ar">tgzfile</var> option was
+  added.</p>
+<p class="Pp">In <span class="Ux">NetBSD 5.0</span>, the ability to specify
+    multiple colon-separated files with a single <code class="Fl">-s</code>
+    option was deprecated.</p>
+<p class="Pp">In <span class="Ux">NetBSD 7.0</span>, the ability to specify
+    multiple colon-separated files with a single <code class="Fl">-s</code>
+    option was removed. Multiple <code class="Fl">-s</code> options must be used
+    instead.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 9, 2022</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

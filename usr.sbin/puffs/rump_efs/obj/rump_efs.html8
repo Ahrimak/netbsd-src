@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: rump_efs.8,v 1.13 2011/07/24 09:00:06 uch Exp $
+  
+  	WARNING: GENERATED FILE, DO NOT EDIT
+  	INSTEAD, EDIT makerumpmanpages.sh AND REGEN
+  	from: NetBSD: makerumpmanpages.sh,v 1.12 2010/11/22 07:56:31 pooka Exp
+  
+   Copyright (c) 2008-2010 Antti Kantee. All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>RUMP_EFS(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">RUMP_EFS(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">RUMP_EFS(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">rump_efs</code> &#x2014;
+<div class="Nd">mount a efs image with a userspace server</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<code class="Cd">file-system PUFFS</code>
+<br/>
+<code class="Cd">pseudo-device putter</code>
+<p class="Pp"></p>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">rump_efs</code></td>
+    <td>[options] <var class="Ar">image</var>
+      <var class="Ar">mountpoint</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<i class="Em">NOTE!</i> This manual page describes features specific to the
+  <a class="Xr" href="../html3/rump.html">rump(3)</a> file server. Please see
+  <a class="Xr" href="../html8/mount_efs.html">mount_efs(8)</a> for a full
+  description of the available command line options.
+<p class="Pp">The <code class="Nm">rump_efs</code> utility can be used to mount
+    efs file systems. It uses
+    <a class="Xr" href="../html3/rump.html">rump(3)</a> and
+    <a class="Xr" href="../html3/p2k.html">p2k(3)</a> to facilitate running the
+    file system as a server in userspace. As opposed to
+    <a class="Xr" href="../html8/mount_efs.html">mount_efs(8)</a>,
+    <code class="Nm">rump_efs</code> does not use file system code within the
+    kernel and therefore does not require kernel support except
+    <a class="Xr" href="../html4/puffs.html">puffs(4)</a>. Apart from a minor
+    speed penalty there is no downside with respect to in-kernel code.</p>
+<p class="Pp"><code class="Nm">rump_efs</code> does not require using
+    <a class="Xr" href="../html8/vnconfig.html">vnconfig(8)</a> for mounts from
+    regular files and the file path can be passed directly as the
+    <var class="Ar">image</var> parameter. In fact, the use of
+    <a class="Xr" href="../html8/vnconfig.html">vnconfig(8)</a> is discouraged,
+    since it is unable to properly deal with images on sparse files.</p>
+<p class="Pp">In case the image contains multiple partitions, the desired
+    partition must be indicated by appending the token
+    &#x201C;%DISKLABEL:p%&#x201D; to the <var class="Ar">image</var> path. The
+    letter &#x201C;p&#x201D; specifies the partition as obtained via
+    <a class="Xr" href="../html8/disklabel.html">disklabel(8)</a>. For example,
+    to mount partition &#x201C;e&#x201D; from image
+    <span class="Pa">/tmp/wd0.img</span>, use
+    &#x201C;/tmp/wd0.img%DISKLABEL:e%&#x201D;.</p>
+<p class="Pp">It is recommended that untrusted file system images be mounted
+    with <code class="Nm">rump_efs</code> instead of
+    <a class="Xr" href="../html8/mount_efs.html">mount_efs(8)</a>. Corrupt file
+    system images commonly cause the file system to crash the entire kernel, but
+    with <code class="Nm">rump_efs</code> only the userspace server process will
+    dump core.</p>
+<p class="Pp">To use <code class="Nm">rump_efs</code> via
+    <a class="Xr" href="../html8/mount.html">mount(8)</a>, the flags
+    <code class="Fl">-o</code> <var class="Ar">rump</var> and
+    <code class="Fl">-t</code> <var class="Ar">efs</var> should be given.
+    Similarly, <code class="Nm">rump_efs</code> is used instead of
+    <a class="Xr" href="../html8/mount_efs.html">mount_efs(8)</a> if
+    &#x201C;rump&#x201D; is added to the options field of
+    <a class="Xr" href="../html5/fstab.html">fstab(5)</a>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/p2k.html">p2k(3)</a>,
+  <a class="Xr" href="../html3/puffs.html">puffs(3)</a>,
+  <a class="Xr" href="../html3/rump.html">rump(3)</a>,
+  <a class="Xr" href="../html8/mount_efs.html">mount_efs(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">rump_efs</code> utility first appeared in
+  <span class="Ux">NetBSD 5.0</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">November 21, 2010</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

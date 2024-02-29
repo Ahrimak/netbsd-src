@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: btattach.8,v 1.10 2017/08/13 18:34:03 wiz Exp $
+  
+   Copyright (c) 2007 KIYOHARA Takashi
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+   DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>BTATTACH(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">BTATTACH(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">BTATTACH(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">btattach</code> &#x2014;
+<div class="Nd">attach serial lines as Bluetooth HCI interfaces</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">btattach</code></td>
+    <td>[<code class="Fl">-dFfoPp</code>] [<code class="Fl">-i</code>
+      <var class="Ar">speed</var>] [<var class="Ar">type</var>]
+      <var class="Ar">tty</var> <var class="Ar">speed</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">btattach</code></td>
+    <td><code class="Fl">-t</code> [<code class="Fl">-dFfoPp</code>]
+      <var class="Ar">tty</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">btattach</code> is used to assign a <var class="Ar">tty</var>
+  line to a Bluetooth Host Controller Interface using the
+  <a class="Xr" href="../html4/btuart.html">btuart(4)</a> or
+  <a class="Xr" href="../html4/bcsp.html">bcsp(4)</a> line disciplines, and can
+  optionally initialize the line for a given device <var class="Ar">type</var>
+  before activating the line discipline.
+<p class="Pp">Supported types are:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt><a class="permalink" href="#bcm2035"><code class="Cm" id="bcm2035">bcm2035</code></a></dt>
+  <dd>Broadcom BCM2035</dd>
+  <dt><a class="permalink" href="#bcm43xx"><code class="Cm" id="bcm43xx">bcm43xx</code></a></dt>
+  <dd>Broadcom BCM43xx</dd>
+  <dt><a class="permalink" href="#bcm43xx-3wire"><code class="Cm" id="bcm43xx-3wire">bcm43xx-3wire</code></a></dt>
+  <dd>Broadcom BCM43xx (3-wire)</dd>
+  <dt><a class="permalink" href="#bcsp"><code class="Cm" id="bcsp">bcsp</code></a></dt>
+  <dd>Generic BCSP (BlueCore Serial Protocol)</dd>
+  <dt><a class="permalink" href="#bgb2xx"><code class="Cm" id="bgb2xx">bgb2xx</code></a></dt>
+  <dd>Philips BGB2xx module</dd>
+  <dt><a class="permalink" href="#btuart"><code class="Cm" id="btuart">btuart</code></a></dt>
+  <dd>Generic UART (this is the default)</dd>
+  <dt><a class="permalink" href="#csr"><code class="Cm" id="csr">csr</code></a></dt>
+  <dd>Cambridge Silicon Radio Casira serial adapter, or Brainboxes serial dongle
+      (BL642)</dd>
+  <dt><a class="permalink" href="#ericsson"><code class="Cm" id="ericsson">ericsson</code></a></dt>
+  <dd>Ericsson based modules</dd>
+  <dt><a class="permalink" href="#digi"><code class="Cm" id="digi">digi</code></a></dt>
+  <dd>Digianswer based cards</dd>
+  <dt><a class="permalink" href="#st"><code class="Cm" id="st">st</code></a></dt>
+  <dd>ST Microelectronics minikits based on STLC2410/STLC2415</dd>
+  <dt><a class="permalink" href="#stlc2500"><code class="Cm" id="stlc2500">stlc2500</code></a></dt>
+  <dd>ST Microelectronics minikits based on STLC2500</dd>
+  <dt><a class="permalink" href="#swave"><code class="Cm" id="swave">swave</code></a></dt>
+  <dd>Silicon Wave kits</dd>
+  <dt><a class="permalink" href="#texas"><code class="Cm" id="texas">texas</code></a></dt>
+  <dd>Texas Instruments modules</dd>
+  <dt><a class="permalink" href="#unistone"><code class="Cm" id="unistone">unistone</code></a></dt>
+  <dd>Infineon UniStone (PBA31308) modules</dd>
+</dl>
+</div>
+<p class="Pp">When the line discipline is activated,
+    <code class="Nm">btattach</code> detaches and sleeps until it receives a
+    <code class="Dv">SIGHUP</code>.</p>
+<p class="Pp">The command line options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>debug mode. print initialization IO and do not detach.</dd>
+  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a></dt>
+  <dd>Disable flow control.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Enable flow control.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>
+    <var class="Ar">speed</var></dt>
+  <dd>Specify an alternate <var class="Ar">speed</var> for the Bluetooth module
+      to use during the initialization phase.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a></dt>
+  <dd>Enable odd parity.</dd>
+  <dt><a class="permalink" href="#P"><code class="Fl" id="P">-P</code></a></dt>
+  <dd>Disable parity.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a></dt>
+  <dd>Enable parity (even parity).</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a></dt>
+  <dd>Test mode.</dd>
+</dl>
+<p class="Pp">Only the super-user may attach a Bluetooth HCI interface.</p>
+<p class="Pp">Test mode tries to guess the speed using the received
+    link-establish packet from HCI, or
+    <a class="Xr" href="../html4/btuart.html">btuart(4)</a>, if there is no
+    response.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/var/run/btattach-</span>{tty}.pid</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/bcsp.html">bcsp(4)</a>,
+  <a class="Xr" href="../html4/bluetooth.html">bluetooth(4)</a>,
+  <a class="Xr" href="../html4/btuart.html">btuart(4)</a>,
+  <a class="Xr" href="../html8/btconfig.html">btconfig(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">btattach</code> program was written with reference to
+  <code class="Nm">hciattach</code> as provided with the BlueZ tools for Linux
+  and first appeared in <span class="Ux">NetBSD 5.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">KIYOHARA Takashi</span>
+  &lt;<a class="Mt" href="mailto:kiyohara@kk.iij4u.or.jp">kiyohara@kk.iij4u.or.jp</a>&gt;
+<br/>
+<span class="An">Iain Hibbert</span>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Not all <var class="Ar">type</var> initializations have been tested.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">August 11, 2017</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

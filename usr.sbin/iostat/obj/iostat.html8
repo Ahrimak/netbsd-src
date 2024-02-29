@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: iostat.8,v 1.30 2023/07/28 12:03:33 wiz Exp $
+  
+   Copyright (c) 1985, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+  	from: @(#)iostat.8	8.1 (Berkeley) 6/6/93
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>IOSTAT(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">IOSTAT(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">IOSTAT(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">iostat</code> &#x2014;
+<div class="Nd">report I/O statistics</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">iostat</code></td>
+    <td>[<code class="Fl">-CDdITXxyz</code>] [<code class="Fl">-c</code>
+      <var class="Ar">count</var>] [<code class="Fl">-H</code>
+      <var class="Ar">height</var>] [<code class="Fl">-W</code>
+      <var class="Ar">width</var>] [<code class="Fl">-w</code>
+      <var class="Ar">wait</var>] [<var class="Ar">drives</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">iostat</code> displays kernel I/O statistics on terminal, disk
+  and CPU operations. By default, <code class="Nm">iostat</code> displays one
+  line of statistics averaged over the machine's run time. The use of
+  <code class="Fl">-c</code> or <code class="Fl">-w</code> presents successive
+  lines averaged over the <var class="Ar">wait</var> period. The
+  <code class="Fl">-I</code> option causes <code class="Nm">iostat</code> to
+  print raw, unaveraged values (totals).
+<p class="Pp">Only the last disk option specified (<code class="Fl">-d</code>,
+    <code class="Fl">-D</code>, <code class="Fl">-X</code>,
+    <code class="Fl">-x</code>, or <code class="Fl">-y</code>) is used.</p>
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#C"><code class="Fl" id="C">-C</code></a></dt>
+  <dd>Show CPU statistics. This is enabled by default unless any of the
+      <code class="Fl">-D</code>, <code class="Fl">-d</code>,
+      <code class="Fl">-T</code>, <code class="Fl">-X</code>,
+      <code class="Fl">-x</code>, or <code class="Fl">-y</code> flags are
+    used.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>
+    <var class="Ar">count</var></dt>
+  <dd>Repeat the display <var class="Ar">count</var> times. Unless the
+      <code class="Fl">-I</code> flag is in effect, the first display is for the
+      time since a reboot and each subsequent report is for the time period
+      since the last display. If no <var class="Ar">wait</var> interval is
+      specified, the default is 1 second.</dd>
+  <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a></dt>
+  <dd>Show alternative disk statistics. Displays number of transfers, kilobytes
+      transferred, and time spent in transfers, during the
+      <var class="Ar">wait</var> period (or since boot with
+      <code class="Fl">-I</code>). Use of this flag disables the default
+      display.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Show disk statistics. This is the default. Displays number of transfers
+      per second, kilobytes per transfer, and megabytes transferred per second.
+      Use of this flag disables the default display of CPU and tty
+    statistics.</dd>
+  <dt><a class="permalink" href="#H"><code class="Fl" id="H">-H</code></a>
+    <var class="Ar">height</var></dt>
+  <dd>Set the page size (length, or height) explicitly, as the number of lines,
+      <var class="Ar">height</var>. If not set, the page length is taken from
+      the environment variable <code class="Ev">LINES</code> if set, or from the
+      terminal (window) size, if output is to a terminal and its size is set,
+      and otherwise defaults to 20. If explicitly set to zero, pages are
+      considered to be infinitely long. This parameter determines the frequency
+      at which repeated headers are output. If the value is greater than zero,
+      but too small for the header, along with one output set, then a new header
+      will be produced for each set of output.</dd>
+  <dt><a class="permalink" href="#I"><code class="Fl" id="I">-I</code></a></dt>
+  <dd>Show the running total values, rather than an average.</dd>
+  <dt><a class="permalink" href="#T"><code class="Fl" id="T">-T</code></a></dt>
+  <dd>Show tty statistics. This is enabled by default unless one, or more, of
+      the <code class="Fl">-C</code>, <code class="Fl">-D</code>,
+      <code class="Fl">-d</code>, <code class="Fl">-X</code>,
+      <code class="Fl">-x</code>, or <code class="Fl">-y</code> flags are
+    used.</dd>
+  <dt><a class="permalink" href="#W"><code class="Fl" id="W">-W</code></a>
+    <var class="Ar">width</var></dt>
+  <dd>Set the page width explicitly, as the number of columns of characters,
+      <var class="Ar">width</var>. If not set, the page width is taken from the
+      environment variable <code class="Ev">COLUMNS</code> if set, or from the
+      terminal (window) size, if output is to a terminal and its size is set,
+      and otherwise defaults to 80. If explicitly set to 0, lines are considered
+      infinitely long. This width is used only to determine the number of drives
+      to display by default when no drive list is given. In other cases output
+      will be as wide as needed to display the data requested.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a>
+    <var class="Ar">wait</var></dt>
+  <dd>Pause <var class="Ar">wait</var> seconds between each display. If no
+      repeat <var class="Ar">count</var> is specified, the default is
+    infinity.</dd>
+  <dt><a class="permalink" href="#X"><code class="Fl" id="X">-X</code></a></dt>
+  <dd>Show limited alternative disk statistics. Displays megabytes transferred,
+      and time spent in transfers, during the <var class="Ar">wait</var> period
+      (or since boot with <code class="Fl">-I</code>). Use of this flag disables
+      the default display.</dd>
+  <dt><a class="permalink" href="#x"><code class="Fl" id="x">-x</code></a></dt>
+  <dd>Show extended disk statistics. Each disk is displayed on a line of its own
+      with all available statistics. This option overrides all other display
+      options, and all disks are displayed unless specific disk names are
+      provided as arguments. Additionally, separate read and write statistics
+      are displayed. The <code class="Fl">-C</code> and
+      <code class="Fl">-T</code> options are ignored with this output
+    format.</dd>
+  <dt><a class="permalink" href="#y"><code class="Fl" id="y">-y</code></a></dt>
+  <dd>Shows the extended statistics (as with <code class="Fl">-x</code>) and
+      additional queuing statistics. Output does not fit in an 80 column window.
+      The <code class="Fl">-C</code> and <code class="Fl">-T</code> options are
+      ignored with this output format.</dd>
+  <dt><a class="permalink" href="#z"><code class="Fl" id="z">-z</code></a></dt>
+  <dd>Replaces drive and CPU statistic outputs that are exactly zero with
+      spaces. Note that zero values can still appear &#x2013; this indicates a
+      value that was not zero, but was rounded down so appears as zero. Drive
+      output is replaced by spaces only when the drive did no input or output at
+      all in the interval, or with <code class="Fl">-I</code>, has never done
+      any I/O.</dd>
+</dl>
+<p class="Pp"><code class="Nm">iostat</code> displays its information in the
+    following format:</p>
+<dl class="Bl-tag">
+  <dt>tty</dt>
+  <dd>
+    <dl class="Bl-tag Bl-compact">
+      <dt>tin</dt>
+      <dd>characters read from terminals</dd>
+      <dt>tout</dt>
+      <dd>characters written to terminals</dd>
+    </dl>
+  </dd>
+  <dt>disks</dt>
+  <dd>Disk operations. The header of the field is the disk name and unit number.
+      If more drives are configured in the system that fit across the current
+      display, <code class="Nm">iostat</code> displays only those drives that
+      fit on the display. To force <code class="Nm">iostat</code> to display
+      specific drives, they may be supplied on the command line, either as names
+      or <code class="Fn">fnmatch</code>() patterns.
+    <p class="Pp"></p>
+    <dl class="Bl-tag Bl-compact">
+      <dt>t/s</dt>
+      <dd>transfers per second</dd>
+      <dt>KB/t</dt>
+      <dd>Kilobytes transferred per disk transfer</dd>
+      <dt>MB/s</dt>
+      <dd>Megabytes transferred per second</dd>
+    </dl>
+    <p class="Pp">The alternative display format, (selected with
+        <code class="Fl">-D</code>), presents the following values:</p>
+    <p class="Pp"></p>
+    <dl class="Bl-tag Bl-compact">
+      <dt>xfr</dt>
+      <dd>Disk transfers</dd>
+      <dt>KB</dt>
+      <dd>Kilobytes transferred</dd>
+      <dt>time</dt>
+      <dd>Seconds spent in disk activity</dd>
+    </dl>
+    <p class="Pp">With the <code class="Fl">-y</code> flag, the following
+        queuing measurements are added:</p>
+    <p class="Pp"></p>
+    <dl class="Bl-tag Bl-compact">
+      <dt>wait</dt>
+      <dd>Number of I/O requests queued up</dd>
+      <dt>actv</dt>
+      <dd>Number of currently active I/O requests</dd>
+      <dt>wsvc_t</dt>
+      <dd>Average waiting time of an I/O request in milliseconds</dd>
+      <dt>asvc_t</dt>
+      <dd>Average duration of an I/O request in milliseconds</dd>
+      <dt>wtime</dt>
+      <dd>Seconds spent in the waiting queue. Queuing data might not be
+          available from all drivers and is then shown as zeros.</dd>
+    </dl>
+    <p class="Pp">With the <code class="Fl">-X</code> flag, the following
+        queuing measurements are added:</p>
+    <p class="Pp"></p>
+    <dl class="Bl-tag Bl-compact">
+      <dt>MB/s</dt>
+      <dd>Megabytes transferred per second</dd>
+      <dt>time</dt>
+      <dd>Seconds spent in disk activity</dd>
+    </dl>
+  </dd>
+  <dt>cpu</dt>
+  <dd>
+    <dl class="Bl-tag Bl-compact">
+      <dt>us</dt>
+      <dd>% of CPU time in user mode</dd>
+      <dt>ni</dt>
+      <dd>% of CPU time in user mode running niced processes</dd>
+      <dt>sy</dt>
+      <dd>% of CPU time in system mode</dd>
+      <dt>in</dt>
+      <dd>% of CPU time in interrupt mode</dd>
+      <dt>id</dt>
+      <dd>% of CPU time in idle mode</dd>
+    </dl>
+    <p class="Pp">Note that because of rounding, these percentages may appear to
+        total more or less than 100.</p>
+  </dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/fstat.html">fstat(1)</a>,
+  <a class="Xr" href="../html1/netstat.html">netstat(1)</a>,
+  <a class="Xr" href="../html1/nfsstat.html">nfsstat(1)</a>,
+  <a class="Xr" href="../html1/ps.html">ps(1)</a>,
+  <a class="Xr" href="../html1/systat.html">systat(1)</a>,
+  <a class="Xr" href="../html1/vmstat.html">vmstat(1)</a>,
+  <a class="Xr" href="../html3/fnmatch.html">fnmatch(3)</a>,
+  <a class="Xr" href="../html8/pstat.html">pstat(8)</a>
+<p class="Pp">The sections starting with ``Interpreting system activity'' in
+    <span class="RsT">Installing and Operating 4.3BSD.</span></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+<code class="Nm">iostat</code> appeared in <span class="Ux">Version&#x00A0;6
+  AT&amp;T UNIX</span>. The <code class="Fl">-x</code> option was added in
+  <span class="Ux">NetBSD 1.4</span>. Collection of queuing values and the
+  <code class="Fl">-y</code> option were added in <span class="Ux">NetBSD
+  8.0</span>. The <code class="Fl">-X</code> option was added in
+  <span class="Ux">NetBSD 11.0</span>. The archaic option format:
+<br/>
+<code class="Nm">iostat</code> [<var class="Ar">drives ...</var>]
+  [<var class="Ar">wait</var> [<var class="Ar">count</var>]]
+<br/>
+remains supported (the first <var class="Ar">drive</var> whose name starts with
+  a digit is taken to be the <var class="Ar">wait</var> period) but is
+  deprecated, and may be removed in a future version, so should not be used.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">July 28, 2023</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

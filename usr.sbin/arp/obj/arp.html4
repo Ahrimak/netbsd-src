@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: arp.4,v 1.15 2022/05/04 07:32:50 andvar Exp $
+  
+   Copyright (c) 1985, 1986, 1988, 1994
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+  	from: @(#)arp4.4	6.5 (Berkeley) 4/18/94
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>ARP(4)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">ARP(4)</td>
+    <td class="head-vol">Device Drivers Manual</td>
+    <td class="head-rtitle">ARP(4)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">arp</code> &#x2014;
+<div class="Nd">Address Resolution Protocol</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<code class="In">#include &lt;<a class="In">netinet/if_ether.h</a>&gt;</code>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The Address Resolution Protocol (ARP) is a protocol used to dynamically map
+  between Internet host addresses and Ethernet addresses. It is used by all the
+  Ethernet interface drivers. It is not specific to Internet protocols or to
+  Ethernet, but this implementation currently supports only that combination.
+<p class="Pp">ARP caches Internet-Ethernet address mappings. When an interface
+    requests a mapping for an address not in the cache, ARP queues the message
+    which requires the mapping and broadcasts a message on the associated
+    network requesting the address mapping. If a response is provided, the new
+    mapping is cached and any pending message is transmitted. ARP will queue at
+    most one packet while waiting for a response to a mapping request; only the
+    most recently ``transmitted'' packet is kept. If the target host does not
+    respond after several requests, the host is considered to be down for a
+    short period (normally 20 seconds), allowing an error to be returned to
+    transmission attempts during this interval. The error is
+    <code class="Er">EHOSTDOWN</code> for a non-responding destination host, and
+    <code class="Er">EHOSTUNREACH</code> for a non-responding router.</p>
+<p class="Pp">Each ARP cache entry is stored in a network interface which a
+    response of ARP comes in. ARP cache entries time out periodically (normally
+    20 minutes after validated; entries are not validated when not in use).</p>
+<p class="Pp">ARP entries may be added, deleted or changed with the
+    <a class="Xr" href="../html8/arp.html">arp(8)</a> utility. Manually-added
+    entries may be temporary or permanent, and may be &#x201C;published&#x201D;,
+    in which case the system will respond to ARP requests for that host as if it
+    were the target of the request.</p>
+<p class="Pp">In the past, ARP was used to negotiate the use of a trailer
+    encapsulation. This is no longer supported.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
+ARP implements Address Conflict Detection. When an address is first added to the
+  host, it is marked tentative and ARP probes the network to discover if another
+  host has the address. If another host replies with the same address, then the
+  local address is marked duplicate and the host will not use it. Otherwise the
+  tentative mark is removed and the host can start using the address.
+<p class="Pp">ARP will defend the host's active address when a conflicting
+    message is received. However, if another conflicting message for the address
+    is found within a 10 second period, then the address is marked duplicate and
+    the host will stop using it.</p>
+<p class="Pp">For some systems such as a router or a server, it is desirable
+    never to give up an assigned address. This can be achieved by setting the
+    <a class="Xr" href="../html7/sysctl.html">sysctl(7)</a> variable
+    <code class="Dv">net.inet.ip_dad_count</code> to 0.</p>
+<p class="Pp">In all of the above cases, ARP will log diagnostic messages which
+    include the hardware address of the conflicting host.</p>
+<dl class="Bl-diag">
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/inet.html">inet(4)</a>,
+  <a class="Xr" href="../html4/route.html">route(4)</a>,
+  <a class="Xr" href="../html8/arp.html">arp(8)</a>,
+  <a class="Xr" href="../html8/ifconfig.html">ifconfig(8)</a>,
+  <a class="Xr" href="../html8/route.html">route(8)</a>
+<p class="Pp"></p>
+<p class="Pp"><cite class="Rs"><span class="RsA">Plummer, D.</span>,
+    <span class="RsT">RFC 826</span>, <i class="RsB">An Ethernet Address
+    Resolution Protocol</i>.</cite></p>
+<p class="Pp"><cite class="Rs"><span class="RsA">Leffler, S.J.</span> and
+    <span class="RsA">Karels, M.J.</span>, <span class="RsT">RFC 893</span>,
+    <i class="RsB">Trailer Encapsulations</i>.</cite></p>
+<p class="Pp"><cite class="Rs"><span class="RsA">Cheshire, S.</span>,
+    <span class="RsT">RFC 5227</span>, <i class="RsB">IPv4 Address Conflict
+    Detection</i>.</cite></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+Since <span class="Ux">NetBSD 8.0</span>, the ARP cache was not stored in the
+  routing table.
+<p class="Pp">Address Conflict Detection was added in <span class="Ux">NetBSD
+    8.0</span>.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">October 12, 2016</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

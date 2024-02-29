@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: lockstat.8,v 1.11 2017/07/03 21:35:31 wiz Exp $
+  
+   Copyright (c) 2006, 2007, 2009 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Andrew Doran.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>LOCKSTAT(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">LOCKSTAT(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">LOCKSTAT(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">lockstat</code> &#x2014;
+<div class="Nd">display kernel locking statistics</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">lockstat</code></td>
+    <td>[<code class="Fl">-cdeflMmpstx</code>] [<code class="Fl">-b</code>
+      <var class="Ar">nbuf</var>] [<code class="Fl">-E</code>
+      <var class="Ar">event</var>] [<code class="Fl">-F</code>
+      <var class="Ar">func</var>] [<code class="Fl">-L</code>
+      <var class="Ar">lock</var>] [<code class="Fl">-N</code>
+      <var class="Ar">nlist</var>] [<code class="Fl">-o</code>
+      <var class="Ar">file</var>] [<code class="Fl">-T</code>
+      <var class="Ar">type</var>] <var class="Ar">command ...</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">lockstat</code> command enables system wide tracing of
+  kernel lock events, executes the specified command, and when finished reports
+  statistics to the user.
+<p class="Pp">Tracing may be ended early by sending
+    <code class="Dv">SIGINT</code> (Ctrl-C) to the process being executed by
+    lockstat.</p>
+<p class="Pp">The <code class="Nm">lockstat</code> pseudo-device driver must be
+    present in the kernel, and the <code class="Nm">lockstat</code> command may
+    only be used by the root user.</p>
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#b"><code class="Fl" id="b">-b</code></a>
+    <var class="Ar">nbuf</var></dt>
+  <dd>Adjust the number of trace buffers allocated by the kernel to
+      <var class="Ar">nbuf</var>.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>Report percentage of total events by count, and sort the output by number
+      of events. The default is to key on event timings.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Disable lockstat. This is useful when a program crashed leaving the
+      lockstat kernel driver enabled.</dd>
+  <dt><a class="permalink" href="#E"><code class="Fl" id="E">-E</code></a>
+    <var class="Ar">event</var></dt>
+  <dd>Limit tracing to one type of event. Use the <code class="Fl">-e</code>
+      option to list valid events.</dd>
+  <dt><a class="permalink" href="#e"><code class="Fl" id="e">-e</code></a></dt>
+  <dd>List valid event types for the <code class="Fl">-E</code> option and
+    exit.</dd>
+  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a>
+    <var class="Ar">func</var></dt>
+  <dd>Limit tracing to locking operations performed within the specified
+      function. <var class="Ar">func</var> must be the name of a valid function
+      in the kernel.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Trace only by calling functions; do not report on individual locks.</dd>
+  <dt><a class="permalink" href="#L"><code class="Fl" id="L">-L</code></a>
+    <var class="Ar">lock</var></dt>
+  <dd>Limit tracing to one lock. <var class="Ar">lock</var> may either be the
+      name of a lock object in the kernel, or a kernel virtual address.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>Trace only by lock; do not report on calling functions.</dd>
+  <dt><a class="permalink" href="#M"><code class="Fl" id="M">-M</code></a></dt>
+  <dd>Merge lock addresses within unique objects.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a></dt>
+  <dd>Merge call sites within unique functions.</dd>
+  <dt><a class="permalink" href="#N"><code class="Fl" id="N">-N</code></a>
+    <var class="Ar">nlist</var></dt>
+  <dd>Extract symbol information from the <var class="Ar">nlist</var> file.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">file</var></dt>
+  <dd>Send output to the file named by <var class="Ar">file</var>, instead of
+      the standard output (the default).</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a></dt>
+  <dd>Show the average number of events and time spent per CPU. The default is
+      to show the total values. May be used in conjunction with the
+      <code class="Fl">-s</code> option.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Show the average number of events per second, and the average time spent
+      per second. The default is to show the total values.</dd>
+  <dt><a class="permalink" href="#T"><code class="Fl" id="T">-T</code></a>
+    <var class="Ar">type</var></dt>
+  <dd>Limit tracing to one type of lock. Use the <code class="Fl">-t</code>
+      option to list valid lock types.</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a></dt>
+  <dd>List valid lock types for the <code class="Fl">-T</code> option and
+    exit.</dd>
+  <dt><a class="permalink" href="#x"><code class="Fl" id="x">-x</code></a></dt>
+  <dd>Summarize events, and do not report on lock types.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/dev/lockstat</span></dt>
+  <dd><code class="Nm">lockstat</code> control device</dd>
+  <dt><span class="Pa">/dev/ksyms</span></dt>
+  <dd>namelist</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<div class="Bd">
+<pre>
+# lockstat -L uvm_pageqlock sleep 10
+Elapsed time: 10.01 seconds.
+
+-- Adaptive mutex spin
+
+Total%  Count   Time/ms          Lock                       Caller
+------ ------- --------- ---------------------- ------------------------------
+100.00    1281      0.78 uvm_pageqlock          &lt;all&gt;
+ 39.81     385      0.31 uvm_pageqlock          uvm_fault_internal+11cc
+ 30.98     358      0.24 uvm_pageqlock          uvm_fault_internal+bb1
+ 28.06     522      0.22 uvm_pageqlock          uvm_anfree+132
+  0.51       5      0.00 uvm_pageqlock          ubc_fault+28f
+  0.20       4      0.00 uvm_pageqlock          uvm_fault_internal+12b6
+  0.18       2      0.00 uvm_pageqlock          uao_detach_locked+58
+  0.11       2      0.00 uvm_pageqlock          uvm_fault_internal+7d5
+  0.08       2      0.00 uvm_pageqlock          ufs_balloc_range+160
+  0.07       1      0.00 uvm_pageqlock          uvm_fault_internal+107b
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
+<dl class="Bl-diag">
+  <dt>lockstat: incompatible lockstat interface version</dt>
+  <dd>
+    <p class="Pp">The kernel device driver does not match the version of the
+        <code class="Nm">lockstat</code> command.</p>
+  </dd>
+  <dt>lockstat: overflowed available kernel trace buffers</dt>
+  <dd>
+    <p class="Pp">Increase the number of buffers using the
+        <code class="Fl">-b</code> option.</p>
+  </dd>
+  <dt>lockstat: ioctl: Invalid argument</dt>
+  <dd>
+    <p class="Pp">The number of trace buffers is outside the minimum and maximum
+        bounds set by the kernel.</p>
+  </dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/ps.html">ps(1)</a>,
+  <a class="Xr" href="../html1/systat.html">systat(1)</a>,
+  <a class="Xr" href="../html1/vmstat.html">vmstat(1)</a>,
+  <a class="Xr" href="../html8/iostat.html">iostat(8)</a>,
+  <a class="Xr" href="../html8/pstat.html">pstat(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">lockstat</code> command appeared in <span class="Ux">NetBSD
+  4.0</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">March 6, 2013</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

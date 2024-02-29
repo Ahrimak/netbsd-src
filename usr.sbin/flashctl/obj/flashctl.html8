@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: flashctl.8,v 1.2 2011/02/27 23:28:12 wiz Exp $
+  
+   Copyright (c) 2011 Department of Software Engineering,
+  		       University of Szeged, Hungary
+   Copyright (c) 2011 Adam Hoka <ahoka@NetBSD.org>
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by the Department of Software Engineering, University of Szeged, Hungary
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+   BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+   AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>FLASHCTL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">FLASHCTL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">FLASHCTL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">flashctl</code> &#x2014;
+<div class="Nd">a program to manipulate flash devices</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">flashctl</code></td>
+    <td><var class="Ar">device</var> <var class="Ar">command</var>
+      [<var class="Ar">arg</var> [...]]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">flashctl</code> could be used to invoke low level operations
+  specific to flash devices. It is used by specifying a device to manipulate,
+  the command to perform, and any arguments the command may require.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DEVICE_COMMANDS"><a class="permalink" href="#DEVICE_COMMANDS">DEVICE
+  COMMANDS</a></h1>
+The following commands may be used on flash devices:
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#badblocks"><code class="Cm" id="badblocks">badblocks</code></a></dt>
+  <dd>List the bad blocks on the device.</dd>
+  <dt><a class="permalink" href="#erase"><code class="Cm" id="erase">erase</code></a>
+    <var class="Ar">offset</var> <var class="Ar">size</var></dt>
+  <dd>Erase <var class="Ar">size</var> amount of flash memory from
+      <var class="Ar">offset</var>. Size could be <var class="Ar">all</var>,
+      which means the rest of the flash after <var class="Ar">offset</var> will
+      be erased.</dd>
+  <dt><a class="permalink" href="#identify"><code class="Cm" id="identify">identify</code></a></dt>
+  <dd>Identify the specified device, displaying the device's vendor, product
+      strings, and the device's capabilities.</dd>
+  <dt><a class="permalink" href="#markbad"><code class="Cm" id="markbad">markbad</code></a>
+    <var class="Ar">offset</var></dt>
+  <dd>Mark the block given by its <var class="Ar">offset</var> as bad.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/flash.html">flash(4)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">flashctl</code> command first appeared in
+  <span class="Ux">NetBSD 6.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The <code class="Nm">flashctl</code> command was written by
+  <span class="An">Adam Hoka</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 27, 2011</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

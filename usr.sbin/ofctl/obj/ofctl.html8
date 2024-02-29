@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: ofctl.8,v 1.7 2018/05/28 12:42:02 wiz Exp $
+  
+   Copyright (c) 2006 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Matt Thomas.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>OFCTL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">OFCTL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">OFCTL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">ofctl</code> &#x2014;
+<div class="Nd">display the OpenPROM or OpenFirmware device tree</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">ofctl</code></td>
+    <td>[<code class="Fl">-lpv</code>] [<code class="Fl">-f</code>
+      <var class="Ar">file</var>] [<code class="Fl">-r</code>
+      <var class="Ar">propfile</var>] [<code class="Fl">-w</code>
+      <var class="Ar">propfile</var>] [<var class="Ar">node</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">ofctl</code> provides an interface for displaying the OpenPROM
+  or OpenFirmware device tree and node properties. The
+  <code class="Nm">ofctl</code> program is only installed on supported
+  platforms.
+<p class="Pp">Without any arguments, <code class="Nm">ofctl</code> will dump the
+    full tree. When given the name of a specific node,
+    <code class="Nm">ofctl</code> will display that node and its child
+  nodes.</p>
+<p class="Pp">The options are as follows:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">file</var></dt>
+  <dd>On systems with OpenPROM, use <var class="Ar">file</var> instead of the
+      default <span class="Pa">/dev/openprom</span>. On systems with
+      OpenFirmware, use <var class="Ar">file</var> instead of the default
+      <span class="Pa">/dev/openfirm</span>.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>Dump a partial tree starting from <var class="Ar">node</var>.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a></dt>
+  <dd>Display each node's properties.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a>
+    <var class="Ar">propfile</var></dt>
+  <dd>Instead of reading from the openprom or openfirm device, use the proplib
+      file <var class="Ar">propfile</var> as input. See also
+      <code class="Fl">-w</code>.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Display the full path name for each node.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a>
+    <var class="Ar">propfile</var></dt>
+  <dd>Write the device tree to the proplib file <var class="Ar">propfile</var>.
+      See also <code class="Fl">-r</code>.</dd>
+</dl>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag">
+  <dt><span class="Pa">/dev/openprom</span></dt>
+  <dd>The openprom device on systems with OpenPROM.</dd>
+  <dt><span class="Pa">/dev/openfirm</span></dt>
+  <dd>The openfirm device on systems with OpenFirmware.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html8/eeprom.html">eeprom(8)</a>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">May 28, 2018</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: gpioctl.8,v 1.24 2019/10/20 17:45:08 wiz Exp $
+  
+   Copyright (c) 2009, 2010, 2011, 2013 Marc Balmer <marc@msys.ch>
+   Copyright (c) 2004 Alexander Yurchenko <grange@openbsd.org>
+  
+   Permission to use, copy, modify, and distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
+  
+   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+   WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+   MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+   ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>GPIOCTL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">GPIOCTL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">GPIOCTL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">gpioctl</code> &#x2014;
+<div class="Nd">control GPIO devices</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">gpioctl</code></td>
+    <td>[<code class="Fl">-qs</code>] <var class="Ar">device</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">gpioctl</code></td>
+    <td>[<code class="Fl">-q</code>] <var class="Ar">device</var>
+      <code class="Cm">attach</code> <var class="Ar">device</var>
+      <var class="Ar">offset</var> <var class="Ar">mask</var>
+      [<var class="Ar">flag</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">gpioctl</code></td>
+    <td>[<code class="Fl">-qs</code>] <var class="Ar">device</var>
+      <var class="Ar">pin</var> [<var class="Ar">0</var> |
+      <var class="Ar">1</var> | <var class="Ar">2</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">gpioctl</code></td>
+    <td>[<code class="Fl">-qs</code>] <var class="Ar">device</var>
+      <var class="Ar">pin</var> [<var class="Ar">on</var> |
+      <var class="Ar">off</var> | <var class="Ar">toggle</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">gpioctl</code></td>
+    <td>[<code class="Fl">-q</code>] <var class="Ar">device</var>
+      <var class="Ar">pin</var> <code class="Cm">set</code>
+      [<var class="Ar">flags</var>] [<var class="Ar">name</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">gpioctl</code></td>
+    <td>[<code class="Fl">-q</code>] <var class="Ar">device</var>
+      <var class="Ar">pin</var> <code class="Cm">unset</code></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">gpioctl</code></td>
+    <td>[<code class="Fl">-q</code>] <var class="Ar">device</var>
+      <var class="Ar">list</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">gpioctl</code> program allows manipulation of GPIO (General
+  Purpose Input/Output) device pins. Such devices can be either part of the
+  chipset or embedded CPU, or a separate chip. The usual way of using GPIO is to
+  connect some simple devices such as LEDs and 1-wire thermal sensors to its
+  pins.
+<p class="Pp">Each GPIO device has an associated device file in the
+    <span class="Pa">/dev</span> directory. <var class="Ar">device</var> can be
+    specified with or without the <span class="Pa">/dev</span> prefix. For
+    example, <span class="Pa">/dev/gpio0</span> or
+    <span class="Pa">gpio0</span>.</p>
+<p class="Pp">GPIO pins can be either &#x201C;read&#x201D; or
+    &#x201C;written&#x201D; with the values of logical 0 or 1. If only a
+    <var class="Ar">pin</var> number is specified on the command line, the pin
+    state will be read from the GPIO controller and displayed. To write to a
+    pin, a value must be specified after the <var class="Ar">pin</var> number.
+    Values can be either 0 or 1. A value of 2 &#x201C;toggles&#x201D; the pin,
+    i.e. changes its state to the opposite. Instead of the numerical values, the
+    word <var class="Ar">on</var>, <var class="Ar">off</var>, or
+    <var class="Ar">toggle</var> can be used.</p>
+<p class="Pp">Only pins that have been configured at securelevel 0, typically
+    during system startup, are accessible once the securelevel has been raised.
+    Pins can be given symbolic names for easier use. Besides using individual
+    pins, device drivers that use GPIO pins can be attached to a
+    <a class="Xr" href="../html4/gpio.html">gpio(4)</a> device using the
+    <code class="Nm">gpioctl</code> command. Such drivers can be detached at
+    runtime using the <a class="Xr" href="../html8/drvctl.html">drvctl(8)</a>
+    command.</p>
+<p class="Pp">The following configuration <var class="Ar">flags</var> are
+    supported by the GPIO framework:</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt>in</dt>
+  <dd>input direction</dd>
+  <dt>out</dt>
+  <dd>output direction</dd>
+  <dt>inout</dt>
+  <dd>bi-directional</dd>
+  <dt>od</dt>
+  <dd>open-drain output</dd>
+  <dt>pp</dt>
+  <dd>push-pull output</dd>
+  <dt>tri</dt>
+  <dd>tri-state (output disabled)</dd>
+  <dt>pu</dt>
+  <dd>internal pull-up enabled</dd>
+  <dt>pd</dt>
+  <dd>internal pull-down enabled</dd>
+  <dt>iin</dt>
+  <dd>invert input</dd>
+  <dt>iout</dt>
+  <dd>invert output</dd>
+  <dt>pulsate</dt>
+  <dd>pulsate output at a hardware-defined frequency and duty cycle</dd>
+  <dt>alt0 - alt7</dt>
+  <dd>select alternate pin function 0 to 7</dd>
+</dl>
+</div>
+<p class="Pp">Note that not all the flags may be supported by the particular
+    GPIO controller.</p>
+<p class="Pp">When executed with only the
+    <a class="Xr" href="../html4/gpio.html">gpio(4)</a> device name as argument,
+    <code class="Nm">gpioctl</code> reads information about the GPIO device and
+    displays it. At securelevel 0 the number of physically available pins is
+    displayed, at higher securelevels the number of configured (set) pins is
+    displayed.</p>
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#q"><code class="Fl" id="q">-q</code></a></dt>
+  <dd>Operate quietly i.e. nothing is printed to stdout.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Only output a single number on stdout, representing either the state of
+      the pin or the number of available pins if no pin number was passed as
+      argument. This option is useful e.g. when <code class="Nm">gpioctl</code>
+      is used in shell scripts to query the state of a pin.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt>/dev/gpio<var class="Ar">u</var></dt>
+  <dd>GPIO device unit <var class="Ar">u</var> file.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+Configure pin 20 to have push-pull output:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li"># gpioctl gpio0 20 set out
+  pp</code></div>
+<p class="Pp">Write logical 1 to pin 20:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li"># gpioctl gpio0 20 1</code></div>
+<p class="Pp">Attach a <a class="Xr" href="../html4/onewire.html">onewire(4)</a>
+    bus on a <a class="Xr" href="../html4/gpioow.html">gpioow(4)</a> device on
+    pin 4:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li"># gpioctl gpio0 attach gpioow 4
+  0x01</code></div>
+<p class="Pp">Detach the gpioow0 device:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li"># drvctl -d gpioow0</code></div>
+<p class="Pp">Configure pin 5 as output and name it error_led:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li"># gpioctl gpio0 5 set out
+  error_led</code></div>
+<p class="Pp">Toggle the error_led:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li"># gpioctl gpio0 error_led
+  2</code></div>
+<p class="Pp">Enumerate all pins and display their symbolic names:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li"># gpioctl gpio0 list</code></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/gpio.html">gpio(4)</a>,
+  <a class="Xr" href="../html8/drvctl.html">drvctl(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">gpioctl</code> command first appeared in
+  <span class="Ux">OpenBSD 3.6</span> and <span class="Ux">NetBSD 4.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The <code class="Nm">gpioctl</code> program was written by
+  <span class="An">Alexander Yurchenko</span>
+  &lt;<a class="Mt" href="mailto:grange@openbsd.org">grange@openbsd.org</a>&gt;.
+  Device attachment was added by <span class="An">Marc Balmer</span>
+  &lt;<a class="Mt" href="mailto:marc@msys.ch">marc@msys.ch</a>&gt;.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">October 20, 2019</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

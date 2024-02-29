@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   Copyright (c) 1983, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       from: @(#)diskpart.8	8.1 (Berkeley) 6/6/93
+  	$NetBSD: diskpart.8,v 1.9 2009/03/15 10:09:29 joerg Exp $
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>DISKPART(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">DISKPART(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">DISKPART(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">diskpart</code> &#x2014;
+<div class="Nd">calculate default disk partition sizes</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">diskpart</code></td>
+    <td>[<code class="Fl">-d</code>] [<code class="Fl">-p</code>]
+      [<code class="Fl">-s</code> <var class="Ar">size</var>]
+      <var class="Ar">disk-type</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">diskpart</code> is used to calculate the disk partition sizes
+  based on the default rules used at Berkeley.
+<p class="Pp">Available options and operands:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>An entry suitable for inclusion in the disk description file
+      <span class="Pa">/etc/disktab</span> is generated; for example,
+      <a class="Xr" href="../html5/disktab.html">disktab(5)</a>.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a></dt>
+  <dd>Tables suitable for inclusion in a device driver are produced.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a>
+    <var class="Ar">size</var></dt>
+  <dd>The size of the disk may be limited to <var class="Ar">size</var> with the
+      <code class="Fl">-s</code> option.</dd>
+</dl>
+<p class="Pp">On disks that use
+    <a class="Xr" href="../html8/bad144.html">bad144(8)</a> type of bad-sector
+    forwarding, space is normally left in the last partition on the disk for a
+    bad sector forwarding table, although this space is not reflected in the
+    tables produced. The space reserved is one track for the replicated copies
+    of the table and sufficient tracks to hold a pool of 126 sectors to which
+    bad sectors are mapped. For more information, see
+    <a class="Xr" href="../html8/bad144.html">bad144(8)</a>. The
+    <code class="Fl">-s</code> option is intended for other controllers which
+    reserve some space at the end of the disk for bad-sector replacements or
+    other control areas, even if not a multiple of cylinders.</p>
+<p class="Pp">The disk partition sizes are based on the total amount of space on
+    the disk as given in the table below (all values are supplied in units of
+    sectors). The &#x2018;<code class="Li">c</code>&#x2019; partition is, by
+    convention, used to access the entire physical disk. The device driver
+    tables include the space reserved for the bad sector forwarding table in the
+    &#x2018;<code class="Li">c</code>&#x2019; partition; those used in the
+    disktab and default formats exclude reserved tracks. In normal operation,
+    either the &#x2018;<code class="Li">g</code>&#x2019; partition is used, or
+    the &#x2018;<code class="Li">d</code>&#x2019;,
+    &#x2018;<code class="Li">e</code>&#x2019;, and
+    &#x2018;<code class="Li">f</code>&#x2019; partitions are used. The
+    &#x2018;<code class="Li">g</code>&#x2019; and
+    &#x2018;<code class="Li">f</code>&#x2019; partitions are variable-sized,
+    occupying whatever space remains after allocation of the fixed sized
+    partitions. If the disk is smaller than 20 Megabytes, then
+    <code class="Nm">diskpart</code> aborts with the message
+    &#x201C;<code class="Li">disk too small, calculate by
+  hand</code>&#x201D;.</p>
+<table class="Bl-column">
+  <tr>
+    <td>Partition</td>
+    <td>20-60 MB</td>
+    <td>61-205 MB</td>
+    <td>206-355 MB</td>
+    <td>356+ MB</td>
+  </tr>
+  <tr>
+    <td>a</td>
+    <td>15884</td>
+    <td>15884</td>
+    <td>15884</td>
+    <td>15884</td>
+  </tr>
+  <tr>
+    <td>b</td>
+    <td>10032</td>
+    <td>33440</td>
+    <td>33440</td>
+    <td>66880</td>
+  </tr>
+  <tr>
+    <td>d</td>
+    <td>15884</td>
+    <td>15884</td>
+    <td>15884</td>
+    <td>15884</td>
+  </tr>
+  <tr>
+    <td>e</td>
+    <td>unused</td>
+    <td>55936</td>
+    <td>55936</td>
+    <td>307200</td>
+  </tr>
+  <tr>
+    <td>h</td>
+    <td>unused</td>
+    <td>unused</td>
+    <td>291346</td>
+    <td>291346</td>
+  </tr>
+</table>
+<p class="Pp">If an unknown disk type is specified,
+    <code class="Nm">diskpart</code> will prompt for the required disk geometry
+    information.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html5/disktab.html">disktab(5)</a>,
+  <a class="Xr" href="../html8/bad144.html">bad144(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">diskpart</code> command appeared in
+  <span class="Ux">4.2BSD</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Most default partition sizes are based on historical artifacts (like the RP06),
+  and may result in unsatisfactory layouts.
+<p class="Pp">When using the <code class="Fl">-d</code> flag, alternative disk
+    names are not included in the output.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">June 6, 1993</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

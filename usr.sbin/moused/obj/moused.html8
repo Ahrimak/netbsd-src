@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: moused.8,v 1.9 2016/08/16 02:04:01 uwe Exp $
+  
+   Copyright (c) 1996
+  	Mike Pritchard <mpp@FreeBSD.org>.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+  	This product includes software developed by Mike Pritchard.
+   4. Neither the name of the author nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+   from:
+  
+   FreeBSD: src/usr.sbin/moused/moused.8,v 1.39 2001/08/10 13:45:34 ru Exp
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>MOUSED(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MOUSED(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">MOUSED(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">moused</code> &#x2014;
+<div class="Nd">pass mouse data to mouse mux</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">moused</code></td>
+    <td>[<code class="Fl">-DPRacdfs</code>] [<code class="Fl">-I</code>
+      <var class="Ar">file</var>] [<code class="Fl">-F</code>
+      <var class="Ar">rate</var>] [<code class="Fl">-r</code>
+      <var class="Ar">resolution</var>] [<code class="Fl">-S</code>
+      <var class="Ar">baudrate</var>] [<code class="Fl">-W</code>
+      <var class="Ar">devicename</var>] [<code class="Fl">-a</code>
+      <var class="Ar">X</var>[,Y]] [<code class="Fl">-m</code>
+      <var class="Ar">N=M</var>] [<code class="Fl">-w</code>
+      <var class="Ar">N</var>] [<code class="Fl">-z</code>
+      <var class="Ar">target</var>] [<code class="Fl">-t</code>
+      <var class="Ar">mousetype</var>] [<code class="Fl">-3</code>
+      [<code class="Fl">-E</code> <var class="Ar">timeout</var>]]
+      <code class="Fl">-p</code> <var class="Ar">port</var></td>
+  </tr>
+</table>
+<p class="Pp"></p>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">moused</code></td>
+    <td>[<code class="Fl">-Pd</code>] <code class="Fl">-p</code>
+      <var class="Ar">port</var> <code class="Fl">-i</code>
+      <var class="Ar">info</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The mouse daemon <code class="Nm">moused</code> and the console driver work
+  together to support access to serial mice from user programs. They virtualize
+  the mouse and provide user programs with mouse data in the standard format
+  (see <a class="Xr" href="../html4/wsmouse.html">wsmouse(4)</a>).
+<p class="Pp"><code class="Nm">moused</code> listens to the specified port for
+    mouse data, interprets and then passes it via ioctls to the console driver.
+    It reports translation movement, button press/release events and movement of
+    the roller or the wheel if available. The roller/wheel movement is reported
+    as &#x201C;Z&#x201D; axis movement.</p>
+<p class="Pp">If <code class="Nm">moused</code> receives the signal
+    <code class="Dv">SIGHUP</code>, it will reopen the mouse port and
+    reinitializes itself. Useful if the mouse is attached/detached while the
+    system is suspended.</p>
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#3"><code class="Fl" id="3">-3</code></a></dt>
+  <dd>Emulate the third (middle) button for 2-button mice. It is emulated by
+      pressing the left and right physical buttons simultaneously.</dd>
+  <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a></dt>
+  <dd>Lower DTR on the serial port. This option is valid only if
+      <var class="Ar">mousesystems</var> is selected as the protocol type. The
+      DTR line may need to be dropped for a 3-button mouse to operate in the
+      <var class="Ar">mousesystems</var> mode.</dd>
+  <dt><a class="permalink" href="#E"><code class="Fl" id="E">-E</code></a>
+    <var class="Ar">timeout</var></dt>
+  <dd>When the third button emulation is enabled (see above),
+      <code class="Nm">moused</code> waits <var class="Ar">timeout</var>
+      milliseconds at most before deciding whether two buttons are being pressed
+      simultaneously. The default timeout is 100 milliseconds.</dd>
+  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a>
+    <var class="Ar">rate</var></dt>
+  <dd>Set the report rate (reports per second) of the device if supported.</dd>
+  <dt><a class="permalink" href="#I"><code class="Fl" id="I">-I</code></a>
+    <var class="Ar">file</var></dt>
+  <dd>Write the process id of <code class="Nm">moused</code> in the specified
+      file. Without this option, the process id will be stored in
+      <span class="Pa">/var/run/moused.pid</span>.</dd>
+  <dt><a class="permalink" href="#P"><code class="Fl" id="P">-P</code></a></dt>
+  <dd>Do not start the Plug and Play COM device enumeration procedure when
+      identifying the serial mouse. If this option is given together with the
+      <code class="Fl">-i</code> option, <code class="Nm">moused</code> will not
+      be able to print useful information for the serial mouse.</dd>
+  <dt><a class="permalink" href="#R"><code class="Fl" id="R">-R</code></a></dt>
+  <dd>Lower RTS on the serial port. This option is valid only if
+      <var class="Ar">mousesystems</var> is selected as the protocol type by the
+      <code class="Fl">-t</code> option below. It is often used with the
+      <code class="Fl">-D</code> option above. Both RTS and DTR lines may need
+      to be dropped for a 3-button mouse to operate in the
+      <var class="Ar">mousesystems</var> mode.</dd>
+  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a>
+    <var class="Ar">baudrate</var></dt>
+  <dd>Select the baudrate for the serial port (1200 to 9600). Not all serial
+      mice support this option.</dd>
+  <dt><a class="permalink" href="#W"><code class="Fl" id="W">-W</code></a>
+    <var class="Ar">devicename</var></dt>
+  <dd>Select the <a class="Xr" href="../html4/wsmux.html">wsmux(4)</a> control
+      device. The default is <span class="Pa">/dev/wsmuxctl0</span>.</dd>
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a>
+    <var class="Ar">X</var>[,Y]</dt>
+  <dd>Accelerate or decelerate the mouse input. This is a linear acceleration
+      only. Values less than 1.0 slow down movement, values greater than 1.0
+      speed it up. Specifying only one value sets the acceleration for both
+      axes.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>Some mice report middle button down events as if the left and right
+      buttons are being pressed. This option handles this.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Enable debugging messages.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Do not become a daemon and instead run as a foreground process. Useful for
+      testing and debugging.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>
+    <var class="Ar">info</var></dt>
+  <dd>Print specified information and quit. Available pieces of information are:
+    <p class="Pp"></p>
+    <dl class="Bl-tag Bl-compact">
+      <dt><var class="Ar">port</var></dt>
+      <dd>Port (device file) name, e.g. <span class="Pa">/dev/tty00</span>.</dd>
+      <dt><var class="Ar">if</var></dt>
+      <dd>Interface type: serial, bus, inport or ps/2.</dd>
+      <dt><var class="Ar">type</var></dt>
+      <dd>Protocol type. It is one of the types listed under the
+          <code class="Fl">-t</code> option below.</dd>
+      <dt><var class="Ar">model</var></dt>
+      <dd>Mouse model. <code class="Nm">moused</code> may not always be able to
+          identify the model.</dd>
+      <dt><var class="Ar">all</var></dt>
+      <dd>All of the above items. Print port, interface, type and model in this
+          order in one line.</dd>
+    </dl>
+    <p class="Pp">If <code class="Nm">moused</code> cannot determine the
+        requested information, it prints ``unknown'' or ``generic''.</p>
+  </dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a>
+    <var class="Ar">N=M</var></dt>
+  <dd>Assign the physical button <var class="Ar">M</var> to the logical button
+      <var class="Ar">N</var>. You may specify as many instances of this option
+      as you like. More than one physical button may be assigned to a logical
+      button at the same time. In this case the logical button will be down, if
+      either of the assigned physical buttons is held down. Do not put space
+      around `='.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a>
+    <var class="Ar">port</var></dt>
+  <dd>Use <var class="Ar">port</var> to communicate with the mouse.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a>
+    <var class="Ar">resolution</var></dt>
+  <dd>Set the resolution of the device; in Dots Per Inch, or
+      <var class="Ar">low</var>, <var class="Ar">medium-low</var>,
+      <var class="Ar">medium-high</var> or <var class="Ar">high</var>. This
+      option may not be supported by all the device.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Select a baudrate of 9600 for the serial line. Not all serial mice support
+      this option.</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a>
+    <var class="Ar">type</var></dt>
+  <dd>Specify the protocol type of the mouse attached to the port. You may
+      explicitly specify a type listed below, or use <var class="Ar">auto</var>
+      to let <code class="Nm">moused</code> automatically select an appropriate
+      protocol for the given mouse. If you entirely omit this option on the
+      command line, <code class="Fl">-t</code> <var class="Ar">auto</var> is
+      assumed. Under normal circumstances, you need to use this option only if
+      <code class="Nm">moused</code> is not able to detect the protocol
+      automatically.
+    <p class="Pp">Note that if a protocol type is specified with this option,
+        the <code class="Fl">-P</code> option above is implied and Plug and Play
+        COM device enumeration procedure will be disabled.</p>
+    <p class="Pp">Valid types for this option are listed below.</p>
+    <p class="Pp">For the serial mouse:</p>
+    <dl class="Bl-tag Bl-compact">
+      <dt><var class="Ar">microsoft</var></dt>
+      <dd>Microsoft serial mouse protocol. Most 2-button serial mice use this
+          protocol.</dd>
+      <dt><var class="Ar">intellimouse</var></dt>
+      <dd>Microsoft IntelliMouse protocol. Genius NetMouse, ASCII Mie Mouse,
+          Logitech MouseMan+ and FirstMouse+ use this protocol too. Other mice
+          with a roller/wheel may be compatible with this protocol.</dd>
+      <dt><var class="Ar">mousesystems</var></dt>
+      <dd>MouseSystems 5-byte protocol. 3-button mice may use this
+        protocol.</dd>
+      <dt><var class="Ar">mmseries</var></dt>
+      <dd>MM Series mouse protocol.</dd>
+      <dt><var class="Ar">logitech</var></dt>
+      <dd>Logitech mouse protocol. Note that this is for old Logitech models.
+          <var class="Ar">mouseman</var> or <var class="Ar">intellimouse</var>
+          should be specified for newer models.</dd>
+      <dt><var class="Ar">mouseman</var></dt>
+      <dd>Logitech MouseMan and TrackMan protocol. Some 3-button mice may be
+          compatible with this protocol. Note that MouseMan+ and FirstMouse+ use
+          <var class="Ar">intellimouse</var> protocol rather than this one.</dd>
+      <dt><var class="Ar">glidepoint</var></dt>
+      <dd>ALPS GlidePoint protocol.</dd>
+      <dt><var class="Ar">thinkingmouse</var></dt>
+      <dd>Kensington ThinkingMouse protocol.</dd>
+      <dt><var class="Ar">mmhitab</var></dt>
+      <dd>Hitachi tablet protocol.</dd>
+      <dt><var class="Ar">x10mouseremote</var></dt>
+      <dd>X10 MouseRemote.</dd>
+      <dt><var class="Ar">kidspad</var></dt>
+      <dd>Genius Kidspad and Easypad protocol.</dd>
+      <dt><var class="Ar">versapad</var></dt>
+      <dd>Interlink VersaPad protocol.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a>
+    <var class="Ar">N</var></dt>
+  <dd>Make the physical button <var class="Ar">N</var> act as the wheel mode
+      button. While this button is pressed, X and Y axis movement is reported to
+      be zero and the Y axis movement is mapped to Z axis. You may further map
+      the Z axis movement to virtual buttons by the <code class="Fl">-z</code>
+      option below.</dd>
+  <dt><a class="permalink" href="#z"><code class="Fl" id="z">-z</code></a>
+    <var class="Ar">target</var></dt>
+  <dd>Map Z axis (roller/wheel) movement to another axis or to virtual buttons.
+      Valid <var class="Ar">target</var> maybe:
+    <dl class="Bl-tag Bl-compact">
+      <dt><var class="Ar">x</var></dt>
+      <dd style="width: auto;">&#x00A0;</dd>
+      <dt><var class="Ar">y</var></dt>
+      <dd>X or Y axis movement will be reported when the Z axis movement is
+          detected.</dd>
+      <dt><var class="Ar">N</var></dt>
+      <dd>Report down events for the virtual buttons <var class="Ar">N</var> and
+          <var class="Ar">N+1</var> respectively when negative and positive Z
+          axis movement is detected. There do not need to be physical buttons
+          <var class="Ar">N</var> and <var class="Ar">N+1</var>. Note that
+          mapping to logical buttons is carried out after mapping from the Z
+          axis movement to the virtual buttons is done.</dd>
+      <dt><var class="Ar">N1 N2</var></dt>
+      <dd>Report down events for the virtual buttons <var class="Ar">N1</var>
+          and <var class="Ar">N2</var> respectively when negative and positive Z
+          axis movement is detected.</dd>
+      <dt><var class="Ar">N1 N2 N3 N4</var></dt>
+      <dd>This is useful for the mouse with two wheels of which the second wheel
+          is used to generate horizontal scroll action, and for the mouse which
+          has a knob or a stick which can detect the horizontal force applied by
+          the user.
+        <p class="Pp">The motion of the second wheel will be mapped to the
+            buttons <var class="Ar">N3</var>, for the negative direction, and
+            <var class="Ar">N4</var>, for the positive direction. If the buttons
+            <var class="Ar">N3</var> and <var class="Ar">N4</var> actually exist
+            in this mouse, their actions will not be detected.</p>
+        <p class="Pp">Note that horizontal movement or second roller/wheel
+            movement may not always be detected, because there appears to be no
+            accepted standard as to how it is encoded.</p>
+        <p class="Pp">Note also that some mice think left is the negative
+            horizontal direction, others may think otherwise. Moreover, there
+            are some mice whose two wheels are both mounted vertically, and the
+            direction of the second vertical wheel does not match the first
+            one's.</p>
+      </dd>
+    </dl>
+  </dd>
+</dl>
+<section class="Ss">
+<h2 class="Ss" id="Multiple_Mice"><a class="permalink" href="#Multiple_Mice">Multiple
+  Mice</a></h2>
+As many instances of <code class="Nm">moused</code> as the number of mice
+  attached to the system may be run simultaneously; one instance for each serial
+  mouse.
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/dev/wsmuxctl0</span></dt>
+  <dd>default device to control mouse mux</dd>
+  <dt><span class="Pa">/var/run/moused.pid</span></dt>
+  <dd>process id of the currently running <code class="Nm">moused</code></dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<div class="Bd Bd-indent"><code class="Li">moused -p /dev/tty00 -i
+  type</code></div>
+<p class="Pp">Let <code class="Nm">moused</code> determine the protocol type of
+    the mouse at the serial port <span class="Pa">/dev/tty00</span>. If
+    successful, <code class="Nm">moused</code> will print the type, otherwise it
+    will say ``unknown''.</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">moused -p /dev/tty00</code></div>
+<p class="Pp">If <code class="Nm">moused</code> is able to identify the protocol
+    type of the mouse at the specified port automatically, you can start the
+    daemon without the <code class="Fl">-t</code> option and enable the mouse
+    pointer in the text console as above.</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">moused -p /dev/tty01 -t
+  microsoft</code></div>
+<p class="Pp">Start <code class="Nm">moused</code> on the serial port
+    <span class="Pa">/dev/tty01</span>. The protocol type
+    <var class="Ar">microsoft</var> is explicitly specified by the
+    <code class="Fl">-t</code> option.</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">moused -p /dev/tty01 -m 1=3 -m
+  3=1</code></div>
+<p class="Pp">Assign the physical button 3 (right button) to the logical button
+    1 (logical left) and the physical button 1 (left) to the logical button 3
+    (logical right). This will effectively swap the left and right buttons.</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">moused -p /dev/tty01 -t intellimouse
+  -z 4</code></div>
+<p class="Pp">Report negative Z axis (roller) movement as the button 4 pressed
+    and positive Z axis movement as the button 5 pressed.</p>
+<p class="Pp">The mouse daemon is normally enabled by setting
+    <span class="Pa">moused=YES</span> in
+  <span class="Pa">/etc/rc.conf</span>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/wsmouse.html">wsmouse(4)</a>,
+  <a class="Xr" href="../html4/wsmux.html">wsmux(4)</a>,
+  <a class="Xr" href="../html5/rc.conf.html">rc.conf(5)</a>,
+  <a class="Xr" href="../html8/wsmoused.html">wsmoused(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="STANDARDS"><a class="permalink" href="#STANDARDS">STANDARDS</a></h1>
+<code class="Nm">moused</code> partially supports &#x201C;Plug and Play External
+  COM Device Specification&#x201D; in order to support PnP serial mice. However,
+  due to various degrees of conformance to the specification by existing serial
+  mice, it does not strictly follow version 1.0 of the standard. Even with this
+  less strict approach, it may not always determine an appropriate protocol type
+  for the given serial mouse.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The mouse daemon <code class="Nm">moused</code> first appeared in
+  <span class="Ux">FreeBSD 2.2</span> and <span class="Ux">NetBSD 1.6</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<code class="Nm">moused</code> was written by
+  &#x27E8;msmith@FreeBSD.org&#x27E9;. This manual page was written by
+  <span class="An">Mike Pritchard</span> &#x27E8;mpp@FreeBSD.org&#x27E9;. The
+  daemon and manual page have since been updated by <span class="An">Kazutaka
+  Yokota</span> &#x27E8;yokota@FreeBSD.org&#x27E9;. The
+  <span class="Ux">NetBSD</span> port was done by <span class="An">Lennart
+  Augustsson</span> &#x27E8;augustss@NetBSD.org&#x27E9;.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Many pad devices behave as if the first (left) button were pressed if the user
+  `taps' the surface of the pad. In contrast, some ALPS GlidePoint and Interlink
+  VersaPad models treat the tapping action as fourth button events. Use the
+  option ``-m 1=4'' for these models to obtain the same effect as the other pad
+  devices.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">October 29, 2001</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

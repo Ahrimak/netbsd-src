@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: gspa.8,v 1.4 2008/04/30 13:11:02 martin Exp $
+  
+   Copyright (c) 2002 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>GSPA(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">GSPA(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">GSPA(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">gspa</code> &#x2014;
+<div class="Nd">assembler for the GSP chip</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">gspa</code></td>
+    <td>[<code class="Fl">-c</code> <var class="Ar">c_array_name</var>]
+      [<code class="Fl">-l</code> <var class="Ar">list_file</var>]
+      [<code class="Fl">-o</code> <var class="Ar">hex_file</var>] [infile]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">gspa</code> is an assembler for the TMS34010 and TMS34020
+  graphics processor chips.
+<p class="Pp">The supported options are:</p>
+<dl class="Bl-tag Bl-compact">
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>
+    <var class="Ar">c_array_name</var></dt>
+  <dd>Create a pre-initialized C-structure <var class="Ar">c_array_name</var>
+      with the hex code of the assembler output.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a>
+    <var class="Ar">list_file</var></dt>
+  <dd>Create commented (with the input file) hex code of the assembler output in
+      <var class="Ar">list_file</var>.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">hex_file</var></dt>
+  <dd>Create the output in <var class="Ar">hex_file</var>. If
+      <code class="Fl">-c</code> is used, C code will be written to
+      <var class="Ar">hex_file</var>, otherwise uncommented hex code of the
+      assembler output will be written.</dd>
+</dl>
+<p class="Pp">If no <code class="Fl">-o</code> option is given, output will be
+    written to stdout.</p>
+<p class="Pp">If no <var class="Ar">infile</var> is given, input will be read
+    from stdin.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+<code class="Nm">gspa</code> appeared in <span class="Ux">NetBSD 1.1</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<code class="Nm">gspa</code> was written by <span class="An">Paul
+  Mackerras</span>. The <code class="Fl">-c</code> mode was added by
+<br/>
+<span class="An">Ignatios Souvatzis</span> &#x27E8;is@NetBSD.org&#x27E9;. This
+  man page was written by
+<br/>
+<span class="An">Thomas Klausner</span> &#x27E8;wiz@NetBSD.org&#x27E9;.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">May 27, 2002</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

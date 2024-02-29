@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: pstat.8,v 1.44 2019/12/12 05:00:33 wiz Exp $
+  
+   Copyright (c) 1980, 1991, 1993, 1994
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       from: @(#)pstat.8	8.5 (Berkeley) 5/13/94
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>PSTAT(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">PSTAT(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">PSTAT(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">pstat</code> &#x2014;
+<div class="Nd">display system data structures</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">pstat</code></td>
+    <td>[<code class="Fl">-T</code> | <code class="Fl">-f</code> |
+      <code class="Fl">-s</code> | <code class="Fl">-t</code> |
+      <code class="Fl">-v</code>] [<code class="Fl">-ghkmn</code>]
+      [<code class="Fl">-M</code> <var class="Ar">core</var>]
+      [<code class="Fl">-N</code> <var class="Ar">system</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">pstat</code> displays open file entry, swap space utilization,
+  terminal state, and vnode data structures. If <var class="Ar">corefile</var>
+  is given, the information is sought there, otherwise in
+  <span class="Pa">/dev/kmem</span>. The required namelist is taken from
+  <span class="Pa">/netbsd</span> unless <var class="Ar">system</var> is
+  specified.
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#T"><code class="Fl" id="T">-T</code></a></dt>
+  <dd>Prints the number of used and free slots for open files, used vnodes, and
+      swap space. This option is useful for checking to see how large system
+      tables become if the system is under heavy load.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Print the open file table with these headings:
+    <dl class="Bl-tag">
+      <dt>LOC</dt>
+      <dd>The core location of this table entry.</dd>
+      <dt>TYPE</dt>
+      <dd>The type of object the file table entry points to.</dd>
+      <dt>FLG</dt>
+      <dd>Miscellaneous state variables encoded thus:
+        <p class="Pp"></p>
+        <dl class="Bl-tag Bl-compact">
+          <dt>R</dt>
+          <dd>open for reading</dd>
+          <dt>W</dt>
+          <dd>open for writing</dd>
+          <dt>A</dt>
+          <dd>open for appending</dd>
+          <dt>S</dt>
+          <dd>shared lock present</dd>
+          <dt>X</dt>
+          <dd>exclusive lock present</dd>
+          <dt>I</dt>
+          <dd>signal pgrp when data ready</dd>
+        </dl>
+      </dd>
+      <dt>CNT</dt>
+      <dd>Number of processes that know this open file.</dd>
+      <dt>MSG</dt>
+      <dd>Number of messages outstanding for this file.</dd>
+      <dt>DATA</dt>
+      <dd>The location of the vnode table entry or socket structure for this
+          file.</dd>
+      <dt>USE</dt>
+      <dd>Number of active users of this open file.</dd>
+      <dt>IFLG</dt>
+      <dd>Value of internal flags.</dd>
+      <dt>OFFSET</dt>
+      <dd>The file offset (see
+          <a class="Xr" href="../html2/lseek.html">lseek(2)</a>).</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#g"><code class="Fl" id="g">-g</code></a></dt>
+  <dd>The <code class="Fl">-g</code> option uses (1024 * 1024 * 1024) byte
+      blocks instead of the default 512 byte.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a></dt>
+  <dd>Use
+      <a class="Xr" href="../html3/humanize_number.html">humanize_number(3)</a>
+      to display (swap) sizes.</dd>
+  <dt><a class="permalink" href="#k"><code class="Fl" id="k">-k</code></a></dt>
+  <dd>Use 1K-byte blocks.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a></dt>
+  <dd>The <code class="Fl">-m</code> option uses (1024 * 1024) byte blocks
+      instead of the default 512 byte.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Print devices by major/minor number rather than by name.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Print information about swap space usage on all the swap areas compiled
+      into the kernel. The first column is the device name of the partition. The
+      next column is the total space available in the partition. The
+      <var class="Ar">Used</var> column indicates the total blocks used so far;
+      the <var class="Ar">Available</var> column indicates how much space is
+      remaining on each partition. The <var class="Ar">Capacity</var> reports
+      the percentage of space used.
+    <p class="Pp">If more than one partition is configured into the system,
+        totals for all of the statistics will be reported in the final line of
+        the report.</p>
+  </dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a></dt>
+  <dd>Print table for terminals with these headings:
+    <dl class="Bl-tag">
+      <dt>LINE</dt>
+      <dd>Physical device name.</dd>
+      <dt>RAW</dt>
+      <dd>Number of characters in raw input queue.</dd>
+      <dt>CAN</dt>
+      <dd>Number of characters in canonicalized input queue.</dd>
+      <dt>OUT</dt>
+      <dd>Number of characters in output queue.</dd>
+      <dt>HWT</dt>
+      <dd>High water mark for output.</dd>
+      <dt>LWT</dt>
+      <dd>Low water mark for output.</dd>
+      <dt>COL</dt>
+      <dd>Calculated column position of terminal.</dd>
+      <dt>STATE</dt>
+      <dd>Miscellaneous state variables encoded thus:
+        <p class="Pp"></p>
+        <dl class="Bl-tag Bl-compact">
+          <dt>T</dt>
+          <dd>delay timeout in progress</dd>
+          <dt>O</dt>
+          <dd>open</dd>
+          <dt>F</dt>
+          <dd>outq has been flushed during DMA</dd>
+          <dt>C</dt>
+          <dd>carrier is on</dd>
+          <dt>B</dt>
+          <dd>busy doing output</dd>
+          <dt>A</dt>
+          <dd>process is awaiting output</dd>
+          <dt>X</dt>
+          <dd>open for exclusive use</dd>
+          <dt>S</dt>
+          <dd>output stopped</dd>
+          <dt>K</dt>
+          <dd>further input blocked</dd>
+          <dt>Y</dt>
+          <dd>tty in async I/O mode</dd>
+          <dt>D</dt>
+          <dd>state for lowercase &#x2018;<code class="Li">\</code>&#x2019;
+            work</dd>
+          <dt>E</dt>
+          <dd>within a &#x2018;<code class="Li">\.../</code>&#x2019; for
+            PRTRUB</dd>
+          <dt>L</dt>
+          <dd>next character is literal</dd>
+          <dt>P</dt>
+          <dd>retyping suspended input (PENDIN)</dd>
+          <dt>N</dt>
+          <dd>counting tab width, ignore FLUSHO</dd>
+          <dt>&gt;</dt>
+          <dd>tty used for dialout</dd>
+        </dl>
+      </dd>
+      <dt>SESS</dt>
+      <dd>Session for which this is controlling terminal.</dd>
+      <dt>PGID</dt>
+      <dd>Current foreground process group associated with this terminal.</dd>
+      <dt>DISC</dt>
+      <dd>Line discipline; &#x2018;<code class="Li">term</code>&#x2019; for
+          TTYDISC (see
+          <a class="Xr" href="../html4/termios.html">termios(4)</a>),
+          &#x2018;<code class="Li">tab</code>&#x2019; for TABLDISC ,
+          &#x2018;<code class="Li">slip</code>&#x2019; for SLIPDISC (see
+          <a class="Xr" href="../html4/sl.html">sl(4)</a>),
+          &#x2018;<code class="Li">ppp</code>&#x2019; for PPPDISC (see
+          <a class="Xr" href="../html4/ppp.html">ppp(4)</a>),
+          &#x2018;<code class="Li">strip</code>&#x2019; for STRIPDISC (see
+          <a class="Xr" href="../html4/strip.html">strip(4)</a>),
+          &#x2018;<code class="Li">hdlc</code>&#x2019; for HDLCDISC.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Print the active vnodes. Each group of vnodes corresponding to a
+      particular filesystem is preceded by a two line header. The first line
+      consists of the following:
+    <p class="Pp"><span class="No">*** MOUNT</span> <i class="Em">fstype
+        from</i> <code class="Li">on</code> <i class="Em">on fsflags</i></p>
+    <p class="Pp">where <i class="Em">fstype</i> is one of
+        <i class="Em">adosfs</i>, <i class="Em">afs</i>,
+        <i class="Em">cd9660</i>, <i class="Em">fdesc</i>,
+        <i class="Em">ffs</i>, <i class="Em">ext2fs</i>,
+        <i class="Em">kernfs</i>, <i class="Em">lfs</i>, <i class="Em">lofs</i>,
+        <i class="Em">mfs</i>, <i class="Em">msdos</i>, <i class="Em">nfs</i>,
+        <i class="Em">null</i>, <i class="Em">procfs</i>,
+        <i class="Em">umap</i>, <i class="Em">union</i>; <i class="Em">from</i>
+        is the filesystem mounted from; <i class="Em">on</i> is the directory
+        the filesystem is mounted on; and <i class="Em">fsflags</i> is a list of
+        optional flags applied to the mount (see
+        <a class="Xr" href="../html8/mount.html">mount(8)</a>). The second line
+        is a header for the individual fields, the first part of which are
+        fixed, and the second part are filesystem type specific. The headers
+        common to all vnodes are:</p>
+    <dl class="Bl-tag">
+      <dt>ADDR</dt>
+      <dd>Location of this vnode.</dd>
+      <dt>TYP</dt>
+      <dd>File type.</dd>
+      <dt>VFLAG</dt>
+      <dd>A list of letters representing vnode flags:
+        <p class="Pp"></p>
+        <dl class="Bl-tag Bl-compact">
+          <dt>R</dt>
+          <dd>VV_ROOT root of its file system.</dd>
+          <dt>T</dt>
+          <dd>VI_TEXT pure text prototype.</dd>
+          <dt>S</dt>
+          <dd>VV_SYSTEM vnode being used by kernel.</dd>
+          <dt>I</dt>
+          <dd>VV_ISTTY vnode is a tty.</dd>
+          <dt>E</dt>
+          <dd>VI_EXECMAP vnode has PROT_EXEC mappings.</dd>
+          <dt>D</dt>
+          <dd>VU_DIROP lfs vnode involved in directory op.</dd>
+          <dt>O</dt>
+          <dd>VI_ONWORKLST vnode is on syncer work-list.</dd>
+          <dt>M</dt>
+          <dd>VV_MPSAFE file system is multithreaded</dd>
+        </dl>
+      </dd>
+      <dt>USE</dt>
+      <dd>The number of references to this vnode.</dd>
+      <dt>HOLD</dt>
+      <dd>The number of I/O buffers held by this vnode.</dd>
+      <dt>TAG</dt>
+      <dd>The type of underlying data.</dd>
+      <dt>NPAGE</dt>
+      <dd>The number of pages in this vnode.</dd>
+      <dt>FILEID</dt>
+      <dd>The vnode fileid. In the case of <i class="Em">ffs</i> or
+          <i class="Em">ext2fs</i> this is the inode number.</dd>
+      <dt>IFLAG</dt>
+      <dd>Miscellaneous filesystem specific state variables encoded thus:
+        <dl class="Bl-tag">
+          <dt>For ffs, lfs or ext2fs:</dt>
+          <dd>
+            <dl class="Bl-tag Bl-compact">
+              <dt>A</dt>
+              <dd>access time must be corrected</dd>
+              <dt>C</dt>
+              <dd>changed time must be corrected</dd>
+              <dt>U</dt>
+              <dd>update time (<a class="Xr" href="../html5/fs.html">fs(5)</a>)
+                  must be corrected</dd>
+              <dt>M</dt>
+              <dd>contains modifications</dd>
+              <dt>a</dt>
+              <dd>has been accessed</dd>
+              <dt>R</dt>
+              <dd>has a rename in progress</dd>
+              <dt>S</dt>
+              <dd>shared lock applied</dd>
+              <dt>E</dt>
+              <dd>exclusive lock applied</dd>
+              <dt>c</dt>
+              <dd>is being cleaned (LFS)</dd>
+              <dt>D</dt>
+              <dd>directory operation in progress (LFS)</dd>
+              <dt>s</dt>
+              <dd>blocks to be freed in free count</dd>
+            </dl>
+          </dd>
+          <dt>For nfs:</dt>
+          <dd>
+            <dl class="Bl-tag Bl-compact">
+              <dt>W</dt>
+              <dd>waiting for I/O buffer flush to complete</dd>
+              <dt>P</dt>
+              <dd>I/O buffers being flushed</dd>
+              <dt>M</dt>
+              <dd>locally modified data exists</dd>
+              <dt>E</dt>
+              <dd>an earlier write failed</dd>
+              <dt>A</dt>
+              <dd>special file accessed</dd>
+              <dt>U</dt>
+              <dd>special file updated</dd>
+              <dt>C</dt>
+              <dd>special file times changed</dd>
+            </dl>
+          </dd>
+        </dl>
+      </dd>
+      <dt>SIZ/RDEV</dt>
+      <dd>Number of bytes in an ordinary file, or major and minor device of
+          special file.</dd>
+    </dl>
+  </dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#BLOCKSIZE"><code class="Ev" id="BLOCKSIZE">BLOCKSIZE</code></a></dt>
+  <dd>If the environment variable <code class="Ev">BLOCKSIZE</code> is set, and
+      the <code class="Fl">-k</code> option is not specified, the block counts
+      will be displayed in units of that size block.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/netbsd</span></dt>
+  <dd>namelist</dd>
+  <dt><span class="Pa">/dev/kmem</span></dt>
+  <dd>default source of tables</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/ps.html">ps(1)</a>,
+  <a class="Xr" href="../html1/systat.html">systat(1)</a>,
+  <a class="Xr" href="../html1/vmstat.html">vmstat(1)</a>,
+  <a class="Xr" href="../html2/stat.html">stat(2)</a>,
+  <a class="Xr" href="../html5/fs.html">fs(5)</a>,
+  <a class="Xr" href="../html8/iostat.html">iostat(8)</a>
+<p class="Pp"><cite class="Rs"><span class="RsA">K. Thompson</span>,
+    <span class="RsT">Tn UNIX Implementation</span>.</cite></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">pstat</code> command appeared in
+  <span class="Ux">4.0BSD</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Swap statistics are reported for all swap partitions compiled into the kernel,
+  regardless of whether those partitions are being used.
+<p class="Pp">Does not understand NFS swap servers.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">December 11, 2019</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

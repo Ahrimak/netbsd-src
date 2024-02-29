@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: services_mkdb.8,v 1.13 2023/02/12 22:48:02 uwe Exp $
+  
+   Copyright (c) 1999 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Luke Mewburn.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>SERVICES_MKDB(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">SERVICES_MKDB(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">SERVICES_MKDB(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">services_mkdb</code> &#x2014;
+<div class="Nd">generate the services databases</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">services_mkdb</code></td>
+    <td>[<code class="Fl">-qv</code>] [<code class="Fl">-o</code>
+      <var class="Ar">database</var>] [<code class="Fl">-V</code>
+      <var class="Ar">style</var>] [<var class="Ar">file</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">services_mkdb</code></td>
+    <td><code class="Fl">-u</code> [<var class="Ar">file</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">services_mkdb</code> creates a
+  <a class="Xr" href="../html5/cdb.html">cdb(5)</a> database for the specified
+  file. If no file is specified, then <span class="Pa">/etc/services</span> is
+  used. The database is installed into
+  <span class="Pa">/var/db/services.cdb</span> for CDB format and into
+  <span class="Pa">/var/db/services.db</span> for legacy DB format (see
+  <code class="Fl">-V</code>). The file must be in the correct format (see
+  <a class="Xr" href="../html5/services.html">services(5)</a>).
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">database</var></dt>
+  <dd>Put the output databases in the named file.</dd>
+  <dt><a class="permalink" href="#q"><code class="Fl" id="q">-q</code></a></dt>
+  <dd>Don't warn about duplicate services. This is the default behavior.</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a></dt>
+  <dd>Print the services file to stdout, omitting duplicate entries and
+      comments.</dd>
+  <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>
+    <var class="Ar">style</var></dt>
+  <dd>Create a specific version of the database style.
+      <var class="Ar">style</var> can be <code class="Cm">cdb</code> to request
+      the CDB format (default) or <code class="Cm">db</code> to request the DB
+      format. The DB format is useful for compatibility with old statically
+      linked binaries.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Warn about duplicate services.</dd>
+</dl>
+<p class="Pp">The databases are used by the C library services routines (see
+    <a class="Xr" href="../html3/getservent.html">getservent(3)</a>).</p>
+<p class="Pp"><code class="Nm">services_mkdb</code> exits zero on success,
+    non-zero on failure.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/services</span></dt>
+  <dd>The current services file.</dd>
+  <dt><span class="Pa">/var/db/services.cdb</span></dt>
+  <dd>The current services database.</dd>
+  <dt><span class="Pa">/var/db/services.cdb.tmp</span></dt>
+  <dd>A temporary file.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/db.html">db(3)</a>,
+  <a class="Xr" href="../html3/getservent.html">getservent(3)</a>,
+  <a class="Xr" href="../html5/cdb.html">cdb(5)</a>,
+  <a class="Xr" href="../html5/services.html">services(5)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Because <code class="Nm">services_mkdb</code> guarantees not to install a
+  partial destination file it must build a temporary file in the same file
+  system and if successful use
+  <a class="Xr" href="../html2/rename.html">rename(2)</a> to install over the
+  destination file.
+<p class="Pp">If <code class="Nm">services_mkdb</code> fails it will leave the
+    previous version of the destination file intact.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 12, 2023</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

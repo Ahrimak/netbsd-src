@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: rump_syspuffs.8,v 1.4 2012/11/14 23:11:27 njoly Exp $
+  
+   Copyright (c) 2008 Antti Kantee. All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>RUMP_SYSPUFFS(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">RUMP_SYSPUFFS(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">RUMP_SYSPUFFS(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">rump_syspuffs</code> &#x2014;
+<div class="Nd">mount a puffs file server with a userspace puffs loop</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<code class="Cd">file-system PUFFS</code>
+<br/>
+<code class="Cd">pseudo-device putter</code>
+<p class="Pp"></p>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">rump_syspuffs</code></td>
+    <td><var class="Ar">file_server</var> <var class="Ar">arguments</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">rump_syspuffs</code> utility can be used to mount any
+  <a class="Xr" href="../html3/puffs.html">puffs(3)</a> file server so that the
+  requests are passed through the kernel puffs code in userspace as well.
+  Therefore the approximate callgraph looks a little like the following, where k
+  and u denote code running in the kernel space and userspace, respectively:
+  puffs vfs (k) &#x2192; libpuffs (u) &#x2192; p2k (u) &#x2192; puffs vfs (u)
+  &#x2192; libpuffs (u) &#x2192; file server (u). The response path is the same,
+  but in reverse.
+<p class="Pp">In its current state, <code class="Nm">rump_syspuffs</code> is
+    most useful as a proof of concept for file system distribution and for
+    developing and debugging the kernel portion of puffs.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+Mount a file system with sshfs:
+<div class="Bd Bd-indent"><code class="Li">rump_syspuffs mount_psshfs
+  server.address /mnt</code></div>
+<p class="Pp">Mount an ntfs file system using ntfs-3g (from
+    pkgsrc/filesystems/fuse-ntfs-3g), set the default uid to 1323:</p>
+<div class="Bd Bd-indent"><code class="Li">rump_syspuffs ntfs-3g -o uid=1323
+  /path/to/filesystem /mnt</code></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/p2k.html">p2k(3)</a>,
+  <a class="Xr" href="../html3/puffs.html">puffs(3)</a>,
+  <a class="Xr" href="../html3/rump.html">rump(3)</a>,
+  <a class="Xr" href="../html4/puffs.html">puffs(4)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">rump_syspuffs</code> debugging utility first appeared in
+  <span class="Ux">NetBSD 5.0</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">June 9, 2009</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

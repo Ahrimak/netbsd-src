@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: tbrconfig.8,v 1.6 2009/04/08 13:37:43 joerg Exp $
+  	$KAME: tbrconfig.8,v 1.2 2001/04/09 16:26:30 thorpej Exp $
+  
+   Copyright (C) 2000
+   Sony Computer Science Laboratories Inc.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY SONY CSL AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL SONY CSL OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>TBRCONFIG(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">TBRCONFIG(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">TBRCONFIG(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">tbrconfig</code> &#x2014;
+<div class="Nd">configure a token bucket regulator for an output queue</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">tbrconfig</code></td>
+    <td><var class="Ar">interface</var> [<var class="Ar">tokenrate</var>
+      [<var class="Ar">bucketsize</var>]]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">tbrconfig</code></td>
+    <td><code class="Fl">-d</code> <var class="Ar">interface</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">tbrconfig</code></td>
+    <td><code class="Fl">-a</code></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">tbrconfig</code> configures a token bucket regulator for the
+  output network interface queue. A token bucket regulator limits both the
+  average amount and instantaneous amount of packets that the underlying driver
+  can dequeue from the network interface within the kernel.
+<p class="Pp">Conceptually, tokens accumulate in a bucket at the average
+    <var class="Ar">tokenrate</var>, up to the <var class="Ar">bucketsize</var>.
+    The driver can dequeue packets as long as there are positive amount of
+    tokens, and the length of the dequeued packet is subtracted from the
+    remaining tokens. Tokens can be negative as a deficit, and packets are not
+    dequeued from the interface queue until the tokens become positive again.
+    The <var class="Ar">tokenrate</var> limits the average rate, and the
+    <var class="Ar">bucketsize</var> limits the maximum burst size.</p>
+<p class="Pp">Limiting the burst size is essential to packet scheduling, since
+    the scheduler schedules packets backlogged at the network interface.
+    Limiting the burst size is also needed for drivers which dequeues more
+    packets than they can send and end up with discarding excess packets.</p>
+<p class="Pp">When the <var class="Ar">tokenrate</var> is set to higher than the
+    actual transmission rate, the transmission complete interrupt will trigger
+    the next dequeue. On the other hand, when the
+    <var class="Ar">tokenrate</var> is set to lower than the actual transmission
+    rate, the transmission complete interrupt would occur before the tokens
+    become positive. In this case, the next dequeue will be triggered by a timer
+    event. Because the kernel timer has a limited granularity, a larger
+    <var class="Ar">bucketsize</var> is required for a higher
+    <var class="Ar">tokenrate</var>.</p>
+<p class="Pp">The <var class="Ar">interface</var> parameter is a string of the
+    form &#x201C;name unit&#x201D;, for example, &#x201C;en0&#x201D;.</p>
+<p class="Pp">The <var class="Ar">tokenrate</var> parameter specifies the
+    average rate in bits per second, and &#x201C;K&#x201D; or &#x201C;M&#x201D;
+    can be appended to <var class="Ar">tokenrate</var> as a short hand of
+    &#x201C;Kilo-bps&#x201D; or &#x201C;Mega-bps&#x201D;, respectively. When
+    <var class="Ar">tokenrate</var> is omitted,
+    <code class="Nm">tbrconfig</code> displays the current parameter values.</p>
+<p class="Pp">The <var class="Ar">bucketsize</var> parameter specifies the
+    bucket size in bytes, and &#x201C;K&#x201D; can be appended to
+    <var class="Ar">bucketsize</var> as a short hand of
+    &#x201C;Kilo-bytes&#x201D;. When <var class="Ar">bucketsize</var> is
+    omitted, <code class="Nm">tbrconfig</code> assumes the regulator is driven
+    by transmission complete interrupts and, using heuristics, assigns a small
+    bucket size according to the <var class="Ar">tokenrate</var>. When the
+    keyword &#x201C;auto&#x201D; is given as <var class="Ar">bucketsize</var>,
+    <code class="Nm">tbrconfig</code> assumes the regulator is driven by the
+    kernel timer, and computes the bucket size from
+    <var class="Ar">tokenrate</var> and the kernel clock frequency.</p>
+<p class="Pp">If the <code class="Fl">-d</code> flag is passed before an
+    interface name, <code class="Nm">tbrconfig</code> will remove the token
+    bucket regulator for the specified interface.</p>
+<p class="Pp">Optionally, the <code class="Fl">-a</code> flag may be used
+    instead of an interface name. This flag instructs
+    <code class="Nm">tbrconfig</code> to display information about all
+    interfaces in the system.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+To configure a token bucket regulator for the interface en0 with 10Mbps token
+  rate and 8KB bucket size,
+<div class="Bd Pp Bd-indent">
+<pre>
+# tbrconfig en0 10M 8K
+</pre>
+</div>
+<p class="Pp">To rate-limit the interface en0 up to 3Mbps,</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+# tbrconfig en0 3M auto
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html5/altq.conf.html">altq.conf(5)</a>,
+  <a class="Xr" href="../html8/altqd.html">altqd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">tbrconfig</code> command first appeared in WIDE/KAME IPv6
+  protocol stack kit as part of ALTQ tools.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">July 25, 2000</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   Copyright (c) 1993 Winning Strategies, Inc.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+        This product includes software developed by Winning Strategies, Inc.
+   4. The name of the author may not be used to endorse or promote products
+      derived from this software without specific prior written permission
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  
+  	$NetBSD: catman.8,v 1.12 2021/08/15 11:00:43 christos Exp $
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>CATMAN(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">CATMAN(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">CATMAN(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">catman</code> &#x2014;
+<div class="Nd">format cat pages from man pages</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">catman</code></td>
+    <td>[<code class="Fl">-knpsw</code>] [<code class="Fl">-m</code>
+      <var class="Ar">directory</var>] [<var class="Ar">sections</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">catman</code></td>
+    <td>[<code class="Fl">-knpsw</code>] [<code class="Fl">-M</code>
+      <var class="Ar">directory</var>] [<var class="Ar">sections</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">catman</code> creates formatted versions of the on-line manual
+  pages from their <a class="Xr" href="../html1/nroff.html">nroff(1)</a> source.
+  Manual pages whose formatted versions are missing or out of date are
+  regenerated. If manual pages are regenerated, <code class="Nm">catman</code>
+  also regenerates the <span class="Pa">whatis</span> database.
+<p class="Pp">The optional <var class="Ar">sections</var> argument is one word,
+    and contains the section numbers of all the sections to be checked. For
+    example, if <var class="Ar">sections</var> is ``13f8'', the manual pages in
+    sections 1, 3f, and 8 will be checked and regenerated. If no
+    <var class="Ar">sections</var> argument is provided,
+    <code class="Nm">catman</code> will try to operate on all of the known
+    manual sections.</p>
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#k"><code class="Fl" id="k">-k</code></a></dt>
+  <dd>Ignore errors from nroff when building manpages.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Do not create the <span class="Pa">whatis</span> database.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a></dt>
+  <dd>Display the commands that would have been executed, but do not actually
+      execute them.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Perform work silently; do not echo commands as they are executed. This
+      flag is ignored if <code class="Fl">-p</code> is specified.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a></dt>
+  <dd>Only create the <span class="Pa">whatis</span> database.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a>
+    <var class="Ar">directory</var></dt>
+  <dd>Add <var class="Ar">directory</var> to the set of directories to be
+      updated.</dd>
+  <dt><a class="permalink" href="#M"><code class="Fl" id="M">-M</code></a>
+    <var class="Ar">directory</var></dt>
+  <dd>Update manual pages in <var class="Ar">directory</var>.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/apropos.html">apropos(1)</a>,
+  <a class="Xr" href="../html1/man.html">man(1)</a>,
+  <a class="Xr" href="../html1/whatis.html">whatis(1)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Currently does not handle hard links. Acts oddly on nights with full moons.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">August 15, 2021</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

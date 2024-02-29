@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: mopprobe.1,v 1.10 2014/03/18 18:20:47 riastradh Exp $
+  
+   Copyright (c) 1996 Mats O Jansson.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>MOPPROBE(1)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MOPPROBE(1)</td>
+    <td class="head-vol">General Commands Manual</td>
+    <td class="head-rtitle">MOPPROBE(1)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">mopprobe</code> &#x2014;
+<div class="Nd">MOP Probe Utility</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">mopprobe</code></td>
+    <td><code class="Fl">-a</code> [<code class="Fl">-3</code> |
+      <code class="Fl">-4</code>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">mopprobe</code></td>
+    <td>[<code class="Fl">-3</code> | <code class="Fl">-4</code>]
+      <var class="Ar">interface</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">mopprobe</code> prints the ethernet address and nodename of MOP
+  SID message on the Ethernet connected to <var class="Ar">interface</var> or
+  all known interfaces if &#x2018;<code class="Fl">-a</code>&#x2019; is given.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+  <dd>Listen on all the Ethernets attached to the system. If
+      &#x2018;<code class="Fl">-a</code>&#x2019; is omitted, an interface must
+      be specified.</dd>
+  <dt><a class="permalink" href="#3"><code class="Fl" id="3">-3</code></a></dt>
+  <dd>Ignore MOP V3 messages (Ethernet II).</dd>
+  <dt><a class="permalink" href="#4"><code class="Fl" id="4">-4</code></a></dt>
+  <dd>Ignore MOP V4 messages (Ethernet 802.3).</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/mopchk.html">mopchk(1)</a>,
+  <a class="Xr" href="../html1/mopcopy.html">mopcopy(1)</a>,
+  <a class="Xr" href="../html1/moptrace.html">moptrace(1)</a>,
+  <a class="Xr" href="../html8/mopd.html">mopd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">Mats O Jansson</span>
+  &lt;<a class="Mt" href="mailto:moj@stacken.kth.se">moj@stacken.kth.se</a>&gt;
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">October 2, 1995</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

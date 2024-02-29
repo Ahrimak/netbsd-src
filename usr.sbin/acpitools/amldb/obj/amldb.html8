@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: amldb.8,v 1.8 2021/08/17 22:00:33 andvar Exp $
+   ACPI (ACPI Package)
+  
+   Copyright (c) 2000 Takanori Watanabe <takawata@FreeBSD.org>
+   Copyright (c) 2000 Mitsuru IWASAKI <iwasaki@FreeBSD.org>
+   Copyright (c) 2000 Yasuo YOKOYAMA <yokoyama@jp.FreeBSD.org>
+   Copyright (c) 2000 Norihiro KUMAGAI <kumagai@home.com>
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+   $FreeBSD: src/usr.sbin/acpi/amldb/amldb.8,v 1.10 2002/08/13 16:07:26 ru Exp $
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>AMLDB(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">AMLDB(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">AMLDB(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">amldb</code> &#x2014;
+<div class="Nd">executing and debugging AML interpreter (with DSDT files)</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">amldb</code></td>
+    <td>[<code class="Fl">-dhst</code>] <var class="Ar">dsdt_file ...</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">amldb</code> utility parses the DSDT (Differentiated System
+  Description Table) files, which usually are acquired from ACPI BIOS, and
+  executes the sequence of ACPI Control Methods described in AML (ACPI Machine
+  Language) with its AML interpreter. The <code class="Nm">amldb</code> utility
+  also has a simple ACPI virtual machine. During execution of the Control
+  Methods each access to the region, such as SystemMemory, SystemIO, PCI_Config,
+  does not affect the real hardware but only the virtual machine. Because the
+  sequence of virtual accesses is maintained in user space, AML interpreter
+  developers need not worry about any effect on hardware when they analyze DSDT
+  data files. They can develop and debug the interpreter, even if the machine
+  has no ACPI BIOS.
+<p class="Pp">The developer will need to acquire a DSDT data file from any
+    machine with ACPI BIOS through
+    <a class="Xr" href="../html8/acpidump.html">acpidump(8)</a>. The DSDT is a
+    table, a part of the whole ACPI memory table located in somewhere in the
+    BIOS area (<code class="Li">0xa0000 - 0x100000</code>). It includes such
+    information as the detailed hardware information for PnP, and the set of
+    procedures which perform power management from the OS. The information is
+    stored in AML format.</p>
+<p class="Pp">The AML interpreter can execute any of the Control Methods
+    specified by users. When executed, it interprets the byte sequence in the
+    Control Method of DSDT, and disassembles the opcodes that it recognizes into
+    ASL (ACPI Source Language) format to be displayed.</p>
+<p class="Pp">If it encounters one of more accesses to the region such as
+    SystemMemory in executing the Control Methods, its ACPI Virtual Machine
+    simulates the input/output operations to the resources in the region. In
+    writing to a certain region, the ACPI Virtual Machine prepares a piece of
+    memory corresponding to its address, if necessary, and holds the specified
+    value in the memory as the <i class="Em">region contents</i>. In reading
+    from a certain region, it fetches the value in the memory
+    (<i class="Em">region contents</i>), prompts with it as the following:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+DEBUG[read(0, 0x100b6813)&amp;mask:0x1](default: 0x1 / 1) &gt;&gt;
+</pre>
+</div>
+<p class="Pp">for users to have the opportunity to modify it, and hands it to
+    the AML interpreter. In case that there is no corresponding region in the
+    AML Virtual Machine, the value zero is handed.</p>
+<p class="Pp">The interpreter continues to maintain all of the
+    <i class="Em">region contents</i> until <code class="Nm">amldb</code>
+    terminates. You can specify their initial values with the file
+    <span class="Pa">region.ini</span> in the current directory. If it is
+    executed with <code class="Fl">-d</code> option, it dumps the final status
+    of all of its <i class="Em">region contents</i> to the file
+    <span class="Pa">region.dmp</span> when it terminates. Each line of there
+    files consists of the following fields, separated by tabs; region type,
+    address, and value. Region types are specified as follows;</p>
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt><b class="Sy">Value</b></dt>
+  <dd><b class="Sy">Region type</b></dd>
+  <dt>0</dt>
+  <dd>SystemMemory</dd>
+  <dt>1</dt>
+  <dd>SystemIO</dd>
+  <dt>2</dt>
+  <dd>PCI_Config</dd>
+  <dt>3</dt>
+  <dd>EmbeddedControl</dd>
+  <dt>4</dt>
+  <dd>SMBus</dd>
+</dl>
+</div>
+<p class="Pp">Interactive commands are described below:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#s"><code class="Cm" id="s">s</code></a></dt>
+  <dd><i class="Em">Single step</i>: Performs single-step execution of the
+      current Control Method. If the next instruction is an invocation of
+      another Control Method, the step execution will continue in the following
+      Control Method.</dd>
+  <dt><a class="permalink" href="#n"><code class="Cm" id="n">n</code></a></dt>
+  <dd><i class="Em">Step program</i>: Performs single-step execution of the
+      current Control Method. Even if the next instruction is an invocation of
+      another Control Method, the step execution will not continue.</dd>
+  <dt><a class="permalink" href="#c"><code class="Cm" id="c">c</code></a></dt>
+  <dd><i class="Em">Continue program being debugged</i>: Resumes execution of
+      the AML interpreter. Because the current <code class="Nm">amldb</code> has
+      no way of breakpoint, this command might not so much useful.</dd>
+  <dt><a class="permalink" href="#q"><code class="Cm" id="q">q</code></a></dt>
+  <dd><i class="Em">Quit method execution</i>: Terminates execution of the
+      current Control Method. If <code class="Nm">amldb</code> is not in
+      execution, this command causes to input the next DSDT data file. If there
+      are no next DSDT data files, it terminates <code class="Nm">amldb</code>
+      itself.</dd>
+  <dt><a class="permalink" href="#t"><code class="Cm" id="t">t</code></a></dt>
+  <dd><i class="Em">Show local name space tree and variables</i>: Displays the
+      structure of the ACPI namespace tree. If <code class="Nm">amldb</code> is
+      in execution, this command displays the structure that relates to the
+      objects, arguments, and local variables below the scope of the current
+      Control Method.</dd>
+  <dt><a class="permalink" href="#i"><code class="Cm" id="i">i</code></a></dt>
+  <dd><i class="Em">Toggle region input prompt</i>: Switches whether the prompt
+      for modifying the value read from the <i class="Em">region contents</i> be
+      showed or not. Default is On.</dd>
+  <dt><a class="permalink" href="#o"><code class="Cm" id="o">o</code></a></dt>
+  <dd><i class="Em">Toggle region output prompt</i>: Switches whether the prompt
+      for modifying the value to be written to the region contents will be shown
+      or not. The default is Off.</dd>
+  <dt><a class="permalink" href="#m"><code class="Cm" id="m">m</code></a></dt>
+  <dd><i class="Em">Show memory management statistics</i>: Displays the current
+      statistics of the memory management system on the AML interpreter.</dd>
+  <dt><a class="permalink" href="#r"><code class="Cm" id="r">r</code></a>
+    <var class="Ar">method</var></dt>
+  <dd><i class="Em">Run specified method</i>: Executes the specified Control
+      Method. If it requires one or more arguments, a prompt such as the
+      following appears;
+    <div class="Bd Pp">
+    <pre>
+Method: Arg 1 From 0x280626ce To 0x28062775
+  Enter argument values (ex. number 1 / string foo). 'q' to quit.
+  Arg0 ?
+    </pre>
+    </div>
+    <p class="Pp">For each argument, a pair of type string and value delimited
+        by one or more spaces can be entered. Now only
+        <code class="Ic">number</code> and <code class="Ic">string</code> can be
+        specified as the type string. In the current implementation, only the
+        first character of the type string, such as <code class="Ic">n</code> or
+        <code class="Ic">s</code>, is identified. For example, we can enter as
+        follows:</p>
+    <div class="Bd Pp">
+    <pre>
+  Arg0 ? n 1
+    </pre>
+    </div>
+  </dd>
+  <dt><a class="permalink" href="#f"><code class="Cm" id="f">f</code></a>
+    <var class="Ar">string</var></dt>
+  <dd><i class="Em">Find named objects from namespace</i>: Lists the named
+      objects that includes the specified string as the terminate elements
+      searching from the ACPI namespace. For the namespace is expressed as the
+      sequence of four-character elements, appropriate number of additional
+      underscore (&#x2018;<code class="Li">_</code>&#x2019;) characters are
+      necessary for specifying objects which have less than four character
+      string. Unless additional underscores specified, matching occurs as the
+      beginning of word with the specified number of characters.</dd>
+  <dt><a class="permalink" href="#h"><code class="Cm" id="h">h</code></a></dt>
+  <dd><i class="Em">Show help message</i>: Displays the command summary of
+      <code class="Nm">amldb</code>.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h1>
+Exactly one of the following options must be specified. Otherwise,
+  <code class="Nm">amldb</code> shows its usage and terminates.
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Dump the final status of all of the <i class="Em">region contents</i> in
+      the ACPI Virtual Machine to the file
+    <span class="Pa">region.dmp</span>.</dd>
+  <dt><a class="permalink" href="#h_2"><code class="Fl" id="h_2">-h</code></a></dt>
+  <dd>Terminate with the usage of this command.</dd>
+  <dt><a class="permalink" href="#s_2"><code class="Fl" id="s_2">-s</code></a></dt>
+  <dd>Display the statistics of the memory management system on the AML
+      interpreter when <code class="Nm">amldb</code> terminates.</dd>
+  <dt><a class="permalink" href="#t_2"><code class="Fl" id="t_2">-t</code></a></dt>
+  <dd>Display the tree structure of ACPI namespace after the DSDT data file is
+      read.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">region.ini</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">region.dmp</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+The following is an example including, invoking the
+  <code class="Nm">amldb</code>, searching <code class="Li">_PRS</code>
+  (Possible Resource Settings) objects, and executing the
+  <code class="Li">_PTS</code> (Prepare To Sleep) Control Method by the AML
+  interpreter.
+<div class="Bd Pp Bd-indent">
+<pre>
+% amldb p2b.dsdt.dat
+Loading p2b.dsdt.dat...done
+AML&gt;f _PRS
+\_SB_.PCI0.ISA_.PS2M._PRS.
+\_SB_.PCI0.ISA_.IRDA._PRS.
+\_SB_.PCI0.ISA_.UAR2._PRS.
+\_SB_.PCI0.ISA_.UAR1._PRS.
+\_SB_.PCI0.ISA_.ECP_._PRS.
+\_SB_.PCI0.ISA_.LPT_._PRS.
+\_SB_.PCI0.ISA_.FDC0._PRS.
+\_SB_.LNKD._PRS.
+\_SB_.LNKC._PRS.
+\_SB_.LNKB._PRS.
+\_SB_.LNKA._PRS.
+AML&gt;r _PTS
+Method: Arg 1 From 0x2805f0a3 To 0x2805f0db
+  Enter argument values (ex. number 1 / string foo). 'q' to quit.
+  Arg0 ? n 5
+==== Running _PTS. ====
+AML&gt;s
+[\_PTS. START]
+If(LNot(LEqual(Arg0, 0x5)))
+AML&gt;
+If(LEqual(Arg0, 0x1))
+AML&gt;
+If(LEqual(Arg0, 0x2))
+AML&gt;
+Store(One, TO12)
+[aml_region_write(1, 1, 0x1, 0xe42c, 0x18, 0x1)]
+amldb: region.ini: No such file or directory
+        [1:0x00@0xe42f]-&gt;[1:0x01@0xe42f]
+[write(1, 0x1, 0xe42f)]
+[aml_region_read(1, 1, 0xe42c, 0x18, 0x1)]
+        [1:0x01@0xe42f]
+DEBUG[read(1, 0xe42f)&amp;mask:0x1](default: 0x1 / 1) &gt;&gt;
+[read(1, 0xe42f)-&gt;0x1]
+AML&gt;
+Or(Arg0, 0xf0, Local2)[Copy number 0xf5]
+AML&gt;t
+_PTS  Method: Arg 1 From 0x2805f0a3 To 0x2805f0db
+  Arg0    Num:0x5
+  Local2  Num:0xf5
+AML&gt;s
+Store(Local2, DBG1)
+[aml_region_write(1, 1, 0xf5, 0x80, 0x0, 0x8)]
+        [1:0x00@0x80]-&gt;[1:0xf5@0x80]
+[write(1, 0xf5, 0x80)]
+[aml_region_read(1, 1, 0x80, 0x0, 0x8)]
+        [1:0xf5@0x80]
+DEBUG[read(1, 0x80)&amp;mask:0xf5](default: 0xf5 / 245) &gt;&gt;
+[read(1, 0x80)-&gt;0xf5]
+AML&gt;
+[\_PTS. END]
+_PTS  Method: Arg 1 From 0x2805f0a3 To 0x2805f0db
+NO object
+==== _PTS finished. ====
+AML&gt;q
+%
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/acpi.html">acpi(4)</a>,
+  <a class="Xr" href="../html8/acpidump.html">acpidump(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">amldb</code> utility appeared in <span class="Ux">FreeBSD
+  5.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">Takanori Watanabe</span>
+  &lt;<a class="Mt" href="mailto:takawata@FreeBSD.org">takawata@FreeBSD.org</a>&gt;
+<br/>
+<span class="An">Mitsuru IWASAKI</span>
+  &lt;<a class="Mt" href="mailto:iwasaki@FreeBSD.org">iwasaki@FreeBSD.org</a>&gt;
+<br/>
+<span class="An">Yasuo YOKOYAMA</span>
+  &lt;<a class="Mt" href="mailto:yokoyama@jp.FreeBSD.org">yokoyama@jp.FreeBSD.org</a>&gt;
+<p class="Pp">Some contributions made by
+  <br/>
+  <span class="An">Chitoshi Ohsawa</span>
+    &lt;<a class="Mt" href="mailto:ohsawa@catv1.ccn-net.ne.jp">ohsawa@catv1.ccn-net.ne.jp</a>&gt;,
+  <br/>
+  <span class="An">Takayasu IWANASHI</span>
+    &lt;<a class="Mt" href="mailto:takayasu@wendy.a.perfect-liberty.or.jp">takayasu@wendy.a.perfect-liberty.or.jp</a>&gt;,
+  <br/>
+  <span class="An">Norihiro KUMAGAI</span>
+    &lt;<a class="Mt" href="mailto:kumagai@home.com">kumagai@home.com</a>&gt;,
+  <br/>
+  <span class="An">Kenneth Ingham</span>
+    &lt;<a class="Mt" href="mailto:ingham@I-pi.com">ingham@I-pi.com</a>&gt;, and
+  <br/>
+  <span class="An">Michael Lucas</span>
+    &lt;<a class="Mt" href="mailto:mwlucas@blackhelicopters.org">mwlucas@blackhelicopters.org</a>&gt;.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+The ACPI virtual machine does not completely simulate the behavior of a machine
+  with an ACPI BIOS. In the current implementation, the ACPI virtual machine
+  only reads or writes the stored values by emulating access to regions such as
+  SystemMemory.
+<p class="Pp">Because the AML interpreter interprets and disassembles
+    simultaneously, it is impossible to implement such features as setting
+    breakpoints with the specified line number in ASL. Setting breakpoints at
+    certain Control Methods, which is not very difficult, has not yet
+    implemented because nobody has ever needed it.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">August 31, 2000</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

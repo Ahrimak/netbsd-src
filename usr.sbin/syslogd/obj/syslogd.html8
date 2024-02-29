@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: syslogd.8,v 1.59 2022/11/08 01:43:09 uwe Exp $
+  
+   Copyright (c) 1983, 1986, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       from: @(#)syslogd.8	8.1 (Berkeley) 6/6/93
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>SYSLOGD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">SYSLOGD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">SYSLOGD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">syslogd</code> &#x2014;
+<div class="Nd">log systems messages</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">syslogd</code></td>
+    <td>[<code class="Fl">-nrSsTUvX</code>] [<code class="Fl">-B</code>
+      <var class="Ar">buffer_length</var>] [<code class="Fl">-b</code>
+      <var class="Ar">bind_address</var>] [<code class="Fl">-d</code>
+      [[<code class="Cm">~</code>]<var class="Ar">what</var>]]
+      [<code class="Fl">-f</code> <var class="Ar">config_file</var>]
+      [<code class="Fl">-g</code> <var class="Ar">group</var>]
+      [<code class="Fl">-m</code> <var class="Ar">mark_interval</var>]
+      [<code class="Fl">-o</code> <var class="Ar">output_format</var>]
+      [<code class="Fl">-P</code> <var class="Ar">file_list</var>]
+      [<code class="Fl">-p</code> <var class="Ar">log_socket</var>
+      [<code class="Fl">-p</code> <var class="Ar">log_socket2 ...</var>]]
+      [<code class="Fl">-t</code> <var class="Ar">chroot_dir</var>]
+      [<code class="Fl">-u</code> <var class="Ar">user</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">syslogd</code> reads and logs messages to the system console,
+  log files, other machines and/or users as specified by its configuration file.
+  The options are as follows:
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#B"><code class="Fl" id="B">-B</code></a>
+    <var class="Ar">buffer_length</var></dt>
+  <dd>Sets the receiving buffer length. The default is 16384 bytes. If syslogd
+      reports buffer overflow, this needs increasing. If you don't care about it
+      being reported, see the <code class="Fl">-X</code> option.</dd>
+  <dt><a class="permalink" href="#b"><code class="Fl" id="b">-b</code></a>
+    <var class="Ar">bind_address</var></dt>
+  <dd>Specify one specific IP address or hostname to bind to. If a hostname is
+      specified, the IPv4 or IPv6 address which corresponds to it is used.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    [[<code class="Cm">~</code>]<var class="Ar">what</var>]</dt>
+  <dd>Do not disassociate from the controlling terminal and enable debugging to
+      the standard output. The optional <var class="Ar">what</var> argument is a
+      number that selects which categories of the debug messages are to be
+      enabled. A tilde (&#x2018;<code class="Cm">~</code>&#x2019;) before
+      <var class="Ar">what</var> inverts its meaning so that all messages except
+      those selected by <var class="Ar">what</var> are enabled.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">config_file</var></dt>
+  <dd>Specify the pathname of an alternative configuration file; the default is
+      <span class="Pa">/etc/syslog.conf</span>.</dd>
+  <dt><a class="permalink" href="#g"><code class="Fl" id="g">-g</code></a>
+    <var class="Ar">group</var></dt>
+  <dd>Set GID to <var class="Ar">group</var> after the sockets and log files
+      have been opened.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a>
+    <var class="Ar">mark_interval</var></dt>
+  <dd>Select the number of minutes between ``mark'' messages; the default is 20
+      minutes.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Do not perform hostname lookups; report only numeric addresses.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">output_format</var></dt>
+  <dd>Select output message format.
+    <dl class="Bl-hang">
+      <dt><i class="Em">bsd</i>, <i class="Em">rfc3164</i></dt>
+      <dd>traditional BSD Syslog format (default)</dd>
+      <dt><i class="Em">syslog</i>, <i class="Em">rfc5424</i></dt>
+      <dd>new syslog-protocol format</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#P"><code class="Fl" id="P">-P</code></a></dt>
+  <dd>Specify the pathname of a file containing a list of sockets to be created.
+      The format of the file is simply one socket per line.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a>
+    <var class="Ar">log_socket</var></dt>
+  <dd>Specify the pathname of a log socket. Multiple <code class="Fl">-p</code>
+      options create multiple log sockets. If no <code class="Fl">-p</code>
+      arguments are given, the default socket of
+      <span class="Pa">/var/run/log</span> is used.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a></dt>
+  <dd>Disable the compression of repeated instances of the same line into a
+      single line of the form &#x201C;last message repeated N
+    times&#x201D;.</dd>
+  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a></dt>
+  <dd>Sync kernel messages to disk immediately.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Select &#x201C;secure&#x201D; mode, in which
+      <code class="Nm">syslogd</code> does not listen on a UDP socket but only
+      communicates over a <span class="Ux">UNIX</span> domain socket. This is
+      valuable when the machine on which <code class="Nm">syslogd</code> runs is
+      subject to attack over the network and it is desired that the machine be
+      protected from attempts to remotely fill logs and similar attacks.</dd>
+  <dt><a class="permalink" href="#T"><code class="Fl" id="T">-T</code></a></dt>
+  <dd>Always use the local time and date for messages received from the network,
+      instead of the timestamp field supplied in the message by the remote host.
+      This is useful if some of the originating hosts can't keep time properly
+      or are unable to generate a correct timestamp.</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a>
+    <var class="Ar">chroot_dir</var></dt>
+  <dd><a class="Xr" href="../html2/chroot.html">chroot(2)</a> to
+      <var class="Ar">chroot_dir</var> after the sockets and log files have been
+      opened.</dd>
+  <dt><a class="permalink" href="#U"><code class="Fl" id="U">-U</code></a></dt>
+  <dd>Unique priority logging. Only log messages at the priority specified by
+      the selector in the configuration file. Without this option, messages at
+      the specified priority or higher are logged. This option changes the
+      default priority comparison from &#x2018;&gt;=&#x2019; to
+      &#x2018;=&#x2019;.</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a>
+    <var class="Ar">user</var></dt>
+  <dd>Set UID to <var class="Ar">user</var> after the sockets and log files have
+      been opened.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Verbose logging. If specified once, the numeric facility and priority are
+      logged with each locally-written message. If specified more than once, the
+      names of the facility and priority are logged with each locally-written
+      message.</dd>
+  <dt><a class="permalink" href="#X"><code class="Fl" id="X">-X</code></a></dt>
+  <dd>Disable logging of buffer overflow.</dd>
+</dl>
+<p class="Pp"><code class="Nm">syslogd</code> reads its configuration file when
+    it starts up and whenever it receives a hangup signal. For information on
+    the format of the configuration file, see
+    <a class="Xr" href="../html5/syslog.conf.html">syslog.conf(5)</a>.</p>
+<p class="Pp"><code class="Nm">syslogd</code> reads messages from the
+    <span class="Ux">UNIX</span> domain socket
+    <span class="Pa">/var/run/log</span>, from an Internet domain socket
+    specified in <span class="Pa">/etc/services</span>, and from the special
+    device <span class="Pa">/dev/klog</span> (to read kernel messages).</p>
+<p class="Pp"><code class="Nm">syslogd</code> creates the file
+    <span class="Pa">/var/run/syslogd.pid</span>, and stores its process id
+    there. This can be used to kill or reconfigure
+    <code class="Nm">syslogd</code>.</p>
+<p class="Pp">By using multiple <code class="Fl">-p</code> options, one can set
+    up many chroot environments by passing the pathname to the log socket
+    (<span class="Pa">/var/run/log</span>) in each chroot area to
+    <code class="Nm">syslogd</code>. For example:</p>
+<div class="Bd Bd-indent"><code class="Li">syslogd -p /var/run/log -p
+  /web/var/run/log -p /ftp/var/run/log</code></div>
+<p class="Pp">Note: the normal log socket must now also be passed to
+    <code class="Nm">syslogd</code>.</p>
+<p class="Pp">The logged message includes the date, time, and hostname (or
+    pathname of the log socket). Commonly, the program name and the process id
+    is included.</p>
+<p class="Pp">The date and time are taken from the received message. If the
+    format of the timestamp field is incorrect, time obtained from the local
+    host is used instead. This can be overridden by the
+    <code class="Fl">-T</code> flag.</p>
+<p class="Pp">Accesses from UDP socket can be filtered by libwrap configuration
+    files, like <span class="Pa">/etc/hosts.deny</span>. Specify
+    &#x201C;<code class="Li">syslogd</code>&#x201D; in
+    <var class="Ar">daemon_list</var> portion of the configuration files. Refer
+    to <a class="Xr" href="../html5/hosts_access.html">hosts_access(5)</a> for
+    details.</p>
+<section class="Ss">
+<h2 class="Ss" id="SYSLOG_PROTOCOL_NOTES"><a class="permalink" href="#SYSLOG_PROTOCOL_NOTES">SYSLOG
+  PROTOCOL NOTES</a></h2>
+<code class="Nm">syslogd</code> accepts messages in traditional BSD Syslog or in
+  newer Syslog Protocol format. See RFC 3164 (BSD Syslog) and RFC 5424 (Syslog
+  Protocol) for detailed description of the message format. Messages from the
+  local kernel that are not tagged with a priority code receive the default
+  facility <code class="Dv">LOG_KERN</code> and priority
+  <code class="Dv">LOG_NOTICE</code>. All other untagged messages receive the
+  default facility <code class="Dv">LOG_USER</code> and priority
+  <code class="Dv">LOG_NOTICE</code>.
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/syslog.conf</span></dt>
+  <dd>The configuration file.</dd>
+  <dt><span class="Pa">/var/run/syslogd.pid</span></dt>
+  <dd>The process id of current <code class="Nm">syslogd</code>.</dd>
+  <dt><span class="Pa">/var/run/log</span></dt>
+  <dd>Name of the <span class="Ux">UNIX</span> domain datagram log socket.</dd>
+  <dt><span class="Pa">/dev/klog</span></dt>
+  <dd>The kernel log device.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/logger.html">logger(1)</a>,
+  <a class="Xr" href="../html3/syslog.html">syslog(3)</a>,
+  <a class="Xr" href="../html5/services.html">services(5)</a>,
+  <a class="Xr" href="../html5/syslog.conf.html">syslog.conf(5)</a>,
+  <a class="Xr" href="../html8/newsyslog.html">newsyslog(8)</a>
+<p class="Pp"><cite class="Rs"><span class="RsT">The BSD syslog Protocol</span>,
+    <span class="RsR">RFC</span>, <span class="RsN">3164</span>,
+    <span class="RsD">August 2001</span>.</cite></p>
+<p class="Pp"><cite class="Rs"><span class="RsT">The Syslog Protocol</span>,
+    <span class="RsR">RFC</span>, <span class="RsN">5424</span>,
+    <span class="RsD">March 2009</span>.</cite></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">syslogd</code> command appeared in
+  <span class="Ux">4.3BSD</span>. Support for multiple log sockets appeared in
+  <span class="Ux">NetBSD 1.4</span>. libwrap support appeared in
+  <span class="Ux">NetBSD 1.6</span>. Support for RFC 5424, TLS encryption and
+  authentication, signed messages appeared in <span class="Ux">NetBSD
+  6.0</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">November 8, 2022</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

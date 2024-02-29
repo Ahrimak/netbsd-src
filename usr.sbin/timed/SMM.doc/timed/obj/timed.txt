@@ -1,0 +1,924 @@
+
+
+
+
+
+
+
+
+
+                    TThhee BBeerrkkeelleeyy UUNNIIXX((RR))
+               TTiimmee SSyynncchhrroonniizzaattiioonn PPrroottooccooll
+
+
+    _R_i_c_c_a_r_d_o _G_u_s_e_l_l_a_, _S_t_e_f_a_n_o _Z_a_t_t_i_, _a_n_d _J_a_m_e_s _M_. _B_l_o_o_m
+              Computer Systems Research Group
+                 Computer Science Division
+ Department of Electrical Engineering and Computer Science
+             University of California, Berkeley
+                     Berkeley, CA 94720
+
+
+
+IInnttrroodduuccttiioonn
+
+     The  Time  Synchronization  Protocol  (TSP)  has   been
+designed for specific use by the program _t_i_m_e_d, a local area
+network clock synchronizer for  the  UNIX  4.3BSD  operating
+system.  Timed is built on the DARPA UDP protocol [4] and is
+based on a master slave scheme.
+
+     TSP serves a dual purpose.  First, it supports messages
+for  the  synchronization of the clocks of the various hosts
+in a local area network.  Second, it supports  messages  for
+the  election that occurs among slave time daemons when, for
+any reason,  the  master  disappears.   The  synchronization
+mechanism and the election procedure employed by the program
+timed are described in other documents [1,2,3].
+
+     Briefly, the synchronization software, which works in a
+local area network, consists of a collection of _t_i_m_e _d_a_e_m_o_n_s
+(one per machine) and is based on a master-slave  structure.
+The  present  implementation keeps processor clocks synchro-
+nized within 20 milliseconds.  A _m_a_s_t_e_r _t_i_m_e _d_a_e_m_o_n measures
+the  time  difference  between  the  clock of the machine on
+which it is running and those of all  other  machines.   The
+current  implementation uses ICMP _T_i_m_e _S_t_a_m_p _R_e_q_u_e_s_t_s [5] to
+measure the clock difference between machines.   The  master
+computes  the  _n_e_t_w_o_r_k _t_i_m_e as the average of the times pro-
+
+-----------
+This  work  was  sponsored by the Defense Advanced
+Research Projects Agency (DoD), monitored  by  the
+Naval  Electronics  Systems Command under contract
+No. N00039-84-C-0089, and  by  the  Italian  CSELT
+Corporation.   The views and conclusions contained
+in this document are  those  of  the  authors  and
+should not be interpreted as representing official
+policies, either  expressed  or  implied,  of  the
+Defense  Research  Projects Agency, of the US Gov-
+ernment, or of CSELT.
+
+
+
+
+
+
+
+
+
+SMM:12-2     The Berkeley UNIX Time Synchronization Protocol
+
+
+vided by nonfaulty clocks.1 It then sends to each _s_l_a_v_e _t_i_m_e
+_d_a_e_m_o_n  the correction that should be performed on the clock
+of its machine.   This  process  is  repeated  periodically.
+Since  the  correction  is  expressed  as  a time difference
+rather than an absolute time,  transmission  delays  do  not
+interfere with synchronization.  When a machine comes up and
+joins the network, it starts a slave time daemon, which will
+ask  the  master  for  the  correct  time and will reset the
+machine's clock before any user  activity  can  begin.   The
+time  daemons  therefore  maintain  a single network time in
+spite of the drift of clocks away from each other.
+
+     Additionally, a time daemon on gateway machines may run
+as  a  _s_u_b_m_a_s_t_e_r.   A  submaster  time daemon functions as a
+slave on one network that already has a master and as master
+on  other networks.  In addition, a submaster is responsible
+for propagating broadcast packets from one  network  to  the
+other.
+
+     To ensure that service provided is continuous and reli-
+able, it is necessary to  implement  an  election  algorithm
+that  will elect a new master should the machine running the
+current master crash, the  master  terminate  (for  example,
+because of a run-time error), or the network be partitioned.
+Under our algorithm, slaves are able  to  realize  when  the
+master  has  stopped  functioning  and to elect a new master
+from among themselves.  It is important to note  that  since
+the  failure  of the master results only in a gradual diver-
+gence of clock values, the election need not  occur  immedi-
+ately.
+
+     All the communication occurring among time daemons uses
+the TSP protocol.  While some messages need not be sent in a
+reliable way, most communication in TSP requires reliability
+not provided by the  underlying  protocol.   Reliability  is
+achieved  by  the use of acknowledgements, sequence numbers,
+and retransmission when message losses occur.  When  a  mes-
+sage that requires acknowledgement is not acknowledged after
+multiple attempts, the time daemon that has sent the message
+will  assume that the addressee is down.  This document will
+not describe the details of how reliability is  implemented,
+but will only point out when a message type requires a reli-
+able transport mechanism.
+
+     The message format in TSP is the same for  all  message
+types;  however,  in  some instances, one or more fields are
+not used.  The next section describes  the  message  format.
+The  following  sections  describe  in  detail the different
+-----------
+  1 A clock is considered to be  faulty  when  its
+value  is  more  than  a  small specified interval
+apart from the  majority  of  the  clocks  of  the
+machines  on the same network.  See [1,2] for more
+details.
+
+
+
+
+
+
+
+
+
+The Berkeley UNIX Time Synchronization Protocol     SMM:12-3
+
+
+message types, their use and the  contents  of  each  field.
+NOTE:  The message format is likely to change in future ver-
+sions of timed.
+
+
+
+MMeessssaaggee FFoorrmmaatt
+
+     All fields are based upon 8-bit bytes.   Fields  should
+be sent in network byte order if they are more than one byte
+long.  The structure of a TSP message is the following:
+
+1)   A one byte message type.
+
+2)   A one byte version number, specifying the protocol ver-
+     sion which the message uses.
+
+3)   A  two  byte sequence number to be used for recognizing
+     duplicate  messages  that  occur  when   messages   are
+     retransmitted.
+
+4)   Eight  bytes  of packet specific data.  This field con-
+     tains two 4 byte time values, a one byte hop count,  or
+     may be unused depending on the type of the packet.
+
+5)   A  zero-terminated string of up to 256 ASCII characters
+     with the name of the machine sending the message.
+
+     The following charts describe the message  types,  show
+their  fields, and explain their usages.  For the purpose of
+the following discussion, a time daemon can be considered to
+be  in  one of three states: slave, master, or candidate for
+election to master.  Also, the term _b_r_o_a_d_c_a_s_t refers to  the
+sending of a message to all active time daemons.
+
+
+AAddjjttiimmee MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                SSeeccoonnddss ooff AAddjjuussttmmeenntt                 |
+  +------------------------------------------------------+
+  |             MMiiccrroosseeccoonnddss ooff AAddjjuussttmmeenntt               |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_ADJTIME (1)
+
+
+
+
+
+
+
+
+
+
+SMM:12-4     The Berkeley UNIX Time Synchronization Protocol
+
+
+     The master sends this message to a slave to communicate
+the difference between the clock of the slave and  the  net-
+work  time  the  master  has  just computed.  The slave will
+accordingly adjust the time of its  machine.   This  message
+requires an acknowledgement.
+
+
+AAcckknnoowwlleeddggeemmeenntt MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_ACK (2)
+
+
+     Both  the  master  and  the slaves use this message for
+acknowledgement only.  It is used in several different  con-
+texts, for example in reply to an Adjtime message.
+
+
+MMaasstteerr RReeqquueesstt MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_MASTERREQ (3)
+
+
+     A  newly-started time daemon broadcasts this message to
+locate a master.  No other action is implied by this packet.
+It requires a Master Acknowledgement.
+
+
+
+
+
+
+
+
+
+
+The Berkeley UNIX Time Synchronization Protocol     SMM:12-5
+
+
+MMaasstteerr AAcckknnoowwlleeddggeemmeenntt
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_MASTERACK (4)
+
+
+     The master sends this message to acknowledge the Master
+Request message and the Conflict Resolution Message.
+
+
+SSeett NNeettwwoorrkk TTiimmee MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |               SSeeccoonnddss ooff TTiimmee ttoo SSeett                 |
+  +------------------------------------------------------+
+  |             MMiiccrroosseeccoonnddss ooff TTiimmee ttoo SSeett              |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_SETTIME (5)
+
+
+     The master sends this message to slave time daemons  to
+set  their  time.  This packet is sent to newly started time
+daemons and when the network date is changed.   It  contains
+the  master's  time as an approximation of the network time.
+It requires an acknowledgement.   The  next  synchronization
+round will eliminate the small time difference caused by the
+random delay in the communication channel.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SMM:12-6     The Berkeley UNIX Time Synchronization Protocol
+
+
+MMaasstteerr AAccttiivvee MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_MASTERUP (6)
+
+
+     The master broadcasts this message to solicit the names
+of the active slaves.  Slaves will reply with a Slave Active
+message.
+
+
+SSllaavvee AAccttiivvee MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_SLAVEUP (7)
+
+
+     A slave sends this message to the master in answer to a
+Master Active message.  This message is also sent when a new
+slave starts up to inform the master that  it  wants  to  be
+synchronized.
+
+
+MMaasstteerr CCaannddiiddaattuurree MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  -------------+-------------+-------------+--------------
+
+
+
+
+
+
+
+
+
+
+The Berkeley UNIX Time Synchronization Protocol     SMM:12-7
+
+  |            |             |                           |
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_ELECTION (8)
+
+
+     A  slave  eligible  to  become a master broadcasts this
+message  when  its  election  timer  expires.   The  message
+declares that the slave wishes to become the new master.
+
+
+CCaannddiiddaattuurree AAcccceeppttaannccee MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_ACCEPT (9)
+
+
+     A slave sends this message to accept the candidature of
+the time daemon that has broadcast an Election message.  The
+candidate  will add the slave's name to the list of machines
+that it will control should it become the master.
+
+
+CCaannddiiddaattuurree RReejjeeccttiioonn MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+
+
+
+
+
+
+
+
+
+
+SMM:12-8     The Berkeley UNIX Time Synchronization Protocol
+
+  |                                                      |
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_REFUSE (10)
+
+
+     After a slave accepts the candidature of a time daemon,
+it  will  reply  to  any election messages from other slaves
+with this message.  This rejects any candidature other  than
+the first received.
+
+
+MMuullttiippllee MMaasstteerr NNoottiiffiiccaattiioonn MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_CONFLICT (11)
+
+
+     When two or more masters reply to a Master Request mes-
+sage, the slave uses this message to inform one of them that
+more than one master exists.
+
+
+CCoonnfflliicctt RReessoolluuttiioonn MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+
+
+
+
+
+
+
+
+
+
+The Berkeley UNIX Time Synchronization Protocol     SMM:12-9
+
+  |                                                      |
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_RESOLVE (12)
+
+
+     A  master  which  has been informed of the existence of
+other masters broadcasts this message to determine  who  the
+other masters are.
+
+
+QQuuiitt MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_QUIT (13)
+
+
+     This  message  is sent by the master in three different
+contexts: 1) to a candidate that broadcasts an Master Candi-
+dature  message,  2)  to another master when notified of its
+existence, 3) to another master if a loop is  detected.   In
+all  cases,  the  recipient time daemon will become a slave.
+This message requires an acknowledgement.
+
+
+SSeett DDaattee MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |               SSeeccoonnddss ooff TTiimmee ttoo SSeett                 |
+  +------------------------------------------------------+
+  |             MMiiccrroosseeccoonnddss ooff TTiimmee ttoo SSeett              |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+
+
+
+
+
+
+
+
+SMM:12-10    The Berkeley UNIX Time Synchronization Protocol
+
+
+Type: TSP_SETDATE (22)
+
+
+     The program _d_a_t_e(1) sends this  message  to  the  local
+time daemon when a super-user wants to set the network date.
+If the local time daemon is the  master,  it  will  set  the
+date; if it is a slave, it will communicate the desired date
+to the master.
+
+
+SSeett DDaattee RReeqquueesstt MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |               SSeeccoonnddss ooff TTiimmee ttoo SSeett                 |
+  +------------------------------------------------------+
+  |             MMiiccrroosseeccoonnddss ooff TTiimmee ttoo SSeett              |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_SETDATEREQ (23)
+
+
+     A slave that has received a Set Date message will  com-
+municate  the desired date to the master using this message.
+
+
+SSeett DDaattee AAcckknnoowwlleeddggeemmeenntt MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_DATEACK (16)
+
+
+     The master sends this message to a  slave  in  acknowl-
+edgement of a Set Date Request Message.  The same message is
+
+
+
+
+
+
+
+
+
+The Berkeley UNIX Time Synchronization Protocol    SMM:12-11
+
+
+sent by the local time daemon to the program _d_a_t_e_(_1_) to con-
+firm that the network date has been set by the master.
+
+
+SSttaarrtt TTrraacciinngg MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_TRACEON (17)
+
+
+     The  controlling  program  _t_i_m_e_d_c sends this message to
+the local time daemon to start the  recording  in  a  system
+file of all messages received.
+
+
+SSttoopp TTrraacciinngg MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_TRACEOFF (18)
+
+
+     _T_i_m_e_d_c  sends  this message to the local time daemon to
+stop the recording of messages received.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SMM:12-12    The Berkeley UNIX Time Synchronization Protocol
+
+
+MMaasstteerr SSiittee MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_MSITE (19)
+
+
+     _T_i_m_e_d_c sends this message to the local time  daemon  to
+find out where the master is running.
+
+
+RReemmoottee MMaasstteerr SSiittee MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_MSITEREQ (20)
+
+
+     A local time daemon broadcasts this message to find the
+location of the master.  It then  uses  the  Acknowledgement
+message to communicate this location to _t_i_m_e_d_c.
+
+
+TTeesstt MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+
+
+
+
+
+
+
+
+
+
+The Berkeley UNIX Time Synchronization Protocol    SMM:12-13
+
+  |                                                      |
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_TEST (21)
+
+
+     For  testing  purposes,  _t_i_m_e_d_c sends this message to a
+slave to cause its election timer to expire.  NOTE: _t_i_m_e_d is
+not normally compiled to support this.
+
+
+
+
+LLoooopp DDeetteeccttiioonn MMeessssaaggee
+               |             |             |
+     BByyttee 11    |   BByyttee 22    |   BByyttee 33    |   BByyttee 44
+  +------------+-------------+-------------+-------------+
+  |   TTyyppee     | VVeerrssiioonn NNoo.. |       SSeeqquueennccee NNoo..        |
+  +------------+-------------+---------------------------+
+  | HHoopp CCoouunntt  |               (( uunnuusseedd ))                |
+  +------------+-----------------------------------------+
+  |                     (( uunnuusseedd ))                       |
+  +------------------------------------------------------+
+  |                    MMaacchhiinnee NNaammee                      |
+  +------------------------------------------------------+
+  |                        .. .. ..                         |
+  +------------------------------------------------------+
+
+
+Type: TSP_LOOP (24)
+
+
+     This packet is initiated by all masters occasionally to
+attempt to detect loops.  All submasters forward this packet
+onto  the  networks over which they are master.  If a master
+receives a packet it sent out initially,  it  knows  that  a
+loop exists and tries to correct the problem.
+
+RReeffeerreenncceess
+
+1.   R.  Gusella  and  S.  Zatti, _T_E_M_P_O_: _A _N_e_t_w_o_r_k _T_i_m_e _C_o_n_-
+     _t_r_o_l_l_e_r _f_o_r _D_i_s_t_r_i_b_u_t_e_d _B_e_r_k_e_l_e_y  _U_N_I_X  _S_y_s_t_e_m,  USENIX
+     Summer  Conference  Proceedings,  Salt  Lake City, June
+     1984.
+
+2.   R. Gusella and S. Zatti,  _C_l_o_c_k  _S_y_n_c_h_r_o_n_i_z_a_t_i_o_n  _i_n  _a
+     _L_o_c_a_l _A_r_e_a _N_e_t_w_o_r_k, University of California, Berkeley,
+
+
+
+
+
+
+
+
+
+SMM:12-14    The Berkeley UNIX Time Synchronization Protocol
+
+
+     Technical Report, _t_o _a_p_p_e_a_r.
+
+3.   R. Gusella and S. Zatti, _A_n _E_l_e_c_t_i_o_n  _A_l_g_o_r_i_t_h_m  _f_o_r  _a
+     _D_i_s_t_r_i_b_u_t_e_d  _C_l_o_c_k  _S_y_n_c_h_r_o_n_i_z_a_t_i_o_n _P_r_o_g_r_a_m, University
+     of California, Berkeley, CS Technical Report #275, Dec.
+     1985.
+
+4.   Postel,  J.,  _U_s_e_r _D_a_t_a_g_r_a_m _P_r_o_t_o_c_o_l, RFC 768.  Network
+     Information Center, SRI International, Menlo Park, Cal-
+     ifornia, August 1980.
+
+5.   Postel, J., _I_n_t_e_r_n_e_t _C_o_n_t_r_o_l _M_e_s_s_a_g_e _P_r_o_t_o_c_o_l, RFC 792.
+     Network Information Center,  SRI  International,  Menlo
+     Park, California, September 1981.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

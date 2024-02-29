@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: installboot.8,v 1.107 2023/05/17 01:35:00 uwe Exp $
+  
+   Copyright (c) 2002-2023 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Luke Mewburn of Wasabi Systems.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+  
+   Prevent accidental hyphenation after the hyphen in "U-Boot"
+   Usage: \*(UB
+ -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>INSTALLBOOT(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">INSTALLBOOT(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">INSTALLBOOT(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">installboot</code> &#x2014;
+<div class="Nd">install disk bootstrap software</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">installboot</code></td>
+    <td>[<code class="Fl">-fnv</code>] [<code class="Fl">-B</code>
+      <var class="Ar">s2bno</var>] [<code class="Fl">-b</code>
+      <var class="Ar">s1bno</var>] [<code class="Fl">-m</code>
+      <var class="Ar">machine</var>] [<code class="Fl">-o</code>
+      <var class="Ar">options</var>] [<code class="Fl">-t</code>
+      <var class="Ar">fstype</var>] [<code class="Fl">-u</code>
+      <var class="Ar">U-Boot-paths</var>] <var class="Ar">filesystem</var>
+      <var class="Ar">primary</var> [<var class="Ar">secondary</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">installboot</code></td>
+    <td><code class="Fl">-c</code> [<code class="Fl">-fnv</code>]
+      [<code class="Fl">-m</code> <var class="Ar">machine</var>]
+      [<code class="Fl">-o</code> <var class="Ar">options</var>]
+      [<code class="Fl">-t</code> <var class="Ar">fstype</var>]
+      <var class="Ar">filesystem</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">installboot</code></td>
+    <td><code class="Fl">-e</code> [<code class="Fl">-fnv</code>]
+      [<code class="Fl">-m</code> <var class="Ar">machine</var>]
+      [<code class="Fl">-o</code> <var class="Ar">options</var>]
+      <var class="Ar">bootstrap</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">installboot</code> utility installs and removes
+  <span class="Ux">NetBSD</span> disk bootstrap software into a file system.
+  <code class="Nm">installboot</code> can install <var class="Ar">primary</var>
+  into <var class="Ar">filesystem</var>, or disable an existing bootstrap in
+  <var class="Ar">filesystem</var>.
+<section class="Ss">
+<h2 class="Ss" id="Traditional_NetBSD_boot"><a class="permalink" href="#Traditional_NetBSD_boot">Traditional
+  NetBSD boot</a></h2>
+Generally, <span class="Ux">NetBSD</span> disk bootstrap software consists of
+  two parts: a &#x201C;primary&#x201D; bootstrap program usually written into
+  the disklabel area of the file system by <code class="Nm">installboot</code>,
+  and a &#x201C;secondary&#x201D; bootstrap program that usually resides as an
+  ordinary file in the file system.
+<p class="Pp">When booting, the primary bootstrap program is loaded and invoked
+    by the machine's PROM or BIOS. After receiving control of the system it
+    loads and runs the secondary bootstrap program, which in turn loads and runs
+    the kernel. The secondary bootstrap may allow control over various boot
+    parameters passed to the kernel.</p>
+<p class="Pp">Perform the following steps to make a file system bootable:</p>
+<ol class="Bl-enum">
+  <li>Copy the secondary bootstrap (usually
+      <span class="Pa">/usr/mdec/boot.</span>&#x27E8;<var class="Ar">MACHINE</var>&#x27E9;
+      or <span class="Pa">/usr/mdec/boot</span>) to the root directory of the
+      target file system.</li>
+  <li>Use <code class="Nm">installboot</code> to install the primary bootstrap
+      program (usually
+      <span class="Pa">/usr/mdec/bootxx_</span>&#x27E8;<var class="Ar">FSTYPE</var>&#x27E9;)
+      into <var class="Ar">filesystem</var>.
+    <p class="Pp">The following platforms do not require this step if the
+        primary bootstrap already exists and the secondary bootstrap file is
+        just being updated: <b class="Sy">alpha</b>, <b class="Sy">amd64</b>,
+        <b class="Sy">amiga</b>, <b class="Sy">i386</b>, <b class="Sy">pmax</b>,
+        <b class="Sy">sparc64</b>, and <b class="Sy">vax</b>.</p>
+    <p class="Pp">The following platform does not require the first step since a
+        single bootstrap file is used. The single bootstrap is installed like
+        the primary bootstrap on other platforms: <b class="Sy">next68k</b>.</p>
+  </li>
+</ol>
+<p class="Pp">On some architectures the options of an existing installed
+    bootstrap, or those of a bootstrap file can be changed. Installing a new
+    primary bootstrap will reset those options to default values.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="Embedded_board_types"><a class="permalink" href="#Embedded_board_types">Embedded
+  board types</a></h2>
+Some platforms, typically embedded system platforms, are umbrella platforms that
+  support many different individual board types, each with their own boot loader
+  binary and installation procedure requirements. On these platforms, it may be
+  necessary to provide specific board type information to
+  <code class="Nm">installboot</code>. Information about known boards and their
+  requirements is loaded from a database at run-time. Sometimes these platforms
+  also require the use of 3rd-party boot loader software, such as U&#x2010;Boot.
+  To support these platforms, <code class="Nm">installboot</code> scans known
+  locations for these 3rd-party boot loader packages for database overlays that
+  contain additional board-specific boot loader installation information in a
+  file called <span class="Pa">installboot.plist</span>.
+<p class="Pp">The following platforms have this requirement and utilize this
+    database overlay feature: <b class="Sy">evbarm</b>.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="UEFI_boot"><a class="permalink" href="#UEFI_boot">UEFI
+  boot</a></h2>
+On platforms that boot with UEFI, there is a single boot loader in the EFI
+  system partition at
+  <span class="Pa">EFI/boot/boot</span>&#x27E8;<var class="Ar">ARCH</var>&#x27E9;<span class="Pa">.efi</span>
+  where <var class="Ar">ARCH</var> is the UEFI name for the architecture, such
+  as <code class="Li">ia32</code> (<span class="Ux">NetBSD</span>/i386),
+  <code class="Li">x64</code> (<span class="Ux">NetBSD</span>/amd64), or
+  <code class="Li">aa64</code> (<span class="Ux">NetBSD</span>/aarch64).
+<p class="Pp"><code class="Nm">installboot</code> is not needed for UEFI boot.
+    However, it may be used on a platform that supports UEFI boot to make a
+    hybrid image that can be booted <i class="Em">either</i> with UEFI boot or
+    with, e.g., BIOS or U&#x2010;Boot. Hybrid images may also require a special
+    GPT for BIOS boot; see
+  <a class="Xr" href="../html8/gpt.html">gpt(8)</a>.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="Options"><a class="permalink" href="#Options">Options</a></h2>
+The options and arguments recognized by <code class="Nm">installboot</code> are
+  as follows:
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#B"><code class="Fl" id="B">-B</code></a>
+    <var class="Ar">s2bno</var></dt>
+  <dd>When hard-coding the blocks of <var class="Ar">secondary</var> into
+      <var class="Ar">primary</var>, start from block
+      <var class="Ar">s2bno</var> instead of trying to determine the block
+      numbers occupied by <var class="Ar">secondary</var> by examining
+      <var class="Ar">filesystem</var>. If this option is supplied,
+      <var class="Ar">secondary</var> should refer to an actual secondary
+      bootstrap (rather than the file name of the one present in
+      <var class="Ar">filesystem</var>) so that its size can be determined.</dd>
+  <dt><a class="permalink" href="#b"><code class="Fl" id="b">-b</code></a>
+    <var class="Ar">s1bno</var></dt>
+  <dd>Install <var class="Ar">primary</var> at block number
+      <var class="Ar">s1bno</var> instead of the default location for the
+      machine and file system type. [<b class="Sy">alpha</b>,
+      <b class="Sy">i386/amd64</b> (<span class="Pa">bootxx_fat16</span> only),
+      <b class="Sy">pmax</b>, <b class="Sy">vax</b>]</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>Clear (remove) any existing bootstrap instead of installing one.</dd>
+  <dt><a class="permalink" href="#e"><code class="Fl" id="e">-e</code></a></dt>
+  <dd>Edit the options of an existing bootstrap. This can be used to change the
+      options in
+      <span class="Pa">bootxx_</span>&#x27E8;<var class="Ar">FSTYPE</var>&#x27E9;
+      files, raw disk partitions, and the
+      <span class="Pa">pxeboot_ia32.bin</span> file. With
+      <code class="Fl">-v</code> and without <code class="Fl">-o</code>, show
+      the current options. [<b class="Sy">amd64</b>,
+    <b class="Sy">i386</b>]</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Forces <code class="Nm">installboot</code> to ignore some errors.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a>
+    <var class="Ar">machine</var></dt>
+  <dd>Use <var class="Ar">machine</var> as the target machine type. The default
+      machine is determined from
+      <a class="Xr" href="../html3/uname.html">uname(3)</a> and then
+      <code class="Ev">MACHINE</code> environment variable. The following
+      machines are currently supported:
+    <div class="Bd Pp Bd-indent"><code class="Ic">alpha</code>,
+      <code class="Ic">amd64</code>, <code class="Ic">amiga</code>,
+      <code class="Ic">evbarm</code>, <code class="Ic">ews4800mips</code>,
+      <code class="Ic">hp300</code>, <code class="Ic">hppa</code>,
+      <code class="Ic">i386</code>, <code class="Ic">landisk</code>,
+      <code class="Ic">macppc</code>, <code class="Ic">news68k</code>,
+      <code class="Ic">newsmips</code>, <code class="Ic">next68k</code>,
+      <code class="Ic">pmax</code>, <code class="Ic">sparc</code>,
+      <code class="Ic">sparc64</code>, <code class="Ic">sun2</code>,
+      <code class="Ic">sun3</code>, <code class="Ic">vax</code>,
+      <code class="Ic">x68k</code></div>
+  </dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Do not write to <var class="Ar">filesystem</var>.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">options</var></dt>
+  <dd>Machine specific <code class="Nm">installboot</code> options, comma
+      separated.
+    <p class="Pp">Supported options are (with the machines for they are valid in
+        brackets):</p>
+    <dl class="Bl-tag">
+      <dt><a class="permalink" href="#alphasum"><code class="Ic" id="alphasum">alphasum</code></a></dt>
+      <dd>[<b class="Sy">alpha</b>] Recalculate and restore the Alpha checksum.
+          This is the default for <span class="Ux">NetBSD</span>/alpha.</dd>
+      <dt><a class="permalink" href="#append"><code class="Ic" id="append">append</code></a></dt>
+      <dd>[<b class="Sy">alpha</b>, <b class="Sy">pmax</b>,
+          <b class="Sy">vax</b>] Append <var class="Ar">primary</var> to the end
+          of <var class="Ar">filesystem</var>, which must be a regular file in
+          this case.</dd>
+      <dt><a class="permalink" href="#board"><code class="Ic" id="board">board</code></a>[<code class="Li">=</code><var class="Ar">type</var>]</dt>
+      <dd>[<b class="Sy">evbarm</b>] Specify the board type used to determine
+          the correct boot loader image and installation procedure. If omitted,
+          <code class="Nm">installboot</code> will attempt to guess the board
+          type based on system information if run natively.</dd>
+      <dt><a class="permalink" href="#bootconf"><code class="Ic" id="bootconf">bootconf</code></a></dt>
+      <dd>[<b class="Sy">amd64</b>, <b class="Sy">i386</b>] (Don't) read a
+          <span class="Pa">boot.cfg</span> file.</dd>
+      <dt><a class="permalink" href="#command"><code class="Ic" id="command">command</code></a><code class="Li">=</code><var class="Ar">commandline</var></dt>
+      <dd>[<b class="Sy">amiga</b>] Modify the default boot command line.</dd>
+      <dt><a class="permalink" href="#console"><code class="Ic" id="console">console</code></a><code class="Li">=</code><var class="Ar">name</var></dt>
+      <dd>[<b class="Sy">amd64</b>, <b class="Sy">i386</b>] Set the console
+          device. <var class="Ar">name</var> must be one of:
+          <code class="Ic">pc</code>, <code class="Ic">com0</code>,
+          <code class="Ic">com1</code>, <code class="Ic">com2</code>,
+          <code class="Ic">com3</code>, <code class="Ic">com0kbd</code>,
+          <code class="Ic">com1kbd</code>, <code class="Ic">com2kbd</code>,
+          <code class="Ic">com3kbd</code>, or <code class="Ic">auto</code>.</dd>
+      <dt><a class="permalink" href="#dtb"><code class="Ic" id="dtb">dtb</code></a><code class="Li">=</code><var class="Ar">dtbfile</var></dt>
+      <dd>[<b class="Sy">evbarm</b>] Attempt to determine the board type from
+          information in the device tree blob file at
+          <var class="Ar">dtbfile</var>. If both <code class="Ic">board</code>
+          and <code class="Ic">dtb</code> options are specified,
+          <code class="Ic">board</code> takes precendence.</dd>
+      <dt><a class="permalink" href="#ioaddr"><code class="Ic" id="ioaddr">ioaddr</code></a><code class="Li">=</code><var class="Ar">ioaddr</var></dt>
+      <dd>[<b class="Sy">amd64</b>, <b class="Sy">i386</b>] Set the IO address
+          to be used for the console serial port. Defaults to the IO address
+          used by the system BIOS for the specified port.</dd>
+      <dt><a class="permalink" href="#keymap"><code class="Ic" id="keymap">keymap</code></a><code class="Li">=</code><var class="Ar">keymap</var></dt>
+      <dd>[<b class="Sy">amd64</b>, <b class="Sy">i386</b>] Set a boot time
+          keyboard translation map. Each character in
+          <var class="Ar">keymap</var> will be replaced by the one following it.
+          For example, an argument of <code class="Li">zyz</code> would swap the
+          lowercase letters &#x27E8;y&#x27E9; and &#x27E8;z&#x27E9;.</dd>
+      <dt><a class="permalink" href="#media"><code class="Ic" id="media">media</code></a><code class="Li">=</code><var class="Ar">type</var></dt>
+      <dd>[<b class="Sy">evbarm</b>] Some boards require a different boot loader
+          binary and/or installation procedure depending on what type of media
+          will be used to boot the system. For such boards, this option is
+          required, and omitting it will display a usage message that lists the
+          valid media types for the board. For boards that do not require
+          special media handling, this option is not allowed. Common values:
+          <code class="Ic">sdmmc</code>, <code class="Ic">emmc</code>,
+          <code class="Ic">usb</code>.</dd>
+      <dt><a class="permalink" href="#modules"><code class="Ic" id="modules">modules</code></a></dt>
+      <dd>[<b class="Sy">amd64</b>, <b class="Sy">i386</b>] (Don't) load kernel
+          modules.</dd>
+      <dt><a class="permalink" href="#password"><code class="Ic" id="password">password</code></a><code class="Li">=</code><var class="Ar">password</var></dt>
+      <dd>[<b class="Sy">amd64</b>, <b class="Sy">i386</b>] Set the password
+          which must be entered before the boot menu can be accessed.</dd>
+      <dt><a class="permalink" href="#resetvideo"><code class="Ic" id="resetvideo">resetvideo</code></a></dt>
+      <dd>[<b class="Sy">amd64</b>, <b class="Sy">i386</b>] Reset the video
+          before booting.</dd>
+      <dt><a class="permalink" href="#speed"><code class="Ic" id="speed">speed</code></a><code class="Li">=</code><var class="Ar">baud</var></dt>
+      <dd>[<b class="Sy">amd64</b>, <b class="Sy">i386</b>] Set the baud rate
+          for the serial console. If a value of zero is specified, then the
+          current baud rate (set by the BIOS) will be used.</dd>
+      <dt><a class="permalink" href="#sunsum"><code class="Ic" id="sunsum">sunsum</code></a></dt>
+      <dd>[<b class="Sy">alpha</b>, <b class="Sy">pmax</b>,
+          <b class="Sy">vax</b>] Recalculate and restore the Sun and
+          <span class="Ux">NetBSD</span>/sparc compatible checksum.
+          <i class="Em">Note</i>: The existing
+          <span class="Ux">NetBSD</span>/sparc disklabel should use no more than
+          4 partitions.</dd>
+      <dt><a class="permalink" href="#timeout"><code class="Ic" id="timeout">timeout</code></a><code class="Li">=</code><var class="Ar">seconds</var></dt>
+      <dd>[<b class="Sy">amd64</b>, <b class="Sy">i386</b>] Set the timeout
+          before the automatic boot begins to the given number of seconds.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a>
+    <var class="Ar">fstype</var></dt>
+  <dd>Use <var class="Ar">fstype</var> as the type of
+      <var class="Ar">filesystem</var>. The default operation is to attempt to
+      auto-detect this setting. The following file system types are currently
+      supported by:
+    <dl class="Bl-tag">
+      <dt><a class="permalink" href="#ffs"><code class="Ic" id="ffs">ffs</code></a></dt>
+      <dd><span class="Ux">BSD</span> Fast File System.</dd>
+      <dt><a class="permalink" href="#raid"><code class="Ic" id="raid">raid</code></a></dt>
+      <dd>Mirrored RAIDframe File System.</dd>
+      <dt><a class="permalink" href="#raw"><code class="Ic" id="raw">raw</code></a></dt>
+      <dd>&#x201C;Raw&#x201D; image. <i class="Em">Note</i>: if a platform needs
+          to hard-code the block offset of the secondary bootstrap, it cannot be
+          searched for on this file system type, and must be provided with
+          <code class="Fl">-B</code> <var class="Ar">s2bno</var>.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a>
+    <var class="Ar">U-Boot-paths</var></dt>
+  <dd><var class="Ar">U-Boot-paths</var> is a colon-separated list of search
+      paths to scan for U&#x2010;Boot packages with
+      <code class="Nm">installboot</code> installation overlays. If multiple
+      overlays are found, overlays from paths closer to the front of the list
+      take precedence. If not specified, environment variable
+      <code class="Ev">INSTALLBOOT_UBOOT_PATHS</code> is used if defined;
+      otherwise, the default path is
+      <span class="Pa">/usr/pkg/share/u-boot</span>. This option is only used on
+      platforms that support using U&#x2010;Boot.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Verbose operation.</dd>
+  <dt><var class="Ar">filesystem</var></dt>
+  <dd>The path name of the device or file system image that
+      <code class="Nm">installboot</code> is to operate on. It is not necessary
+      for <var class="Ar">filesystem</var> to be a currently mounted file
+      system.</dd>
+  <dt><var class="Ar">primary</var></dt>
+  <dd>The path name of the &#x201C;primary&#x201D; boot block to install. The
+      path name must refer to a file in a file system that is currently
+    mounted.</dd>
+  <dt><var class="Ar">secondary</var></dt>
+  <dd>The path name of the &#x201C;secondary&#x201D; boot block, relative to the
+      root of the file system in the device or image specified by the
+      <var class="Ar">filesystem</var> argument. Note that this may refer to a
+      file in a file system that is not mounted. Most systems require
+      <var class="Ar">secondary</var> to be in the &#x201C;root&#x201D;
+      directory of the file system, so the leading
+      &#x2018;<code class="Li">/</code>&#x2019; is not necessary on
+      <var class="Ar">secondary</var>.
+    <p class="Pp">Only certain combinations of platform
+        (<code class="Fl">-m</code> <var class="Ar">machine</var>) and file
+        system type (<code class="Fl">-t</code> <var class="Ar">fstype</var>)
+        require that the name of the secondary bootstrap is supplied as
+        <var class="Ar">secondary</var>, so that information such as the disk
+        block numbers occupied by the secondary bootstrap can be stored in the
+        primary bootstrap. These are:</p>
+    <table class="Bl-column Bd-indent">
+      <tr>
+        <td><b class="Sy">Platform</b></td>
+        <td><b class="Sy">File systems</b></td>
+      </tr>
+      <tr>
+        <td>macppc</td>
+        <td>ffs, raw</td>
+      </tr>
+      <tr>
+        <td>news68k</td>
+        <td>ffs, raw</td>
+      </tr>
+      <tr>
+        <td>newsmips</td>
+        <td>ffs, raw</td>
+      </tr>
+      <tr>
+        <td>sparc</td>
+        <td>ffs, raid, raw</td>
+      </tr>
+      <tr>
+        <td>sun2</td>
+        <td>ffs, raw</td>
+      </tr>
+      <tr>
+        <td>sun3</td>
+        <td>ffs, raw</td>
+      </tr>
+    </table>
+  </dd>
+</dl>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#INSTALLBOOT_UBOOT_PATHS"><code class="Ev" id="INSTALLBOOT_UBOOT_PATHS">INSTALLBOOT_UBOOT_PATHS</code></a></dt>
+  <dd>A colon-separated list of search paths to scan for U&#x2010;Boot packages
+      with <code class="Nm">installboot</code> installation overlays. If
+      multiple overlays are found, overlays from paths closer to the front of
+      the list take precedence. If not specified, the default path is
+      <span class="Pa">/usr/pkg/share/u-boot</span>. This environment variable
+      is only used on platforms that support using U&#x2010;Boot.</dd>
+  <dt><a class="permalink" href="#MACHINE"><code class="Ev" id="MACHINE">MACHINE</code></a></dt>
+  <dd>Default value for <var class="Ar">machine</var>, overriding the result
+      from <a class="Xr" href="../html3/uname.html">uname(3)</a>.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+Most <span class="Ux">NetBSD</span> ports will contain variations of the
+  following files:
+<dl class="Bl-tag">
+  <dt><span class="Pa">/usr/mdec/bootxx_</span>&#x27E8;<var class="Ar">FSTYPE</var>&#x27E9;</dt>
+  <dd>Primary bootstrap for file system type <var class="Ar">FSTYPE</var>.
+      Installed into the bootstrap area of the file system by
+      <code class="Nm">installboot</code>.</dd>
+  <dt><span class="Pa">/usr/mdec/bootxx_fat16</span></dt>
+  <dd>Primary bootstrap for MS-DOS <b class="Sy">FAT16</b> file systems. This
+      differs from <span class="Pa">bootxx_msdos</span> in that it doesn't
+      require the filesystem to have been initialised with any &#x201C;reserved
+      sectors&#x201D;. It also uses the information in the &#x201C;Boot
+      Parameter Block&#x201D; to get the media and filesystem properties. The
+      &#x201C;hidden sectors&#x201D; field of the BPB must be the offset of the
+      partition in the disk. This can be set using the
+      <code class="Fl">-b</code> <var class="Ar">s1bno</var> option.</dd>
+  <dt><span class="Pa">/usr/mdec/bootxx_ffsv1</span></dt>
+  <dd>Primary bootstrap for <b class="Sy">FFSv1</b> file systems (the
+      &#x201C;traditional&#x201D; file system prior to <span class="Ux">NetBSD
+      6.0</span>). Use <a class="Xr" href="../html8/dumpfs.html">dumpfs(8)</a>
+      to confirm the file system format is FFSv1.</dd>
+  <dt><span class="Pa">/usr/mdec/bootxx_ffsv2</span></dt>
+  <dd>Primary bootstrap for <b class="Sy">FFSv2</b> file systems (the default
+      file system for some platforms as of <span class="Ux">NetBSD 6.0</span>).
+      Use <a class="Xr" href="../html8/dumpfs.html">dumpfs(8)</a> to confirm the
+      file system format is FFSv2.</dd>
+  <dt><span class="Pa">/usr/mdec/bootxx_lfsv1</span></dt>
+  <dd>Primary bootstrap for <b class="Sy">LFSv1</b> file systems.</dd>
+  <dt><span class="Pa">/usr/mdec/bootxx_lfsv2</span></dt>
+  <dd>Primary bootstrap for <b class="Sy">LFSv2</b> file systems (the default
+      LFS version).</dd>
+  <dt><span class="Pa">/usr/mdec/bootxx_msdos</span></dt>
+  <dd>Primary bootstrap for MS-DOS <b class="Sy">FAT</b> file systems.</dd>
+  <dt><span class="Pa">/usr/mdec/bootxx_ustarfs</span></dt>
+  <dd>Primary bootstrap for <b class="Sy">TARFS</b> boot images. This is used by
+      various install media.</dd>
+  <dt><span class="Pa">/usr/mdec/boot.</span>&#x27E8;<var class="Ar">MACHINE</var>&#x27E9;</dt>
+  <dd>Secondary bootstrap for machine type <var class="Ar">MACHINE</var>. This
+      should be installed into the file system before
+      <code class="Nm">installboot</code> is run.</dd>
+  <dt><span class="Pa">/usr/mdec/boot</span></dt>
+  <dd>Synonym for
+      <span class="Pa">/usr/mdec/boot.</span>&#x27E8;<var class="Ar">MACHINE</var>&#x27E9;</dd>
+  <dt><span class="Pa">/boot.</span>&#x27E8;<var class="Ar">MACHINE</var>&#x27E9;</dt>
+  <dd>Installed copy of secondary bootstrap for machine type
+      <var class="Ar">MACHINE</var>.</dd>
+  <dt><span class="Pa">/boot</span></dt>
+  <dd>Installed copy of secondary bootstrap. Searched for by the primary
+      bootstrap if
+      <span class="Pa">/boot.</span>&#x27E8;<var class="Ar">MACHINE</var>&#x27E9;
+      is not found.</dd>
+</dl>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/evbarm_files"><a class="permalink" href="#NetBSD/evbarm_files">NetBSD/evbarm
+  files</a></h2>
+The <span class="Ux">NetBSD</span>/evbarm platform covers a wide variety of
+  board types, many of which use U&#x2010;Boot. Running
+  <code class="Nm">installboot</code> with no options will display a list of
+  known boards. Using the verbose option will also display information about
+  which U&#x2010;Boot package needs to be installed to support that board, and
+  if the required U&#x2010;Boot package is installed, the path at which it is
+  located.
+<dl class="Bl-tag">
+  <dt><span class="Pa">/usr/pkg/share/u-boot</span></dt>
+  <dd>The default location scanned for U&#x2010;Boot packages with installation
+      overlays.</dd>
+  <dt><span class="Pa">/usr/share/installboot/evbarm/boards.plist</span></dt>
+  <dd>Base board database, used to provide information about which U&#x2010;Boot
+      package is required for a given board.</dd>
+</dl>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/evbmips_files"><a class="permalink" href="#NetBSD/evbmips_files">NetBSD/evbmips
+  files</a></h2>
+The <span class="Ux">NetBSD</span>/evbmips bootstrap files currently only apply
+  to the SBMIPS kernels for the SiByte/Broadcom BCM1250 and BCM1480 CPUs.
+<dl class="Bl-tag">
+  <dt><span class="Pa">/usr/mdec/sbmips/boot</span></dt>
+  <dd><span class="Ux">NetBSD</span>/evbmips secondary bootstrap for FFSv1,
+      FFSv2, LFSv1, and LFSv2.</dd>
+  <dt><span class="Pa">/usr/mdec/sbmips/bootxx_cd9660</span></dt>
+  <dd>SBMIPS primary bootstrap for ISO 9660 file system.</dd>
+  <dt><span class="Pa">/usr/mdec/sbmips/bootxx_ffs</span></dt>
+  <dd>SBMIPS primary bootstrap for FFSv1 and FFSv2 file system.</dd>
+  <dt><span class="Pa">/usr/mdec/sbmips/bootxx_lfs</span></dt>
+  <dd>SBMIPS primary bootstrap for LFSv1 and LFSv2 file system.</dd>
+  <dt><span class="Pa">/usr/mdec/sbmips/netboot</span></dt>
+  <dd>SBMIPS primary bootstrap for network root.
+    <p class="Pp">Note that <code class="Nm">installboot</code> does not
+        currently support evbmips directly.</p>
+  </dd>
+</dl>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/hppa_files"><a class="permalink" href="#NetBSD/hppa_files">NetBSD/hppa
+  files</a></h2>
+<dl class="Bl-tag">
+  <dt><span class="Pa">/usr/mdec/xxboot</span></dt>
+  <dd><span class="Ux">NetBSD</span>/hppa primary bootstrap for FFSv1, FFSv2,
+      LFSv1, and LFSv2.</dd>
+  <dt><span class="Pa">/usr/mdec/cdboot</span></dt>
+  <dd><span class="Ux">NetBSD</span>/hppa primary bootstrap for ISO 9660 file
+      system.</dd>
+  <dt><span class="Pa">/usr/mdec/sdboot</span></dt>
+  <dd>Synonym for <span class="Pa">/usr/mdec/xxboot</span></dd>
+</dl>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/macppc_files"><a class="permalink" href="#NetBSD/macppc_files">NetBSD/macppc
+  files</a></h2>
+<dl class="Bl-tag">
+  <dt><span class="Pa">/usr/mdec/bootxx</span></dt>
+  <dd><span class="Ux">NetBSD</span>/macppc primary bootstrap.</dd>
+  <dt><span class="Pa">/usr/mdec/ofwboot</span></dt>
+  <dd><span class="Ux">NetBSD</span>/macppc secondary bootstrap.</dd>
+  <dt><span class="Pa">/ofwboot</span></dt>
+  <dd>Installed copy of <span class="Ux">NetBSD</span>/macppc secondary
+      bootstrap.</dd>
+</dl>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/next68k_files"><a class="permalink" href="#NetBSD/next68k_files">NetBSD/next68k
+  files</a></h2>
+<dl class="Bl-tag">
+  <dt><span class="Pa">/usr/mdec/boot</span></dt>
+  <dd><span class="Ux">NetBSD</span>/next68k bootstrap.</dd>
+</dl>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/sparc64_files"><a class="permalink" href="#NetBSD/sparc64_files">NetBSD/sparc64
+  files</a></h2>
+<dl class="Bl-tag">
+  <dt><span class="Pa">/usr/mdec/bootblk</span></dt>
+  <dd><span class="Ux">NetBSD</span>/sparc64 primary bootstrap.</dd>
+  <dt><span class="Pa">/usr/mdec/ofwboot</span></dt>
+  <dd><span class="Ux">NetBSD</span>/sparc64 secondary bootstrap.</dd>
+  <dt><span class="Pa">/ofwboot</span></dt>
+  <dd>Installed copy of <span class="Ux">NetBSD</span>/sparc64 secondary
+      bootstrap.</dd>
+</dl>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<section class="Ss">
+<h2 class="Ss" id="Common"><a class="permalink" href="#Common">Common</a></h2>
+Verbosely install the Berkeley Fast File System primary bootstrap on to disk
+  &#x2018;<code class="Li">sd0</code>&#x2019;:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot -v /dev/rsd0c
+  /usr/mdec/bootxx_ffs</code></div>
+<p class="Pp">Note: the &#x201C;whole disk&#x201D; partition
+    (&#x2018;<code class="Li">c</code>&#x2019; on some ports,
+    &#x2018;<code class="Li">d</code>&#x2019; on others) is used here, since the
+    &#x2018;<code class="Li">a</code>&#x2019; partition probably is already
+    opened (mounted as <span class="Pa">/</span>), so
+    <code class="Nm">installboot</code> would not be able to access it.</p>
+<p class="Pp">Remove the primary bootstrap from disk
+    &#x2018;<code class="Li">sd1</code>&#x2019;:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot -c
+  /dev/rsd1c</code></div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/amiga"><a class="permalink" href="#NetBSD/amiga">NetBSD/amiga</a></h2>
+Modify the command line to change the default from
+  &#x2018;<code class="Li">netbsd -ASn2</code>&#x2019; to
+  &#x2018;<code class="Li">netbsd -S</code>&#x2019;:
+<div class="Bd Pp Bd-indent">
+<pre>
+installboot -m amiga -o command=&quot;netbsd -S&quot; /dev/rsd0a \
+    /usr/mdec/bootxx_ffsv1
+</pre>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/evbarm"><a class="permalink" href="#NetBSD/evbarm">NetBSD/evbarm</a></h2>
+Install the U&#x2010;Boot boot loader for a Pinebook into an image that will be
+  written to an SDMMC card:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot -m evbarm -o
+  board=pine64,pinebook arm64.img</code></div>
+<p class="Pp">Install/update the U&#x2010;Boot boot loader for the current
+    running system on the eMMC device
+    &#x2018;<code class="Li">ld0</code>&#x2019; and display verbose information
+    about the procedure:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot -v
+  /dev/rld0c</code></div>
+<p class="Pp">Install a specific U&#x2010;Boot package for a BeagleBone Black
+    into an image that will be written to an SDMMC card:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+installboot -m evbarm -o board=ti,am335x-bone-black armv7.img \
+    /path/to/experimental/u-boot/package
+</pre>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/ews4800mips"><a class="permalink" href="#NetBSD/ews4800mips">NetBSD/ews4800mips</a></h2>
+Install the System V Boot File System primary bootstrap on to disk
+  &#x2018;<code class="Li">sd0</code>&#x2019;, with the secondary bootstrap
+  <span class="Pa">/boot</span> already present in the SysVBFS partition on the
+  disk:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot /dev/rsd0p
+  /usr/mdec/bootxx_bfs</code></div>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><i class="Em">Note</i>: On
+  <span class="Ux">NetBSD</span>/ews4800mips the
+  &#x2018;<code class="Li">p</code>&#x2019; partition is the &#x201C;whole
+  disk&#x201D; (i.e., raw) partition.</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/i386_and_NetBSD/amd64"><a class="permalink" href="#NetBSD/i386_and_NetBSD/amd64">NetBSD/i386
+  and NetBSD/amd64</a></h2>
+Install new boot blocks on an existing FFSv2 mounted root file system on
+  &#x2018;<code class="Li">wd0</code>&#x2019;, setting the timeout to five
+  seconds, after installing an MBR bootcode and copying a new secondary
+  bootstrap:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">fdisk -c /usr/mdec/mbr
+  /dev/rwd0d</code></div>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><i class="Em">Note</i>: See
+  <a class="Xr" href="../html8/fdisk.html">fdisk(8)</a> and
+  <a class="Xr" href="../html8/x86/mbr.html">x86/mbr(8)</a> for more
+  details.</div>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">cp /usr/mdec/boot /boot</code></div>
+<div class="Bd Bd-indent"><code class="Li">installboot -v -o timeout=5
+  /dev/rwd0a /usr/mdec/bootxx_ffsv2</code></div>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><i class="Em">Note</i>: Pre <span class="Ux">NetBSD
+  6.0</span> systems used FFSv1 file systems on these platforms; double check
+  with <a class="Xr" href="../html8/dumpfs.html">dumpfs(8)</a> to be sure to use
+  the correct secondary bootstrap.</div>
+<p class="Pp">Create a bootable CD-ROM with an ISO 9660 file system for an i386
+    system with a serial console:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+mkdir cdrom
+cp sys/arch/i386/compile/mykernel/netbsd cdrom/netbsd
+cp /usr/mdec/boot cdrom/boot
+cp /usr/mdec/bootxx_cd9660 bootxx
+installboot -o console=com0,speed=19200 -m i386 -e bootxx
+makefs -t cd9660 -o 'bootimage=i386;bootxx,no-emul-boot' boot.iso \
+    cdrom
+</pre>
+</div>
+<p class="Pp">Create a bootable floppy disk with an FFSv1 file system for a
+    small custom kernel (note: bigger kernels needing multiple disks are handled
+    with the ustarfs file system):</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">newfs -s 1440k
+  /dev/rfd0a</code></div>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><i class="Em">Note</i>: Ignore the warnings that
+  <a class="Xr" href="../html8/newfs.html">newfs(8)</a> displays; it can not
+  write a disklabel, which is not a problem for a floppy disk.</div>
+<div class="Bd Pp Bd-indent">
+<pre>
+mount /dev/fd0a /mnt
+cp /usr/mdec/boot /mnt/boot
+gzip -9 &lt; sys/arch/i386/compile/mykernel/netbsd &gt; /mnt/netbsd.gz
+umount /mnt
+installboot -v /dev/rfd0a /usr/mdec/bootxx_ffsv1
+</pre>
+</div>
+<p class="Pp">Create a bootable FAT file system on
+    &#x2018;<code class="Li">wd1a</code>&#x2019;, which should have the same
+    offset and size as a FAT primary partition in the Master Boot Record
+  (MBR):</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">newfs_msdos -r 16
+  /dev/rwd1a</code></div>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><i class="Em">Notes</i>: The
+  <code class="Fl">-r</code> <code class="Ic">16</code> is to reserve space for
+  the primary bootstrap.
+  <a class="Xr" href="../html8/newfs_msdos.html">newfs_msdos(8)</a> will display
+  an &#x201C;MBR type&#x201D; such as &#x2018;<code class="Li">1</code>&#x2019;,
+  &#x2018;<code class="Li">4</code>&#x2019;, or
+  &#x2018;<code class="Li">6</code>&#x2019;; the MBR partition type of the
+  appropriate primary partition should be changed to this value.</div>
+<div class="Bd Pp Bd-indent">
+<pre>
+mount -t msdos /dev/wd1a /mnt
+cp /usr/mdec/boot /mnt/boot
+cp path/to/kernel /mnt/netbsd
+umount /mnt
+installboot -t raw /dev/rwd1a /usr/mdec/bootxx_msdos
+</pre>
+</div>
+<p class="Pp">Make the existing FAT16 filesystem on
+    &#x2018;<code class="Li">sd0e</code>&#x2019; bootable. This can be used to
+    make USB memory bootable provided it has 512 byte sectors and that the
+    manufacturer correctly initialised the file system.</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+mount -t msdos /dev/sd0e /mnt
+cp /usr/mdec/boot /mnt/boot
+cp path/to/kernel /mnt/netbsd
+umount /mnt
+installboot /dev/rsd0e /usr/mdec/bootxx_fat16
+</pre>
+</div>
+<p class="Pp">It may also be necessary to use
+    <a class="Xr" href="../html8/fdisk.html">fdisk(8)</a> to make the device
+    itself bootable.</p>
+<p class="Pp">Switch the existing installed bootstrap to use a serial console
+    without reinstalling or altering other options such as timeout.</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot -e -o console=com0
+  /dev/rwd0a</code></div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/macppc"><a class="permalink" href="#NetBSD/macppc">NetBSD/macppc</a></h2>
+Note the <code class="Nm">installboot</code> utility is only required for macppc
+  machines with OpenFirmware version 2 to boot. OpenFirmware 3 cannot load
+  bootblocks specified in the Apple partition map.
+<p class="Pp">Install the Berkeley Fast File System primary bootstrap on to disk
+    &#x2018;<code class="Li">wd0</code>&#x2019;:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot /dev/rwd0c
+  /usr/mdec/bootxx /ofwboot</code></div>
+<p class="Pp">The secondary <span class="Ux">NetBSD</span>/macppc bootstrap is
+    located in <span class="Pa">/usr/mdec/ofwboot</span>.</p>
+<p class="Pp">The primary bootstrap requires the raw
+    <span class="Pa">ofwboot</span> for the secondary bootstrap, not
+    <span class="Pa">ofwboot.xcf</span>, which is used for the OpenFirmware to
+    load kernels.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/next68k"><a class="permalink" href="#NetBSD/next68k">NetBSD/next68k</a></h2>
+Install the bootstrap on to disk &#x2018;<code class="Li">sd0</code>&#x2019;:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot /dev/rsd0c
+  /usr/mdec/boot</code></div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/pmax"><a class="permalink" href="#NetBSD/pmax">NetBSD/pmax</a></h2>
+Install the Berkeley Fast File System primary bootstrap on to disk
+  &#x2018;<code class="Li">sd0</code>&#x2019;:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot /dev/rsd0c
+  /usr/mdec/bootxx_ffs</code></div>
+<p class="Pp"><span class="Ux">NetBSD</span>/pmax requires that this file system
+    starts at block 0 of the disk.</p>
+<p class="Pp">Install the ISO 9660 primary bootstrap in the file
+    <span class="Pa">/tmp/cd-image</span>:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot -m pmax /tmp/cd-image
+  /usr/mdec/bootxx_cd9660</code></div>
+<p class="Pp">Make an ISO 9660 filesystem in the file
+    <span class="Pa">/tmp/cd-image</span> and install the ISO 9660 primary
+    bootstrap in the filesystem, where the source directory for the ISO 9660
+    filesystem contains a kernel, the primary bootstrap
+    <span class="Pa">bootxx_cd9660</span> and the secondary bootstrap
+    <span class="Pa">boot.pmax</span>:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+mkisofs -o /tmp/cd-image -a -l -v iso-source-dir
+...
+48 51 iso-source-dir/bootxx_cd9660
+...
+installboot -b $((48 * 4)) /tmp/cd-image /usr/mdec/bootxx_cd9660
+</pre>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/sparc"><a class="permalink" href="#NetBSD/sparc">NetBSD/sparc</a></h2>
+Install the Berkeley Fast File System primary bootstrap on to disk
+  &#x2018;<code class="Li">sd0</code>&#x2019;, with the secondary bootstrap
+  <span class="Pa">/boot</span> already present:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot /dev/rsd0c
+  /usr/mdec/bootxx /boot</code></div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/sparc64"><a class="permalink" href="#NetBSD/sparc64">NetBSD/sparc64</a></h2>
+Install the primary bootstrap on to disk
+  &#x2018;<code class="Li">sd0</code>&#x2019;:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot /dev/rsd0c
+  /usr/mdec/bootblk</code></div>
+<p class="Pp">The secondary <span class="Ux">NetBSD</span>/sparc64 bootstrap is
+    located in <span class="Pa">/usr/mdec/ofwboot</span>.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/sun2_and_NetBSD/sun3"><a class="permalink" href="#NetBSD/sun2_and_NetBSD/sun3">NetBSD/sun2
+  and NetBSD/sun3</a></h2>
+Install the Berkeley Fast File System primary bootstrap on to disk
+  &#x2018;<code class="Li">sd0</code>&#x2019;, with the secondary bootstrap
+  <span class="Pa">/boot</span> already present:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">installboot /dev/rsd0c
+  /usr/mdec/bootxx /boot</code></div>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTIC"><a class="permalink" href="#DIAGNOSTIC">DIAGNOSTIC</a></h1>
+The <code class="Nm">installboot</code> utility exits&#x00A0;0 on success,
+  and&#x00A0;&gt;0 if an error occurs.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/uname.html">uname(3)</a>,
+  <a class="Xr" href="../html8/boot.html">boot(8)</a>,
+  <a class="Xr" href="../html8/disklabel.html">disklabel(8)</a>,
+  <a class="Xr" href="../html8/dumpfs.html">dumpfs(8)</a>,
+  <a class="Xr" href="../html8/fdisk.html">fdisk(8)</a>,
+  <a class="Xr" href="../html8/gpt.html">gpt(8)</a>,
+  <a class="Xr" href="../html8/x86/mbr.html">x86/mbr(8)</a>,
+  <a class="Xr" href="../html8/x86/pxeboot.html">x86/pxeboot(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+This implementation of <code class="Nm">installboot</code> appeared in
+  <span class="Ux">NetBSD 1.6</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The machine independent portion of this implementation of
+  <code class="Nm">installboot</code> was written by <span class="An">Luke
+  Mewburn</span>. The following people contributed to the various machine
+  dependent back-ends: <span class="An">Simon Burge</span> (pmax),
+  <span class="An">Chris Demetriou</span> (alpha), <span class="An">Matthew
+  Fredette</span> (sun2, sun3), <span class="An">Matthew Green</span> (sparc64),
+  <span class="An">Ross Harvey</span> (alpha), <span class="An">Michael
+  Hitch</span> (amiga), <span class="An">Paul Kranenburg</span> (sparc),
+  <span class="An">David Laight</span> (i386), <span class="An">Christian
+  Limpach</span> (next68k), <span class="An">Luke Mewburn</span> (macppc),
+  <span class="An">Matt Thomas</span> (vax), <span class="An">Izumi
+  Tsutsui</span> (news68k, newsmips), and <span class="An">UCHIYAMA
+  Yasushi</span> (ews4800mips).
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+There are not currently primary bootstraps to support all file systems types
+  which are capable of being the root file system.
+<p class="Pp">If a disk has been converted from FFS to RAID without the contents
+    of the disk erased, then the original FFS installation may be auto-detected
+    instead of the RAID installation. In this case, the
+    <code class="Fl">-t</code> <code class="Ic">raid</code> option must be
+    provided.</p>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/alpha"><a class="permalink" href="#NetBSD/alpha">NetBSD/alpha</a></h2>
+The <span class="Ux">NetBSD</span>/alpha primary bootstrap program can only load
+  the secondary bootstrap program from file systems starting at the beginning
+  (block 0) of disks. Similarly, the secondary bootstrap program can only load
+  kernels from file systems starting at the beginning of disks.
+<p class="Pp">The size of primary bootstrap programs is restricted to 7.5KB,
+    even though some file systems (e.g., ISO 9660) are able to accommodate
+    larger ones.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/hp300"><a class="permalink" href="#NetBSD/hp300">NetBSD/hp300</a></h2>
+The disk must have a boot partition large enough to hold the bootstrap code.
+  Currently the primary bootstrap must be a LIF format file.
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/i386_and_NetBSD/amd64_2"><a class="permalink" href="#NetBSD/i386_and_NetBSD/amd64_2">NetBSD/i386
+  and NetBSD/amd64</a></h2>
+The bootstrap must be installed in the <span class="Ux">NetBSD</span> partition
+  that starts at the beginning of the MBR partition. If that is a valid
+  filesystem and contains the <span class="Pa">/boot</span> program then it will
+  be used as the root filesystem, otherwise the
+  &#x2018;<code class="Li">a</code>&#x2019; partition will be booted.
+<p class="Pp">The size of primary bootstrap programs is restricted to 8KB, even
+    though some file systems (e.g., ISO 9660) are able to accommodate larger
+    ones.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/macppc_2"><a class="permalink" href="#NetBSD/macppc_2">NetBSD/macppc</a></h2>
+Due to restrictions in <code class="Nm">installboot</code> and the secondary
+  bootstrap implementation, file systems where kernels exist must start at the
+  beginning of disks.
+<p class="Pp">Currently, <code class="Nm">installboot</code> doesn't recognize
+    an existing Apple partition map on the disk and always writes a faked map to
+    make disks bootable.</p>
+<p class="Pp">The <span class="Ux">NetBSD</span>/macppc bootstrap program can't
+    load kernels from FFSv2 partitions.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/next68k_2"><a class="permalink" href="#NetBSD/next68k_2">NetBSD/next68k</a></h2>
+The size of bootstrap programs is restricted to the free space before the file
+  system at the beginning of the disk minus 8KB.
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/pmax_2"><a class="permalink" href="#NetBSD/pmax_2">NetBSD/pmax</a></h2>
+The <span class="Ux">NetBSD</span>/pmax secondary bootstrap program can only
+  load kernels from file systems starting at the beginning of disks.
+<p class="Pp">The size of primary bootstrap programs is restricted to 7.5KB,
+    even though some file systems (e.g., ISO 9660) are able to accommodate
+    larger ones.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/sun2_and_NetBSD/sun3_2"><a class="permalink" href="#NetBSD/sun2_and_NetBSD/sun3_2">NetBSD/sun2
+  and NetBSD/sun3</a></h2>
+The <span class="Ux">NetBSD</span>/sun2 and <span class="Ux">NetBSD</span>/sun3
+  secondary bootstrap program can only load kernels from file systems starting
+  at the beginning of disks.
+</section>
+<section class="Ss">
+<h2 class="Ss" id="NetBSD/vax"><a class="permalink" href="#NetBSD/vax">NetBSD/vax</a></h2>
+The <span class="Ux">NetBSD</span>/vax secondary bootstrap program can only load
+  kernels from file systems starting at the beginning of disks.
+<p class="Pp">The size of primary bootstrap programs is restricted to 7.5KB,
+    even though some file systems (e.g., ISO 9660) are able to accommodate
+    larger ones.</p>
+</section>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">May 16, 2023</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

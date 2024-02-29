@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: hdaudioctl.8,v 1.8 2021/04/12 12:22:10 nia Exp $
+  
+   Copyright (c) 2009 Precedence Technologies Ltd <support@precedence.co.uk>
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Precedence Technologies Ltd
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>HDAUDIOCTL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">HDAUDIOCTL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">HDAUDIOCTL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">hdaudioctl</code> &#x2014;
+<div class="Nd">program to manipulate
+  <a class="Xr" href="../html4/hdaudio.html">hdaudio(4)</a> devices</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">hdaudioctl</code></td>
+    <td>[<var class="Ar">-f device</var>] <var class="Ar">command</var>
+      [<var class="Ar">arguments</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">hdaudioctl</code> command can be used to inspect and
+  reconfigure High Definition Audio devices and their child codecs.
+<p class="Pp">The mandatory <var class="Ar">command</var> argument specifies the
+    action to take. Valid commands are:</p>
+<dl class="Bl-tag">
+  <dt>list</dt>
+  <dd>For each child codec of the chosen
+      <a class="Xr" href="../html4/hdaudio.html">hdaudio(4)</a> device, display
+      the nid, vendor, product, subsystem and device IDs.</dd>
+  <dt>show <var class="Ar">codecid</var> <var class="Ar">nid</var></dt>
+  <dd>Retrieve and display the current codec configuration in human-readable
+      form.</dd>
+  <dt>get <var class="Ar">codecid</var> <var class="Ar">nid</var></dt>
+  <dd>Retrieve and display the current codec configuration as a
+      <a class="Xr" href="../html3/proplib.html">proplib(3)</a> XML plist.</dd>
+  <dt>set <var class="Ar">codecid</var> <var class="Ar">nid</var>
+    [<var class="Ar">plist</var>]</dt>
+  <dd>Detach the specified <a class="Xr" href="../html4/hdafg.html">hdafg(4)</a>
+      codec and then re-attach with its widgets explicitly configured according
+      to the specified plist. If no plist is given, the in-built widget parsing
+      rules based on the High Definition Audio specification will be used.</dd>
+  <dt>graph <var class="Ar">codecid</var> <var class="Ar">nid</var></dt>
+  <dd>Output a DOT file suitable processing by graphviz. The resulting image
+      will graphically show the structure and interconnections of the widgets
+      that form the chosen <a class="Xr" href="../html4/hdafg.html">hdafg(4)</a>
+      codec.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/dev/hdaudioX</span></dt>
+  <dd>control devices</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/audio.html">audio(4)</a>,
+  <a class="Xr" href="../html4/hdaudio.html">hdaudio(4)</a>,
+  <span class="Pa">pkgsrc/graphics/graphviz</span>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">hdaudioctl</code> command first appeared in
+  <span class="Ux">NetBSD 5.1</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<code class="Nm">hdaudioctl</code> is based on two separate programs written by
+  <span class="An">Jared McNeill</span>
+  &lt;<a class="Mt" href="mailto:jmcneill@NetBSD.org">jmcneill@NetBSD.org</a>&gt;
+  under contract by <a class="Lk" href="http://www.precedence.co.uk/">Precedence
+  Technologies Ltd</a>. Integration into one program and writing this manual
+  page was done by
+<br/>
+<span class="An">Stephen Borrill</span>
+  &lt;<a class="Mt" href="mailto:sborrill@NetBSD.org">sborrill@NetBSD.org</a>&gt;.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="CAVEATS"><a class="permalink" href="#CAVEATS">CAVEATS</a></h1>
+When a plist is loaded and the
+  <a class="Xr" href="../html4/hdafg.html">hdafg(4)</a> codec reattaches, all
+  mixer controls will be returned to their default values.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">April 12, 2021</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

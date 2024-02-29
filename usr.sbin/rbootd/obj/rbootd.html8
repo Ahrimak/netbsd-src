@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: rbootd.8,v 1.13 2014/02/24 07:23:44 skrll Exp $
+  
+   Copyright (c) 1988, 1992 The University of Utah and the Center
+  	for Software Science (CSS).
+   Copyright (c) 1992, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   This code is derived from software contributed to Berkeley by
+   the Center for Software Science of the University of Utah Computer
+   Science Department.  CSS requests users of this software to return
+   to css-dist@cs.utah.edu any improvements that they make and grant
+   CSS redistribution rights.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+  	from: @(#)rbootd.8	8.2 (Berkeley) 12/11/93
+  
+   Utah Hdr: rbootd.man 3.1 92/07/06
+   Author: Jeff Forys, University of Utah CSS
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>RBOOTD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">RBOOTD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">RBOOTD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">rbootd</code> &#x2014;
+<div class="Nd">HP remote boot server</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">rbootd</code></td>
+    <td>[<code class="Fl">-ad</code>] [<code class="Fl">-i</code>
+      <var class="Ar">interface</var>] [config_file]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">rbootd</code> utility services boot requests from
+  Hewlett-Packard workstations over a local area network. All boot files must
+  reside in the boot file directory; further, if a client supplies path
+  information in its boot request, it will be silently stripped away before
+  processing. By default, <code class="Nm">rbootd</code> only responds to
+  requests from machines listed in its configuration file. If the client doesn't
+  supply a file name (HPPA series machines don't), the first one listed for this
+  machine will be supplied.
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+  <dd>Respond to boot requests from any machine. The configuration file is
+      ignored if this option is specified.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Run <code class="Nm">rbootd</code> in debug mode. Packets sent and
+      received are displayed to the terminal.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>
+    <var class="Ar">interface</var></dt>
+  <dd>Service boot requests on specified interface. If unspecified,
+      <code class="Nm">rbootd</code> searches the system interface list for the
+      lowest numbered, configured ``up'' interface (excluding loopback). Ties
+      are broken by choosing the earliest match.</dd>
+</dl>
+<p class="Pp">Specifying <var class="Ar">config_file</var> on the command line
+    causes <code class="Nm">rbootd</code> to use a different configuration file
+    from the default.</p>
+<p class="Pp">The configuration file is a text file where each line describes a
+    particular machine. A line must start with a machine's Ethernet address
+    followed by an optional list of boot file names. An Ethernet address is
+    specified in hexadecimal with each of its six octets separated by a colon.
+    The boot file names come from the boot file directory. The ethernet address
+    and boot file(s) must be separated by white-space and/or comma characters. A
+    pound sign causes the remainder of a line to be ignored.</p>
+<p class="Pp">Here is a sample configuration file:</p>
+<table class="Bl-column">
+  <tr>
+    <td>#</td>
+  </tr>
+  <tr>
+    <td># ethernet addr</td>
+    <td>boot file(s)</td>
+    <td>comments</td>
+  </tr>
+  <tr>
+    <td>#</td>
+  </tr>
+  <tr>
+    <td>08:00:09:0:66:ad</td>
+    <td>SYSHPBSD</td>
+    <td># snake (4.3BSD)</td>
+  </tr>
+  <tr>
+    <td>08:00:09:0:59:5b</td>
+    <td></td>
+    <td># vandy (anything)</td>
+  </tr>
+  <tr>
+    <td>8::9:1:C6:75</td>
+    <td>SYSHPBSD,SYSHPUX</td>
+    <td># jaguar (either)</td>
+  </tr>
+</table>
+<p class="Pp"><code class="Nm">rbootd</code> logs status and error messages via
+    <a class="Xr" href="../html3/syslog.html">syslog(3)</a>. A startup message
+    is always logged, and in the case of fatal errors (or deadly signals) a
+    message is logged announcing the server's termination. In general, a
+    non-fatal error is handled by ignoring the event that caused it (e.g. an
+    invalid Ethernet address in the config file causes that line to be
+    invalidated).</p>
+<p class="Pp">The following signals have the specified effect when sent to the
+    server process using the <a class="Xr" href="../html1/kill.html">kill(1)</a>
+    command:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt>SIGHUP</dt>
+  <dd>Drop all active connections and reconfigure.</dd>
+  <dt>SIGUSR1</dt>
+  <dd>Turn on debugging, do nothing if already on.</dd>
+  <dt>SIGUSR2</dt>
+  <dd>Turn off debugging, do nothing if already off.</dd>
+</dl>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/dev/bpf</span></dt>
+  <dd>packet-filter device</dd>
+  <dt><span class="Pa">/etc/rbootd.conf</span></dt>
+  <dd>configuration file</dd>
+  <dt><span class="Pa">/tmp/rbootd.dbg</span></dt>
+  <dd>debug output</dd>
+  <dt><span class="Pa">/usr/mdec/rbootd</span></dt>
+  <dd>directory containing boot files</dd>
+  <dt><span class="Pa">/var/run/rbootd.pid</span></dt>
+  <dd>process id</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/kill.html">kill(1)</a>,
+  <a class="Xr" href="../html2/socket.html">socket(2)</a>,
+  <a class="Xr" href="../html3/signal.html">signal(3)</a>,
+  <a class="Xr" href="../html3/syslog.html">syslog(3)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+If multiple servers are started on the same interface, each will receive and
+  respond to the same boot packets.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">December 11, 1993</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: apmd.8,v 1.22 2012/04/08 22:00:40 wiz Exp $
+  
+   Copyright (c) 1996, 2010 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by John Kohl.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>APMD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">APMD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">APMD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">apmd</code> &#x2014;
+<div class="Nd">Advanced Power Management monitor daemon</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">apmd</code></td>
+    <td>[<code class="Fl">-adlqsv</code>] [<code class="Fl">-f</code>
+      <var class="Ar">devname</var>] [<code class="Fl">-m</code>
+      <var class="Ar">sockmode</var>] [<code class="Fl">-o</code>
+      <var class="Ar">sockowner:sockgroup</var>] [<code class="Fl">-S</code>
+      <var class="Ar">sockname</var>] [<code class="Fl">-t</code>
+      <var class="Ar">rate</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">apmd</code> daemon monitors the Advanced Power Management
+  (APM) pseudo-device, acting on signaled events and upon user requests as sent
+  by the <a class="Xr" href="../html8/apm.html">apm(8)</a> utility. The
+  <code class="Nm">apmd</code> daemon is only installed on supported platforms.
+<p class="Pp"><i class="Em">The</i> <code class="Nm">apmd</code>
+    <i class="Em">is largely deprecated.</i> Modern systems supporting ACPI
+    should rely on <a class="Xr" href="../html4/acpi.html">acpi(4)</a>,
+    <a class="Xr" href="../html8/powerd.html">powerd(8)</a>, and the
+    <a class="Xr" href="../html4/envsys.html">envsys(4)</a> framework
+  instead.</p>
+<p class="Pp">For suspend and standby request events delivered by the BIOS, or
+    via <a class="Xr" href="../html8/apm.html">apm(8)</a>,
+    <code class="Nm">apmd</code> runs the appropriate configuration program (if
+    one exists), syncs the buffer cache to disk and initiates the requested
+    mode. When resuming after suspend or standby, <code class="Nm">apmd</code>
+    runs the appropriate configuration utility (if one exists). For power status
+    change events, <code class="Nm">apmd</code> fetches the current status and
+    reports it via <a class="Xr" href="../html3/syslog.html">syslog(3)</a> with
+    logging facility <code class="Dv">LOG_DAEMON</code>.</p>
+<p class="Pp"><code class="Nm">apmd</code> announces the transition to standby
+    mode with a single high tone on the speaker (using the
+    <span class="Pa">/dev/speaker</span> device). Suspends are announced with
+    two high tones.</p>
+<p class="Pp"><code class="Nm">apmd</code> periodically polls the APM driver for
+    the current power state. If the battery charge level changes substantially
+    or the external power status changes, the new status is logged. The polling
+    rate defaults to once per 10 minutes, but this may be altered by using the
+    <code class="Fl">-t</code> command-line flag.</p>
+<p class="Pp"><code class="Nm">apmd</code> supports the following options:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+  <dd>Any BIOS-initiated suspend or standby requests are ignored if the system
+      is connected to line current and not running from batteries (user requests
+      are still honored).</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Enter debug mode, log to facility <code class="Dv">LOG_LOCAL1</code> and
+      stay in the foreground on the controlling terminal.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">devname</var></dt>
+  <dd>Specify an alternate device file name.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>A low-battery event causes a suspend request to occur.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a>
+    <var class="Ar">sockmode</var></dt>
+  <dd>Use <var class="Ar">sockmode</var> instead of &#x2018;0660&#x2019; for the
+      mode of <span class="Pa">/var/run/apmdev</span>.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">sockowner:sockgroup</var></dt>
+  <dd>Use <var class="Ar">sockowner:sockgroup</var> instead of
+      &#x2018;`0:0'&#x2019; for the owner/group of
+      <span class="Pa">/var/run/apmdev</span>.</dd>
+  <dt><a class="permalink" href="#q"><code class="Fl" id="q">-q</code></a></dt>
+  <dd>Do not announce suspend and standby requests on the speaker.</dd>
+  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a>
+    <var class="Ar">sockname</var></dt>
+  <dd>Specify an alternate socket name (used by
+      <a class="Xr" href="../html8/apm.html">apm(8)</a> to communicate with
+      <code class="Nm">apmd</code>).</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>The current battery statistics are reported via
+      <a class="Xr" href="../html3/syslog.html">syslog(3)</a> and exit without
+      monitoring the APM status.</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a>
+    <var class="Ar">rate</var></dt>
+  <dd>Change the polling rate from 600 seconds to <var class="Ar">rate</var>
+      seconds.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Periodically log the power status via
+      <a class="Xr" href="../html3/syslog.html">syslog(3)</a>.</dd>
+</dl>
+<p class="Pp">When a client requests a suspend or stand-by mode,
+    <code class="Nm">apmd</code> does not wait for positive confirmation that
+    the requested mode has been entered before replying to the client; to do so
+    would mean the client does not get a reply until the system resumes from its
+    sleep state. Rather, <code class="Nm">apmd</code> replies with the intended
+    state to the client and then places the system in the requested mode after
+    running the configuration script and flushing the buffer cache.</p>
+<p class="Pp">Actions can be configured for the five transitions:
+    <code class="Cm">suspend</code>, <code class="Cm">standby</code>,
+    <code class="Cm">resume</code>, <code class="Cm">line</code> or
+    <code class="Cm">battery</code>. The suspend and standby actions are run
+    prior to <code class="Nm">apmd</code> performing any other actions (such as
+    disk syncs) and entering the new mode. The resume program is run after
+    resuming from a stand-by or suspended state.</p>
+<p class="Pp">The line and battery actions are run after switching power sources
+    to AC (line) or battery, respectively. The appropriate line or battery
+    action is also run upon the startup of apmd based on the current power
+    source.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/apm/suspend</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/etc/apm/standby</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/etc/apm/resume</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/etc/apm/line</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/etc/apm/battery</span></dt>
+  <dd>Contain the host's customized actions. Each file must be an executable
+      binary or shell script suitable for execution by the
+      <a class="Xr" href="../html2/execve.html">execve(2)</a> function. If you
+      wish to have the same program or script control all transitions, it may
+      determine which transition is in progress by examining its
+      <var class="Va">argv[0]</var> which is set to one of
+      <var class="Ar">suspend</var>, <var class="Ar">standby</var>,
+      <var class="Ar">resume</var>, <var class="Ar">line</var> or
+      <var class="Ar">battery</var>. See
+      <span class="Pa">/usr/share/examples/apm/script</span> for such an example
+      script.
+    <p class="Pp"></p>
+  </dd>
+  <dt><span class="Pa">/var/run/apmdev</span></dt>
+  <dd>The default UNIX-domain socket used for communication with
+      <a class="Xr" href="../html8/apm.html">apm(8)</a>. The socket is protected
+      by default to mode 0660, UID 0, GID 0.
+    <p class="Pp"></p>
+  </dd>
+  <dt><span class="Pa">/dev/apmctl</span></dt>
+  <dd>The default device used to control the APM kernel driver.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html2/execve.html">execve(2)</a>,
+  <a class="Xr" href="../html3/syslog.html">syslog(3)</a>,
+  <a class="Xr" href="../html4/apm.html">apm(4)</a>,
+  <a class="Xr" href="../html4/speaker.html">speaker(4)</a>,
+  <a class="Xr" href="../html8/apm.html">apm(8)</a>,
+  <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">apmd</code> daemon appeared in <span class="Ux">NetBSD
+  1.3</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">March 20, 2010</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

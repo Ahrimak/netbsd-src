@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: lastlogin.8,v 1.14 2020/05/07 12:52:26 wiz Exp $
+  
+   Copyright (c) 1996 John M. Vinopal
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+  	This product includes software developed for the NetBSD Project
+  	by John M. Vinopal.
+   4. The name of the author may not be used to endorse or promote products
+      derived from this software without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+   BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+   AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>LASTLOGIN(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">LASTLOGIN(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">LASTLOGIN(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">lastlogin</code> &#x2014;
+<div class="Nd">indicate last login time of users</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">lastlogin</code></td>
+    <td>[<code class="Fl">-Fnrt</code>] [<code class="Fl">-f</code>
+      <var class="Ar">filename</var>] [<code class="Fl">-H</code>
+      <var class="Ar">hostsize</var>] [<code class="Fl">-L</code>
+      <var class="Ar">linesize</var>] [<code class="Fl">-N</code>
+      <var class="Ar">namesize</var>] [user ...]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">lastlogin</code> will list the last login session of specified
+  <var class="Ar">users</var>, or for all users by default. Each line of output
+  contains the user name, the tty from which the session was conducted, any
+  hostname, and the start time for the session.
+<p class="Pp">If multiple <var class="Ar">users</var> are given, the session
+    information for each user is printed in the order given on the command line.
+    Otherwise, information for all users is printed, sorted by uid.</p>
+<p class="Pp"><code class="Nm">lastlogin</code> differs from
+    <a class="Xr" href="../html1/last.html">last(1)</a> in that it only prints
+    information regarding the very last login session. The last login database
+    is never turned over or deleted in standard usage.</p>
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a></dt>
+  <dd>Use fixed widths for all output fields.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">filename</var></dt>
+  <dd>Process input from <var class="Ar">filename</var>. If the file ends with
+      an &#x201C;x&#x201D;, then it is assumed that it is a
+      <a class="Xr" href="../html5/lastlogx.html">lastlogx(5)</a> file, else it
+      is assumed to be a
+      <a class="Xr" href="../html5/lastlog.html">lastlog(5)</a> file.</dd>
+  <dt><a class="permalink" href="#H"><code class="Fl" id="H">-H</code></a>
+    <var class="Ar">hostlen</var></dt>
+  <dd>Set the field width for host output to <var class="Ar">hostlen</var>
+      characters.</dd>
+  <dt><a class="permalink" href="#L"><code class="Fl" id="L">-L</code></a>
+    <var class="Ar">linelen</var></dt>
+  <dd>Set the field width for line output to <var class="Ar">linelen</var>
+      characters.</dd>
+  <dt><a class="permalink" href="#N"><code class="Fl" id="N">-N</code></a>
+    <var class="Ar">namelen</var></dt>
+  <dd>Set the field width for name output to <var class="Ar">namelen</var>
+      characters.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Attempt to print numeric host addresses. This option is only supported
+      with <a class="Xr" href="../html5/lastlogx.html">lastlogx(5)</a> format
+      files.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a></dt>
+  <dd>Reverse the order of the sort.</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a></dt>
+  <dd>Sort by last login time (most recent first.)</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/var/log/lastlogx</span></dt>
+  <dd>default last login database</dd>
+  <dt><span class="Pa">/var/log/lastlog</span></dt>
+  <dd>compatibility last login database</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<code class="Nm">lastlogin</code> looks by default to the
+  <span class="Pa">/var/log/lastlogx</span> database, where some old programs
+  that are not <a class="Xr" href="../html5/utmpx.html">utmpx(5)</a> aware might
+  only write to <span class="Pa">/var/log/lastlog</span>. To look at the old
+  database one can use:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">lastlogin -f
+  /var/log/lastlog</code></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/last.html">last(1)</a>,
+  <a class="Xr" href="../html5/lastlog.html">lastlog(5)</a>,
+  <a class="Xr" href="../html5/lastlogx.html">lastlogx(5)</a>,
+  <a class="Xr" href="../html8/ac.html">ac(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">John M. Vinopal</span> wrote this program in January 1996 and
+  contributed it to the <span class="Ux">NetBSD</span> project.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">May 6, 2020</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

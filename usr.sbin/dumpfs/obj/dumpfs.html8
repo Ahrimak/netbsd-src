@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: dumpfs.8,v 1.21 2022/12/19 18:51:42 chs Exp $
+  
+   Copyright (c) 1983, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       @(#)dumpfs.8	8.1 (Berkeley) 6/5/93
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>DUMPFS(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">DUMPFS(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">DUMPFS(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">dumpfs</code> &#x2014;
+<div class="Nd">dump file system information</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">dumpfs</code></td>
+    <td>[<code class="Fl">-acFijmsv</code>] <var class="Ar">filesys</var>
+      <span class="No">|</span> <var class="Ar">device</var>
+      [<var class="Ar">...</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">dumpfs</code> prints out detailed information about the
+  specified filesystems.
+<p class="Pp">Options:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+  <dd>Print details from each alternate superblock.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>Print details of each cylinder group.</dd>
+  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a></dt>
+  <dd>Dump a file system image from a file, not a special device.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a></dt>
+  <dd>Print details of each allocated inode.</dd>
+  <dt><a class="permalink" href="#j"><code class="Fl" id="j">-j</code></a></dt>
+  <dd>Print details of the WAPBL journal.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a></dt>
+  <dd>Print details of the cylinder group summary.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Print details of the superblock.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Be even more verbose.</dd>
+</dl>
+<p class="Pp">If none of <code class="Fl">-a</code>, <code class="Fl">-c</code>,
+    <code class="Fl">-i</code>, <code class="Fl">-j</code>,
+    <code class="Fl">-m</code>, or <code class="Fl">-s</code> are given, then
+    <code class="Nm">dumpfs</code> defaults to
+  <code class="Fl">-cmsv</code>.</p>
+<p class="Pp"><code class="Nm">dumpfs</code> is useful mostly for finding out
+    certain file system information such as the file system block size, minimum
+    free space percentage, and (for FFSv1) the file system level that can be
+    upgraded with the <code class="Fl">-c</code> option of
+    <a class="Xr" href="../html8/fsck_ffs.html">fsck_ffs(8)</a>. All of this
+    information is output by <code class="Nm">dumpfs</code>
+    <code class="Fl">-s</code>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html5/disktab.html">disktab(5)</a>,
+  <a class="Xr" href="../html5/fs.html">fs(5)</a>,
+  <a class="Xr" href="../html8/disklabel.html">disklabel(8)</a>,
+  <a class="Xr" href="../html8/fsck.html">fsck(8)</a>,
+  <a class="Xr" href="../html8/fsck_ffs.html">fsck_ffs(8)</a>,
+  <a class="Xr" href="../html8/newfs.html">newfs(8)</a>,
+  <a class="Xr" href="../html8/tunefs.html">tunefs(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">dumpfs</code> command appeared in
+  <span class="Ux">4.2BSD</span>. The <code class="Fl">-a</code>,
+  <code class="Fl">-c</code>, <code class="Fl">-i</code>,
+  <code class="Fl">-m</code>, and <code class="Fl">-s</code> options, and the
+  inode dump were added for <span class="Ux">NetBSD 2.0</span>. The
+  <code class="Fl">-j</code>, option was added for <span class="Ux">NetBSD
+  6.0</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 27, 2010</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

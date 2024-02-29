@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: lpd.8,v 1.36 2017/07/03 21:35:31 wiz Exp $
+  
+   Copyright (c) 1983, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       @(#)lpd.8	8.3 (Berkeley) 4/19/94
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>LPD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">LPD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">LPD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">lpd</code> &#x2014;
+<div class="Nd">line printer spooler daemon</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">lpd</code></td>
+    <td>[<code class="Fl">-dlsrW</code>] [<code class="Fl">-b</code>
+      <var class="Ar">bind-address</var>] [<code class="Fl">-n</code>
+      <var class="Ar">maxchild</var>] [<code class="Fl">-w</code>
+      <var class="Ar">maxwait</var>] [port]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">lpd</code> is the line printer daemon (spool area handler) and
+  is normally invoked at boot time from the
+  <a class="Xr" href="../html8/rc.html">rc(8)</a> file. It makes a single pass
+  through the <a class="Xr" href="../html5/printcap.html">printcap(5)</a> file
+  to find out about the existing printers and prints any files left after a
+  crash. It then uses the system calls
+  <a class="Xr" href="../html2/listen.html">listen(2)</a> and
+  <a class="Xr" href="../html2/accept.html">accept(2)</a> to receive requests to
+  print files in the queue, transfer files to the spooling area, display the
+  queue, or remove jobs from the queue. In each case, it forks a child to handle
+  the request so the parent can continue to listen for more requests.
+<p class="Pp">Available options:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#b"><code class="Fl" id="b">-b</code></a></dt>
+  <dd>Normally, if the <code class="Fl">-s</code> option is not specified,
+      <code class="Nm">lpd</code> will listen on all network interfaces for
+      incoming TCP connections. The <code class="Fl">-b</code> option, followed
+      by a <var class="Ar">bind-address</var> specifies that
+      <code class="Nm">lpd</code> should listen on that address instead of
+      INADDR_ANY. Multiple <code class="Fl">-b</code> options are permitted,
+      allowing a list of addresses to be specified. Use of this option silently
+      overrides the <code class="Fl">-s</code> option if it is also present on
+      the command line. <var class="Ar">bind-address</var> can be a numeric host
+      name in IPv4 or IPv6 notation, or a symbolic host name which will be
+      looked up in the normal way.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>The <code class="Fl">-d</code> option turns on the
+      <code class="Dv">SO_DEBUG</code>
+      <a class="Xr" href="../html2/socket.html">socket(2)</a> option. See
+      <a class="Xr" href="../html2/setsockopt.html">setsockopt(2)</a> for more
+      details.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>The <code class="Fl">-l</code> flag causes <code class="Nm">lpd</code> to
+      log valid requests received from the network. This can be useful for
+      debugging purposes.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>The <code class="Fl">-n</code> flag sets <var class="Ar">maxchild</var> as
+      the maximum number of child processes that <code class="Nm">lpd</code>
+      will spawn. The default is 32.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a></dt>
+  <dd>The <code class="Fl">-r</code> flag allows the &#x201C;of&#x201D; and
+      &#x201C;if&#x201D; filters to be used if specified for a remote printer.
+      Traditionally, <code class="Nm">lpd</code> would not use filters for
+      remote printers.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>The <code class="Fl">-s</code> flag selects &#x201C;secure&#x201D; mode,
+      in which <code class="Nm">lpd</code> does not listen on a TCP socket but
+      only takes commands from a <span class="Ux">UNIX</span> domain socket.
+      This is valuable when the machine on which <code class="Nm">lpd</code>
+      runs is subject to attack over the network and it is desired that the
+      machine be protected from attempts to remotely fill spools and similar
+      attacks.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a></dt>
+  <dd>The <code class="Fl">-w</code> flag sets <var class="Ar">maxwait</var> as
+      the wait time (in seconds) for dead remote server detection. If no
+      response is returned from a connected server within this period, the
+      connection is closed and a message logged. The default is 120
+    seconds.</dd>
+  <dt><a class="permalink" href="#W"><code class="Fl" id="W">-W</code></a></dt>
+  <dd>The <code class="Fl">-W</code> option will instruct lpd not to verify a
+      remote tcp connection comes from a reserved port (&lt;1024).</dd>
+</dl>
+<p class="Pp">If the [port] parameter is passed, <code class="Nm">lpd</code>
+    listens on this port instead of the usual &#x201C;printer/tcp&#x201D; port
+    from <span class="Pa">/etc/services</span>.</p>
+<p class="Pp">Access control is provided by three means. First,
+    <span class="Pa">/etc/hosts.allow</span> and
+    <span class="Pa">/etc/hosts.deny</span> are consulted as described in
+    <a class="Xr" href="../html5/hosts_access.html">hosts_access(5)</a> with
+    daemon name <code class="Nm">lpd</code>. Second, all requests must come from
+    one of the machines listed in the file
+    <span class="Pa">/etc/hosts.equiv</span> or
+    <span class="Pa">/etc/hosts.lpd</span> unless there is a line consisting of
+    &#x2018;+&#x2019;, in which case any host will be accepted that passes the
+    <a class="Xr" href="../html5/hosts_access.html">hosts_access(5)</a> test and
+    has reverse resolving set up. Lastly, if the <code class="Li">rs</code>
+    capability is specified in the
+    <a class="Xr" href="../html5/printcap.html">printcap(5)</a> entry for the
+    printer being accessed, <i class="Em">lpr</i> requests will only be honored
+    for those users with accounts on the machine with the printer. Requests must
+    pass all three tests.</p>
+<p class="Pp">The file <i class="Em">minfree</i> in each spool directory
+    contains the number of disk blocks to leave free so that the line printer
+    queue won't completely fill the disk. The <i class="Em">minfree</i> file can
+    be edited with your favorite text editor.</p>
+<p class="Pp">The daemon begins processing files after it has successfully set
+    the lock for exclusive access (described a bit later), and scans the spool
+    directory for files beginning with <i class="Em">cf</i>. Lines in each
+    <i class="Em">cf</i> file specify files to be printed or non-printing
+    actions to be performed. Each such line begins with a key character to
+    specify what to do with the remainder of the line.</p>
+<dl class="Bl-tag">
+  <dt>J</dt>
+  <dd>Job Name. String to be used for the job name on the burst page.</dd>
+  <dt>C</dt>
+  <dd>Classification. String to be used for the classification line on the burst
+      page.</dd>
+  <dt>L</dt>
+  <dd>Literal. The line contains identification info from the password file and
+      causes the banner page to be printed.</dd>
+  <dt>T</dt>
+  <dd>Title. String to be used as the title for
+      <a class="Xr" href="../html1/pr.html">pr(1)</a>.</dd>
+  <dt>H</dt>
+  <dd>Host Name. Name of the machine where
+      <a class="Xr" href="../html1/lpr.html">lpr(1)</a> was invoked.</dd>
+  <dt>P</dt>
+  <dd>Person. Login name of the person who invoked
+      <a class="Xr" href="../html1/lpr.html">lpr(1)</a>. This is used to verify
+      ownership by <a class="Xr" href="../html1/lprm.html">lprm(1)</a>.</dd>
+  <dt>M</dt>
+  <dd>Send mail to the specified user when the current print job completes.</dd>
+  <dt>f</dt>
+  <dd>Formatted File. Name of a file to print which is already formatted.</dd>
+  <dt>l</dt>
+  <dd>Like &#x201C;f&#x201D; but passes control characters and does not make
+      page breaks.</dd>
+  <dt>p</dt>
+  <dd>Name of a file to print using
+      <a class="Xr" href="../html1/pr.html">pr(1)</a> as a filter.</dd>
+  <dt>t</dt>
+  <dd>Troff File. The file contains
+      <a class="Xr" href="../html1/troff.html">troff(1)</a> output (cat
+      phototypesetter commands).</dd>
+  <dt>n</dt>
+  <dd>Ditroff File. The file contains device independent troff output.</dd>
+  <dt>d</dt>
+  <dd>DVI File. The file contains Tex l output DVI format from Stanford.</dd>
+  <dt>g</dt>
+  <dd>Graph File. The file contains data produced by
+      <code class="Ic">plot</code>.</dd>
+  <dt>c</dt>
+  <dd>Cifplot File. The file contains data produced by
+      <code class="Ic">cifplot</code>.</dd>
+  <dt>v</dt>
+  <dd>The file contains a raster image.</dd>
+  <dt>o</dt>
+  <dd>The file contains PostScript data.</dd>
+  <dt>r</dt>
+  <dd>The file contains text data with FORTRAN carriage control characters.</dd>
+  <dt>1</dt>
+  <dd>Troff Font R. Name of the font file to use instead of the default.</dd>
+  <dt>2</dt>
+  <dd>Troff Font I. Name of the font file to use instead of the default.</dd>
+  <dt>3</dt>
+  <dd>Troff Font B. Name of the font file to use instead of the default.</dd>
+  <dt>4</dt>
+  <dd>Troff Font S. Name of the font file to use instead of the default.</dd>
+  <dt>W</dt>
+  <dd>Width. Changes the page width (in characters) used by
+      <a class="Xr" href="../html1/pr.html">pr(1)</a> and the text filters.</dd>
+  <dt>I</dt>
+  <dd>Indent. The number of characters to indent the output by (in ascii).</dd>
+  <dt>U</dt>
+  <dd>Unlink. Name of file to remove upon completion of printing.</dd>
+  <dt>N</dt>
+  <dd>File name. The name of the file which is being printed, or a blank for the
+      standard input (when <a class="Xr" href="../html1/lpr.html">lpr(1)</a> is
+      invoked in a pipeline).</dd>
+</dl>
+<p class="Pp">If a file cannot be opened, a message will be logged via
+    <a class="Xr" href="../html3/syslog.html">syslog(3)</a> using the
+    <i class="Em">LOG_LPR</i> facility. <code class="Nm">lpd</code> will try up
+    to 20 times to reopen a file it expects to be there, after which it will
+    skip the file to be printed.</p>
+<p class="Pp"><code class="Nm">lpd</code> uses
+    <a class="Xr" href="../html2/flock.html">flock(2)</a> to provide exclusive
+    access to the lock file and to prevent multiple daemons from becoming active
+    simultaneously. If the daemon should be killed or die unexpectedly, the lock
+    file need not be removed. The lock file is kept in a readable ASCII form and
+    contains two lines. The first is the process id of the daemon and the second
+    is the control file name of the current job being printed. The second line
+    is updated to reflect the current status of <code class="Nm">lpd</code> for
+    the programs <a class="Xr" href="../html1/lpq.html">lpq(1)</a> and
+    <a class="Xr" href="../html1/lprm.html">lprm(1)</a>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/printcap</span></dt>
+  <dd>printer description file</dd>
+  <dt><span class="Pa">/var/spool/output/*</span></dt>
+  <dd>spool directories</dd>
+  <dt><span class="Pa">/var/spool/output/*/minfree</span></dt>
+  <dd>minimum free space to leave</dd>
+  <dt><span class="Pa">/dev/lp*</span></dt>
+  <dd>line printer devices</dd>
+  <dt><span class="Pa">/var/run/printer</span></dt>
+  <dd>socket for local requests</dd>
+  <dt><span class="Pa">/etc/hosts.allow</span></dt>
+  <dd>explicit remote host access list.</dd>
+  <dt><span class="Pa">/etc/hosts.deny</span></dt>
+  <dd>explicit remote host denial of service list.</dd>
+  <dt><span class="Pa">/etc/hosts.equiv</span></dt>
+  <dd>lists machine names allowed printer access</dd>
+  <dt><span class="Pa">/etc/hosts.lpd</span></dt>
+  <dd>lists machine names allowed printer access, but not under same
+      administrative control.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/lpq.html">lpq(1)</a>,
+  <a class="Xr" href="../html1/lpr.html">lpr(1)</a>,
+  <a class="Xr" href="../html1/lprm.html">lprm(1)</a>,
+  <a class="Xr" href="../html2/setsockopt.html">setsockopt(2)</a>,
+  <a class="Xr" href="../html3/syslog.html">syslog(3)</a>,
+  <a class="Xr" href="../html5/hosts.equiv.html">hosts.equiv(5)</a>,
+  <a class="Xr" href="../html5/hosts_access.html">hosts_access(5)</a>,
+  <a class="Xr" href="../html5/hosts_options.html">hosts_options(5)</a>,
+  <a class="Xr" href="../html5/printcap.html">printcap(5)</a>,
+  <a class="Xr" href="../html8/lpc.html">lpc(8)</a>,
+  <a class="Xr" href="../html8/pac.html">pac(8)</a>
+<p class="Pp"><cite class="Rs"><span class="RsT">4.3 BSD Line Printer Spooler
+    Manual</span>.</cite></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+An <code class="Nm">lpd</code> daemon appeared in Version 6 AT&amp;T UNIX.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 20, 2006</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

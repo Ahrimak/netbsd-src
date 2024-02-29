@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: ndbootd.8,v 1.4 2002/02/02 01:21:00 wiz Exp $
+  	<<Id: ndbootd.8,v 1.2 2001/05/15 14:42:25 fredette Exp >>
+  
+   Copyright (c) 2001 Matthew Fredette.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+     1. Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+     2. Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in the
+        documentation and/or other materials provided with the distribution.
+     3. All advertising materials mentioning features or use of this software
+        must display the following acknowledgement:
+          This product includes software developed by Matthew Fredette.
+     4. The name of Matthew Fredette may not be used to endorse or promote
+        products derived from this software without specific prior written
+        permission.
+  
+   THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
+   WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+   MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>NDBOOTD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">NDBOOTD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">NDBOOTD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">ndbootd</code> &#x2014;
+<div class="Nd">Sun Network Disk (ND) Protocol server</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">ndbootd</code></td>
+    <td>[<code class="Fl">-s</code> <var class="Ar">boot2</var>]
+      [<code class="Fl">-i</code> <var class="Ar">interface</var>]
+      [<code class="Fl">-w</code> <var class="Ar">windowsize</var>]
+      [<code class="Fl">-d</code>] <var class="Ar">boot1</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">ndbootd</code> is a server which supports the Sun Network Disk
+  (ND) Protocol. This protocol was designed by Sun before they designed NFS. ND
+  simply makes the raw blocks of a disk available to network clients. Contrast
+  this with the true namespace and file abstractions that NFS provides.
+<p class="Pp">The only reason you're likely to encounter ND nowadays is if you
+    have an old Sun 2 machine, like the 2/120 or 2/50. The Sun 2 PROMs can only
+    use ND to boot over the network. (Later, the Sun 3 PROMs would use RARP and
+    TFTP to boot over the network.)</p>
+<p class="Pp"><code class="Nm">ndbootd</code> is a very simple ND server that
+    only supports client reads for booting. It exports a disk that the clients
+    consider to be <span class="Pa">/dev/ndp0</span> (ND public unit zero). The
+    disk is available only to clients that are listed in
+    <span class="Pa">/etc/ethers</span> and have valid hostnames. (Sun 2 PROMs
+    don't do RARP, but they do learn their IP address from the first ND response
+    they receive from the server.)</p>
+<p class="Pp"><var class="Ar">boot1</var> is a file containing the mandatory
+    first-stage network boot program, typically
+    <span class="Pa">/usr/mdec/bootyy</span>. The layout of the exported disk
+    is:</p>
+<ul class="Bl-bullet Bd-indent">
+  <li>block 0: normally a Sun disklabel (but ignored by the PROM)</li>
+  <li>blocks 1-15: the first-stage network boot program</li>
+</ul>
+<p class="Pp">With the <code class="Fl">-s</code> <var class="Ar">boot2</var>
+    option, <code class="Nm">ndbootd</code> will also make a second-stage
+    network boot program available to clients, typically
+    <span class="Pa">/usr/mdec/netboot</span>. When <var class="Ar">boot2</var>
+    is a filename, that file is the single second-stage network boot program to
+    be served to all clients.</p>
+<p class="Pp">When <var class="Ar">boot2</var> is a directory name, typically
+    <span class="Pa">/tftpboot</span>, <code class="Nm">ndbootd</code> finds a
+    client's second-stage network boot program by turning its IP address into a
+    filename in that directory, in the same manner later Sun 3 PROMs do when
+    TFTPing (i.e., if a client has IP address 192.168.1.10,
+    <code class="Nm">ndbootd</code> expects to find
+    <span class="Pa">/tftpboot/C0A8010A.SUN2</span> ).</p>
+<p class="Pp">When used in this last manner with an ND-aware first-stage boot
+    program, <code class="Nm">ndbootd</code> serves the same purpose in the Sun
+    2 netboot process as <a class="Xr" href="../html8/tftpd.html">tftpd(8)</a>
+    serves in the Sun 3 netboot process.</p>
+<p class="Pp">Any second-stage network boot program always begins at block 16 of
+    the exported disk, regardless of the length of the first-stage network boot
+    program.</p>
+<p class="Pp">All first- and second-stage network boot programs must have all
+    executable headers stripped off; they must be raw binary programs.</p>
+<p class="Pp">The remaining options are:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>
+    <var class="Ar">interface</var></dt>
+  <dd>Only listen for ND clients on interface <var class="Ar">interface</var>.
+      Normally <code class="Nm">ndbootd</code> listens for clients on the first
+      non-loopback IP interface that is up and running.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a>
+    <var class="Ar">windowsize</var></dt>
+  <dd>This adjusts the window size of the ND protocol. This is the number of
+      1-kilobyte packets that can be transmitted before waiting for an
+      acknowledgement. Defaults to 6.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Run in debug mode. Debugging output goes to standard error and the server
+      will not fork.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/ethers</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/etc/hosts</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html8/tftpd.html">tftpd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Whether or not there is a second-stage network boot program, the exported disk
+  appears to all clients to have infinite length. The content of all blocks not
+  used by the first- or second-stage network boot programs is undefined. All
+  client reads of undefined blocks are silently allowed by the server.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">May 9, 2001</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

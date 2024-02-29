@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: mrinfo.8,v 1.9 2017/07/03 21:35:31 wiz Exp $
+  
+   Written Wed Mar 24 1993 by Van Jacobson (adapted from the
+   multicast mapper written by Pavel Curtis).
+  
+   The lawyers insist we include the following UC copyright notice.
+   The mapper from which this is derived contained a Xerox copyright
+   notice which follows the UC one.  Try not to get depressed noting
+   that the legal gibberish is larger than the program.
+  
+   Copyright (c) 1993 Regents of the University of California.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+  	This product includes software developed by the Computer Systems
+  	Engineering Group at Lawrence Berkeley Laboratory.
+   4. Neither the name of the University nor of the Laboratory may be used
+      to endorse or promote products derived from this software without
+      specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+   ---------------------------------
+   Copyright (c) 1992, 2001 Xerox Corporation.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are met:
+  
+   Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+  
+   Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+  
+   Neither name of the Xerox, PARC, nor the names of its contributors may be
+   used to endorse or promote products derived from this software
+   without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE XEROX CORPORATION OR
+   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+   EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+   OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+   WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>MRINFO(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MRINFO(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">MRINFO(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+mrinfo - Displays configuration info from a multicast router
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<b>/usr/sbin/mrinfo</b> [ <b>-d</b> <i>debug_level</i> ] [ <b>-r</b>
+  <i>retry_count</i> ] [ <b>-t</b> <i>timeout_count</i> ]
+  <b>multicast_router</b>
+<p class="Pp"></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<i>mrinfo</i> attempts to display the configuration information from the
+  multicast router <i>multicast_router.</i>
+<p class="Pp"><i>mrinfo</i> uses the ASK_NEIGHBORS IGMP message to the specified
+    multicast router. If this multicast router responds, the version number and
+    a list of their neighboring multicast router addresses is part of that
+    response. If the responding router has a recent multicast version number,
+    then <i>mrinfo</i> requests additional information such as metrics,
+    thresholds, and flags from the multicast router. Once the specified
+    multicast router responds, the configuration is displayed to the standard
+    output.
+  <br/>
+</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="INVOCATION"><a class="permalink" href="#INVOCATION">INVOCATION</a></h1>
+&quot;-d&quot; option sets the debug level. When the debug level is greater than
+  the default value of 0, addition debugging messages are printed. Regardless of
+  the debug level, an error condition, will always write an error message and
+  will cause <i>mrinfo</i> to terminate. Non-zero debug levels have the
+  following effects:
+<dl class="Bl-tag">
+  <dt>level 1</dt>
+  <dd>packet warnings are printed to stderr.</dd>
+  <dt>level 2</dt>
+  <dd>all level 1 messages plus notifications down networks are printed to
+      stderr.</dd>
+  <dt>level 3</dt>
+  <dd>all level 2 messages plus notifications of all packet timeouts are printed
+      to stderr.</dd>
+</dl>
+<p class="Pp">&quot;-r retry_count&quot; sets the neighbor query retry limit.
+    Default is 3 retry.</p>
+<p class="Pp">&quot;-t timeout_count&quot; sets the number of seconds to wait
+    for a neighbor query reply. Default timeout is 4 seconds.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SAMPLE_OUTPUT"><a class="permalink" href="#SAMPLE_OUTPUT">SAMPLE
+  OUTPUT</a></h1>
+<pre>
+<i>mrinfo mbone.phony.dom.net</i>
+127.148.176.10 (mbone.phony.dom.net) [version 3.3]:
+ 127.148.176.10 -&gt; 0.0.0.0 (?) [1/1/querier]
+ 127.148.176.10 -&gt; 127.0.8.4 (mbone2.phony.dom.net) [1/45/tunnel]
+ 127.148.176.10 -&gt; 105.1.41.9 (momoney.com) [1/32/tunnel/down]
+ 127.148.176.10 -&gt; 143.192.152.119 (mbone.dipu.edu) [1/32/tunnel]
+</pre>
+<p class="Pp">For each neighbor of the queried multicast router, the IP of the
+    queried router is displayed, followed by the IP and name of the neighbor. In
+    square brackets the metric (cost of connection), the threshold (multicast
+    ttl) is displayed. If the queried multicast router has a newer version
+    number, the type (tunnel, srcrt) and status (disabled, down) of the
+    connection is displayed.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="IMPORTANT_NOTE"><a class="permalink" href="#IMPORTANT_NOTE">IMPORTANT
+  NOTE</a></h1>
+<i>mrinfo</i> must be run as root.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<b>mrouted</b>(8)<b>,</b> <b>map-mbone</b>(8)<b>,</b> <b>mtrace</b>(8)
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHOR"><a class="permalink" href="#AUTHOR">AUTHOR</a></h1>
+Van Jacobson
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date"></td>
+    <td class="foot-os">4.2 Berkeley Distribution</td>
+  </tr>
+</table>
+</body>
+</html>

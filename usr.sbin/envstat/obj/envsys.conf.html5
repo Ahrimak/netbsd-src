@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: envsys.conf.5,v 1.15 2017/07/03 21:35:30 wiz Exp $
+  
+   -
+   Copyright (c) 2007, 2008 Juan Romero Pardines.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>ENVSYS.CONF(5)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">ENVSYS.CONF(5)</td>
+    <td class="head-vol">File Formats Manual</td>
+    <td class="head-rtitle">ENVSYS.CONF(5)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">envsys.conf</code> &#x2014;
+<div class="Nd">configuration file for the
+  <a class="Xr" href="../html4/envsys.html">envsys(4)</a> framework</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">envstat</code></td>
+    <td>[<code class="Fl">-S</code>] [<code class="Fl">-c</code>
+      <var class="Ar">/etc/envsys.conf</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">envsys.conf</code> file configures all the features
+  provided by the <a class="Xr" href="../html4/envsys.html">envsys(4)</a>
+  framework. It consists of a series of device and sensor blocks. Each sensor
+  block defines a group of <i class="Em">properties</i>. The file format is
+  free-form: new line markers and indentation are ignored. Comments start with a
+  &#x2018;#&#x2019; sign and extend until the end of line.
+<p class="Pp">A <i class="Em">property</i> is like a variable assignment. It has
+    a name, which goes to the left of the equal sign, and a value, which goes to
+    the right. The assignment ends with a semicolon. It looks like:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">name = value;</code></div>
+<p class="Pp">There is no difference between string or integer values when
+    defining them. The value must be surrounded by double quotes if it contains
+    whitespace.</p>
+<p class="Pp">There can be multiple groups of devices and multiple groups of
+    sensors in the configuration file.</p>
+<p class="Pp">A device block consists of one or more sensor blocks and one or
+    more global properties. It has the following syntax:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+	device_name {
+		prop = value;
+		...
+        	sensor0 {
+			prop = value;
+        		...
+		}
+		...
+		sensorN {
+			prop = value;
+			...
+		}
+	}
+	...
+</pre>
+</div>
+<p class="Pp">Device names are those shown by the
+    &#x2018;<code class="Li">envstat -D</code>&#x2019; command; sensor blocks
+    are named by the index position in which they are shown.</p>
+<p class="Pp">For example, if we have the following output from the
+    <a class="Xr" href="../html8/envstat.html">envstat(8)</a> command:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+  CPU Temperature:     32.000 degC
+   MB Temperature:     37.000 degC
+    Vcore Voltage:      1.232 V
+     +3.3 Voltage:      3.248 V
+       +5 Voltage:      4.992 V
+      +12 Voltage:     11.985 V
+    CPU FAN Speed:       1250 RPM
+</pre>
+</div>
+<p class="Pp">&#x2018;<code class="Li">sensor0</code>&#x2019; corresponds to the
+    <i class="Em">CPU Temperature</i> sensor and
+    &#x2018;<code class="Li">sensor6</code>&#x2019; corresponds to the
+    <i class="Em">CPU FAN Speed</i> sensor.</p>
+<p class="Pp">There is another way that will give you the correct index sensor;
+    the &#x2018;<code class="Li">envstat -x</code>&#x2019; command will print
+    the raw XML property list. You only have to find the <i class="Em">index</i>
+    object in the appropriate dictionary. The object will be shown as:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+	&lt;key&gt;index&lt;/key&gt;
+	&lt;string&gt;sensor2&lt;/string&gt;
+</pre>
+</div>
+<p class="Pp">Invalid sensors and devices will be detected by the
+    <a class="Xr" href="../html8/envstat.html">envstat(8)</a> parser and will be
+    reported as errors.</p>
+<p class="Pp">The following properties are provided for sensor blocks (please
+    note that not all properties apply to all type of sensors):</p>
+<dl class="Bl-tag">
+  <dt>critical-capacity = 10;</dt>
+  <dd>
+    <p class="Pp">Sets a critical capacity limit property of 10 percent in a
+        battery sensor. Battery sensors are those that report a percentage from
+        the <a class="Xr" href="../html8/envstat.html">envstat(8)</a>
+      output.</p>
+    <p class="Pp">It is possible to find out if the sensor accepts this property
+        by running &#x2018;<code class="Li">envstat -x</code>&#x2019; and
+        looking if the <i class="Em">want-percentage</i> object is defined as
+        <i class="Em">true</i> on its dictionary. For example:</p>
+    <div class="Bd Pp Bd-indent">
+    <pre>
+	&lt;key&gt;want-percentage&lt;/key&gt;
+	&lt;true/&gt;
+    </pre>
+    </div>
+    <p class="Pp">Only a value between 0 and 100 is allowed. When the limit is
+        reached in the sensor, a <i class="Em">critical-capacity</i> event will
+        be sent to the <a class="Xr" href="../html8/powerd.html">powerd(8)</a>
+        daemon (if running) and will execute the block for this event in
+        <span class="Pa">/etc/powerd/scripts/sensor_battery</span>.</p>
+    <p class="Pp">If this property is set, its value will be shown in the
+        <a class="Xr" href="../html8/envstat.html">envstat(8)</a> display output
+        with a column named <var class="Ar">CritMin</var>.</p>
+  </dd>
+  <dt>warning-capacity = 20;</dt>
+  <dd>
+    <p class="Pp">Sets a warning capacity limit property of 20 percent in a
+        battery sensor. Battery sensors are those that report a percentage from
+        the <a class="Xr" href="../html8/envstat.html">envstat(8)</a>
+      output.</p>
+    <p class="Pp">It is possible to find out if the sensor accepts this property
+        by running &#x2018;<code class="Li">envstat -x</code>&#x2019; and
+        looking if the <i class="Em">want-percentage</i> object is defined as
+        <i class="Em">true</i> on its dictionary. For example:</p>
+    <div class="Bd Pp Bd-indent">
+    <pre>
+	&lt;key&gt;want-percentage&lt;/key&gt;
+	&lt;true/&gt;
+    </pre>
+    </div>
+    <p class="Pp">Only a value between 0 and 100 is allowed. When the limit is
+        reached in the sensor, a <i class="Em">warning-capacity</i> event will
+        be sent to the <a class="Xr" href="../html8/powerd.html">powerd(8)</a>
+        daemon (if running) and will execute the block for this event in
+        <span class="Pa">/etc/powerd/scripts/sensor_battery</span>.</p>
+    <p class="Pp">If this property is set, its value will be shown in the
+        <a class="Xr" href="../html8/envstat.html">envstat(8)</a> display output
+        with a column named <var class="Ar">WarnMin</var>.</p>
+  </dd>
+  <dt>high-capacity = 90;</dt>
+  <dd>
+    <p class="Pp">Sets a high capacity limit property of 90 percent in a battery
+        sensor. Battery sensors are those that report a percentage from the
+        <a class="Xr" href="../html8/envstat.html">envstat(8)</a> output.</p>
+    <p class="Pp">It is possible to find out if the sensor accepts this property
+        by running &#x2018;<code class="Li">envstat -x</code>&#x2019; and
+        looking if the <i class="Em">want-percentage</i> object is defined as
+        <i class="Em">true</i> on its dictionary. For example:</p>
+    <div class="Bd Pp Bd-indent">
+    <pre>
+	&lt;key&gt;want-percentage&lt;/key&gt;
+	&lt;true/&gt;
+    </pre>
+    </div>
+    <p class="Pp">Only a value between 0 and 100 is allowed. When the limit is
+        reached in the sensor, a <i class="Em">high-capacity</i> event will be
+        sent to the <a class="Xr" href="../html8/powerd.html">powerd(8)</a>
+        daemon (if running) and will execute the block for this event in
+        <span class="Pa">/etc/powerd/scripts/sensor_battery</span>.</p>
+    <p class="Pp">If this property is set, its value will be shown in the
+        <a class="Xr" href="../html8/envstat.html">envstat(8)</a> display output
+        with a column named <var class="Ar">WarnMax</var>.</p>
+  </dd>
+  <dt>maximum-capacity = 99;</dt>
+  <dd>
+    <p class="Pp">Sets a warning capacity limit property of 99 percent in a
+        battery sensor. Battery sensors are those that report a percentage from
+        the <a class="Xr" href="../html8/envstat.html">envstat(8)</a>
+      output.</p>
+    <p class="Pp">It is possible to find out if the sensor accepts this property
+        by running &#x2018;<code class="Li">envstat -x</code>&#x2019; and
+        looking if the <i class="Em">want-percentage</i> object is defined as
+        <i class="Em">true</i> on its dictionary. For example:</p>
+    <div class="Bd Pp Bd-indent">
+    <pre>
+	&lt;key&gt;want-percentage&lt;/key&gt;
+	&lt;true/&gt;
+    </pre>
+    </div>
+    <p class="Pp">Only a value between 0 and 100 is allowed. When the limit is
+        reached in the sensor, a <i class="Em">warning-capacity</i> event will
+        be sent to the <a class="Xr" href="../html8/powerd.html">powerd(8)</a>
+        daemon (if running) and will execute the block for this event in
+        <span class="Pa">/etc/powerd/scripts/sensor_battery</span>.</p>
+    <p class="Pp">If this property is set, its value will be shown in the
+        <a class="Xr" href="../html8/envstat.html">envstat(8)</a> display output
+        with a column named <var class="Ar">WarnMin</var>.</p>
+  </dd>
+  <dt>critical-max = 70C;</dt>
+  <dd>
+    <p class="Pp">Sets a critical maximum limit property in a sensor. Note that
+        in this example, we are specifying the
+        &#x2018;<code class="Li">C</code>&#x2019; keyword at the end; that means
+        that this will only be valid for <i class="Em">temperature</i> sensors
+        and that the value is specified as degrees <i class="Em">Celsius</i>. If
+        degrees Fahrenheit are wanted, just use the letter <i class="Em">F</i>,
+        as in:</p>
+    <div class="Bd Pp Bd-indent">
+    <pre>
+critical-max = 140F;
+    </pre>
+    </div>
+    <p class="Pp">To know sensor type, you have to look at the
+        <i class="Em">type</i> object in the XML property list. Remember: the
+        XML property list has all the information that the application uses to
+        print the values!</p>
+    <p class="Pp">Other sensors that are not of <i class="Em">temperature</i>
+        type must not include the final character for the unit. A dot is allowed
+        in the value, if it corresponds to the range that the sensor is
+        reporting. When the limit has been reached in the sensor, a
+        <i class="Em">critical-over</i> event will be sent to the
+        <a class="Xr" href="../html8/powerd.html">powerd(8)</a> daemon (if
+        running) and will execute the block for this event in the appropriate
+        <span class="Pa">/etc/powerd/scripts/sensor_foo</span> script (depending
+        on the sensor's type).</p>
+    <p class="Pp">Please note that this property cannot be set in battery
+        capacity sensors (those that have the <i class="Em">want-percentage</i>
+        object in their dictionary). This rule applies for the
+        &#x2018;<code class="Li">critical-min</code>&#x2019;,
+        &#x2018;<code class="Li">warning-max</code>&#x2019;, and
+        &#x2018;<code class="Li">warning-min</code>&#x2019; properties too.</p>
+    <p class="Pp">If this property is set, its value will be shown in the
+        <a class="Xr" href="../html8/envstat.html">envstat(8)</a> display output
+        with a column named <var class="Ar">CritMax</var>.</p>
+  </dd>
+  <dt>critical-min = 1.230;</dt>
+  <dd>
+    <p class="Pp">Sets a critical minimum limit property in a sensor. The rules
+        for <i class="Em">critical-max</i>, <i class="Em">critical-min</i>,
+        <i class="Em">warning-max</i>, and <i class="Em">warning-min</i> are the
+        same. When the limit has been reached in the sensor, a
+        <i class="Em">critical-under</i> event will be sent to the
+        <a class="Xr" href="../html8/powerd.html">powerd(8)</a> daemon (if
+        running) and will execute the block for this event in the appropriate
+        <span class="Pa">/etc/powerd/scripts/sensor_foo</span> script (depending
+        on the sensor's type).</p>
+    <p class="Pp">If this property is set, its value will be shown in the
+        <a class="Xr" href="../html8/envstat.html">envstat(8)</a> display output
+        with a column named <var class="Ar">CritMin</var>.</p>
+  </dd>
+  <dt>warning-max = 70C;</dt>
+  <dd>
+    <p class="Pp">Sets a warning maximum limit property in a sensor. The rules
+        for <i class="Em">critical-max</i>, <i class="Em">critical-min</i>,
+        <i class="Em">warning-max</i>, and <i class="Em">warning-min</i> are the
+        same. When the limit has been reached in the sensor, a
+        <i class="Em">warning-over</i> event will be sent to the
+        <a class="Xr" href="../html8/powerd.html">powerd(8)</a> daemon (if
+        running) and will execute the block for this event in the appropriate
+        <span class="Pa">/etc/powerd/scripts/sensor_foo</span> script (depending
+        on the sensor's type).</p>
+    <p class="Pp">Please note that this property cannot be set in battery
+        capacity sensors (those that have the <i class="Em">want-percentage</i>
+        object in their dictionary). This rule applies for the
+        &#x2018;<code class="Li">warning-min</code>&#x2019; property too.</p>
+    <p class="Pp">If this property is set, its value will be shown in the
+        <a class="Xr" href="../html8/envstat.html">envstat(8)</a> display output
+        with a column named <var class="Ar">WarnMax</var>.</p>
+  </dd>
+  <dt>warning-min = 1.230;</dt>
+  <dd>
+    <p class="Pp">Sets a critical minimum limit property in a sensor. The rules
+        for <i class="Em">critical-max</i>, <i class="Em">critical-min</i>,
+        <i class="Em">warning-max</i>, and <i class="Em">warning-min</i> are the
+        same. When the limit has been reached in the sensor, a
+        <i class="Em">warning-under</i> event will be sent to the
+        <a class="Xr" href="../html8/powerd.html">powerd(8)</a> daemon (if
+        running) and will execute the block for this event in the appropriate
+        <span class="Pa">/etc/powerd/scripts/sensor_foo</span> script (depending
+        on the sensor's type).</p>
+    <p class="Pp">If this property is set, its value will be shown in the
+        <a class="Xr" href="../html8/envstat.html">envstat(8)</a> display output
+        with a column named <var class="Ar">WarnMin</var>.</p>
+  </dd>
+  <dt>description = string</dt>
+  <dd>
+    <p class="Pp">Sets a new description in a sensor. You can set this property
+        in all sensors, except that you won't be able to set a description that
+        is currently used for the specified device.</p>
+  </dd>
+  <dt>rfact = 56000</dt>
+  <dd>
+    <p class="Pp">Sets a new resistor factor property in a sensor. This property
+        is only allowed in <i class="Em">Voltage</i> sensors and
+        <i class="Em">only</i> if the device has enabled the appropriate flag
+        for the mentioned sensor. The resistor factor may be used to change the
+        behavior of the value returned by the device.</p>
+    <p class="Pp">If a sensor supports this, the <i class="Em">allow-rfact</i>
+        object appears enabled (true) in the dictionary.</p>
+  </dd>
+</dl>
+<p class="Pp">The following properties are available for device blocks:</p>
+<dl class="Bl-tag">
+  <dt>refresh-timeout = 10s</dt>
+  <dd>
+    <p class="Pp">This property sets the refresh timeout value in a device, and
+        will be used to refresh data and check for critical conditions any time
+        the timeout is met. The value may be specified in seconds, minutes or
+        hours. To specify the value in seconds, the <i class="Em">s</i>
+        character must be appended last, if minutes is desired, a
+        <i class="Em">m</i> and a <i class="Em">h</i> for hours. For example
+        <i class="Em">10s</i> for 10 seconds or <i class="Em">1h</i> for one
+        hour.</p>
+  </dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/envsys.conf</span></dt>
+  <dd>Default configuration file.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/proplib.html">proplib(3)</a>,
+  <a class="Xr" href="../html4/envsys.html">envsys(4)</a>,
+  <a class="Xr" href="../html8/envstat.html">envstat(8)</a>,
+  <a class="Xr" href="../html8/powerd.html">powerd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">envsys.conf</code> configuration file first appeared in
+  <span class="Ux">NetBSD 5.0</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 15, 2010</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

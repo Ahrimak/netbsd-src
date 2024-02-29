@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: rpcbind.8,v 1.15 2017/08/17 07:45:24 christos Exp $
+   @(#)rpcbind.1m 1.19 92/09/14 SMI; from SVr4
+   Copyright 1989 AT&T
+   Copyright 1991 Sun Microsystems, Inc.
+   $FreeBSD: head/usr.sbin/rpcbind/rpcbind.8 317163 2017-04-19 20:23:27Z ngie $
+ -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>RPCBIND(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">RPCBIND(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">RPCBIND(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">rpcbind</code> &#x2014;
+<div class="Nd">universal addresses to RPC program number mapper</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">rpcbind</code></td>
+    <td>[<code class="Fl">-6adiLlsWw</code>] [<code class="Fl">-h</code>
+      <var class="Ar">bindip</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">rpcbind</code> utility is a server that converts RPC
+  program numbers into universal addresses. It must be running on the host to be
+  able to make RPC calls on a server on that machine.
+<p class="Pp">When an RPC service is started, it tells
+    <code class="Nm">rpcbind</code> the address at which it is listening, and
+    the RPC program numbers it is prepared to serve. When a client wishes to
+    make an RPC call to a given program number, it first contacts
+    <code class="Nm">rpcbind</code> on the server machine to determine the
+    address where RPC requests should be sent.</p>
+<p class="Pp">The <code class="Nm">rpcbind</code> utility should be started
+    before any other RPC service. Normally, standard RPC servers are started by
+    port monitors, so <code class="Nm">rpcbind</code> must be started before
+    port monitors are invoked.</p>
+<p class="Pp">When <code class="Nm">rpcbind</code> is started, it checks that
+    certain name-to-address translation-calls function correctly. If they fail,
+    the network configuration databases may be corrupt. Since RPC services
+    cannot function correctly in this situation, <code class="Nm">rpcbind</code>
+    reports the condition and terminates.</p>
+<p class="Pp">The <code class="Nm">rpcbind</code> utility can only be started by
+    the super-user.</p>
+<p class="Pp">Access control is provided by
+    <span class="Pa">/etc/hosts.allow</span> and
+    <span class="Pa">/etc/hosts.deny</span>, as described in
+    <a class="Xr" href="../html5/hosts_access.html">hosts_access(5)</a> with
+    daemon name <code class="Nm">rpcbind</code>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#6"><code class="Fl" id="6">-6</code></a></dt>
+  <dd>Bind to AF_INET6 (IPv6) addresses only.</dd>
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+  <dd>When debugging (<code class="Fl">-d</code>), abort on errors.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Run in debug mode. In this mode, <code class="Nm">rpcbind</code> will not
+      fork when it starts, will print additional information during operation,
+      and will abort on certain errors if <code class="Fl">-a</code> is also
+      specified. With this option, the name-to-address translation consistency
+      checks are shown in detail.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>
+    <var class="Ar">bindip</var></dt>
+  <dd>IP addresses to bind to when servicing TCP and UDP requests. This option
+      may be specified multiple times and is typically necessary when running on
+      a multi-homed host. If no <code class="Fl">-h</code> option is specified,
+      <code class="Nm">rpcbind</code> will bind to
+      <code class="Dv">INADDR_ANY</code>, which could lead to problems on a
+      multi-homed host due to <code class="Nm">rpcbind</code> returning a UDP
+      packet from a different IP address than it was sent to. Note that when
+      specifying IP addresses with <code class="Fl">-h</code>,
+      <code class="Nm">rpcbind</code> will automatically add
+      <code class="Li">127.0.0.1</code> and if IPv6 is enabled,
+      <code class="Li">::1</code> to the list.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a></dt>
+  <dd>&#x201C;Insecure&#x201D; mode. Allows calls to SET and UNSET from any
+      host. Normally <code class="Nm">rpcbind</code> accepts these requests only
+      from the loopback interface for security reasons. This change is necessary
+      for programs that were compiled with earlier versions of the rpc library
+      and do not make those requests using the loopback interface.</dd>
+  <dt><a class="permalink" href="#L"><code class="Fl" id="L">-L</code></a></dt>
+  <dd>Allows old-style local connections over the loopback interface. Without
+      this flag, local connections are only allowed over a local socket,
+      <span class="Pa">/var/run/rpcbind.sock</span>.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>Turns on libwrap connection logging.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Causes <code class="Nm">rpcbind</code> to change to the user daemon as
+      soon as possible. This causes <code class="Nm">rpcbind</code> to use
+      non-privileged ports for outgoing connections, preventing non-privileged
+      clients from using <code class="Nm">rpcbind</code> to connect to services
+      from a privileged port.</dd>
+  <dt><a class="permalink" href="#W"><code class="Fl" id="W">-W</code></a></dt>
+  <dd>Enable libwrap (TCP wrappers) support.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a></dt>
+  <dd>Enable the warmstart feature.
+    <p class="Pp">The warmstart feature saves RPC registrations on termination.
+        Any saved RPC registrations are restored on restart if
+        <code class="Fl">-w</code> is specified. This feature helps avoid RPC
+        service interruption when restarting <code class="Nm">rpcbind</code>.
+        warmstart support must be compiled in to
+        <code class="Nm">rpcbind</code>. Portmap registrations are stored in
+        <span class="Pa">/tmp/portmap.file</span>.
+        <code class="Nm">rpcbind</code> registrations are stored in
+        <span class="Pa">/tmp/rpcbind.file</span>.</p>
+  </dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="NOTES"><a class="permalink" href="#NOTES">NOTES</a></h1>
+All RPC servers must be restarted if <code class="Nm">rpcbind</code> is
+  restarted.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/var/run/portmap.file</span></dt>
+  <dd>saved portmap registrations file.</dd>
+  <dt><span class="Pa">/var/run/rpcbind.file</span></dt>
+  <dd>saved <code class="Nm">rpcbind</code> registrations file.</dd>
+  <dt><span class="Pa">/var/run/rpcbind.sock</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/etc/hosts.allow</span></dt>
+  <dd>explicit remote host access list.</dd>
+  <dt><span class="Pa">/etc/hosts.deny</span></dt>
+  <dd>explicit remote host denial of service list.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/rpcbind.html">rpcbind(3)</a>,
+  <a class="Xr" href="../html5/hosts_access.html">hosts_access(5)</a>,
+  <a class="Xr" href="../html5/hosts_options.html">hosts_options(5)</a>,
+  <a class="Xr" href="../html5/netconfig.html">netconfig(5)</a>,
+  <a class="Xr" href="../html8/rpcinfo.html">rpcinfo(8)</a>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">August 17, 2017</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

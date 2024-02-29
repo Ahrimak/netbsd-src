@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: mrouted.8,v 1.18 2017/07/03 21:35:31 wiz Exp $
+  	$OpenBSD: mrouted.8,v 1.11 2003/03/03 15:14:28 deraadt Exp $
+   The mrouted program is covered by the license in the accompanying file
+   named "LICENSE".  Use of the mrouted program represents acceptance of
+   the terms and conditions listed in that file.
+  
+   The mrouted program is COPYRIGHT 1989 by The Board of Trustees of
+   Leland Stanford Junior University.
+ -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>MROUTED(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MROUTED(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">MROUTED(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">mrouted</code> &#x2014;
+<div class="Nd">IP multicast routing daemon</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">mrouted</code></td>
+    <td>[<code class="Fl">-c</code> <var class="Ar">config_file</var>]
+      [<code class="Fl">-d</code> <var class="Ar">debug_level</var>]
+      [<code class="Fl">-p</code>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">mrouted</code> is an implementation of the Distance-Vector
+  Multicast Routing Protocol (DVMRP), an earlier version of which is specified
+  in RFC 1075. It maintains topological knowledge via a distance-vector routing
+  protocol (like RIP, described in RFC 1058), upon which it implements a
+  multicast datagram forwarding algorithm called Reverse Path Multicasting.
+<p class="Pp"><code class="Nm">mrouted</code> forwards a multicast datagram
+    along a shortest (reverse) path tree rooted at the subnet on which the
+    datagram originates. The multicast delivery tree may be thought of as a
+    broadcast delivery tree that has been pruned back so that it does not extend
+    beyond those subnetworks that have members of the destination group. Hence,
+    datagrams are not forwarded along those branches which have no listeners of
+    the multicast group. The IP time-to-live of a multicast datagram can be used
+    to limit the range of multicast datagrams.</p>
+<p class="Pp">In order to support multicasting among subnets that are separated
+    by (unicast) routers that do not support IP multicasting,
+    <code class="Nm">mrouted</code> includes support for &quot;tunnels&quot;,
+    which are virtual point-to-point links between pairs of
+    <code class="Nm">mrouted</code> daemons located anywhere in an internet. IP
+    multicast packets are encapsulated for transmission through tunnels, so that
+    they look like normal unicast datagrams to intervening routers and subnets.
+    The encapsulation is added on entry to a tunnel, and stripped off on exit
+    from a tunnel. By default, the packets are encapsulated using the IP-in-IP
+    protocol (IP protocol number 4). Older versions of
+    <code class="Nm">mrouted</code> tunnel using IP source routing, which puts a
+    heavy load on some types of routers. This version does not support IP source
+    route tunneling.</p>
+<p class="Pp">The tunneling mechanism allows <code class="Nm">mrouted</code> to
+    establish a virtual internet, for the purpose of multicasting only, which is
+    independent of the physical internet, and which may span multiple Autonomous
+    Systems. This capability is intended for experimental support of internet
+    multicasting only, pending widespread support for multicast routing by the
+    regular (unicast) routers. <code class="Nm">mrouted</code> suffers from the
+    well-known scaling problems of any distance-vector routing protocol, and
+    does not (yet) support hierarchical multicast routing.</p>
+<p class="Pp"><code class="Nm">mrouted</code> handles multicast routing only;
+    there may or may not be unicast routing software running on the same machine
+    as <code class="Nm">mrouted</code>. With the use of tunnels, it is not
+    necessary for <code class="Nm">mrouted</code> to have access to more than
+    one physical subnet in order to perform multicast forwarding.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="INVOCATION"><a class="permalink" href="#INVOCATION">INVOCATION</a></h1>
+If no <code class="Fl">-d</code> option is given, or if the debug level is
+  specified as 0, <code class="Nm">mrouted</code> detaches from the invoking
+  terminal. Otherwise, it remains attached to the invoking terminal and
+  responsive to signals from that terminal. If <code class="Fl">-d</code> is
+  given with no argument, the debug level defaults to 2. Regardless of the debug
+  level, <code class="Nm">mrouted</code> always writes warning and error
+  messages to the system log daemon. Non-zero debug levels have the following
+  effects:
+<dl class="Bl-hang Bd-indent Bl-compact">
+  <dt>1</dt>
+  <dd>all syslog'ed messages are also printed to stderr.</dd>
+  <dt>2</dt>
+  <dd>all level 1 messages plus notifications of &quot;significant&quot; events
+      are printed to stderr.</dd>
+  <dt>3</dt>
+  <dd>all level 2 messages plus notifications of all packet arrivals and
+      departures are printed to stderr.</dd>
+</dl>
+<p class="Pp">Upon startup, mrouted writes its pid to the file
+    <span class="Pa">/var/run/mrouted.pid</span>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="CONFIGURATION"><a class="permalink" href="#CONFIGURATION">CONFIGURATION</a></h1>
+<code class="Nm">mrouted</code> automatically configures itself to forward on
+  all multicast-capable interfaces, i.e., interfaces that have the IFF_MULTICAST
+  flag set (excluding the loopback &quot;interface&quot;), and it finds other
+  <code class="Nm">mrouted</code> directly reachable via those interfaces. To
+  override the default configuration, or to add tunnel links to other
+  <code class="Nm">mrouted</code> configuration commands may be placed in
+  <span class="Pa">/etc/mrouted.conf</span> (or an alternative file, specified
+  by the <code class="Fl">-c</code> option). There are four types of
+  configuration commands:
+<ul class="Bl-item Bd-indent">
+  <li>phyint &lt;local-addr&gt; [disable] [metric &lt;m&gt;]
+    <div class="Bd-indent">
+    <dl class="Bl-tag Bl-compact">
+      <dt>[threshold &lt;t&gt;] [rate_limit &lt;b&gt;]</dt>
+      <dd style="width: auto;">&#x00A0;</dd>
+      <dt>[boundary
+        (&lt;boundary-name&gt;|&lt;scoped-addr&gt;/&lt;mask-len&gt;)]</dt>
+      <dd style="width: auto;">&#x00A0;</dd>
+      <dt>[altnet &lt;network&gt;/&lt;mask-len&gt;]</dt>
+      <dd style="width: auto;">&#x00A0;</dd>
+    </dl>
+    </div>
+  </li>
+  <li>
+    <div class="Bd-indent">
+    <dl class="Bl-tag Bl-compact">
+      <dt>tunnel &lt;local-addr&gt; &lt;remote-addr&gt; [metric &lt;m&gt;]</dt>
+      <dd style="width: auto;">&#x00A0;</dd>
+      <dt>[threshold &lt;t&gt;] [rate_limit &lt;b&gt;]</dt>
+      <dd style="width: auto;">&#x00A0;</dd>
+      <dt>[boundary
+        (&lt;boundary-name&gt;|&lt;scoped-addr&gt;/&lt;mask-len&gt;)]</dt>
+      <dd style="width: auto;">&#x00A0;</dd>
+    </dl>
+    </div>
+  </li>
+  <li>cache_lifetime &lt;ct&gt;</li>
+  <li>pruning &lt;off/on&gt;</li>
+  <li>name &lt;boundary-name&gt; &lt;scoped-addr&gt;/&lt;mask-len&gt;</li>
+</ul>
+<p class="Pp">The file format is free-form; whitespace (including newlines) is
+    not significant. The <var class="Ar">boundary</var> and
+    <var class="Ar">altnet</var> options may be specified as many times as
+    necessary.</p>
+<p class="Pp">The phyint command can be used to disable multicast routing on the
+    physical interface identified by local IP address
+    <var class="Ar">&lt;local-addr&gt;</var>, or to associate a non-default
+    metric or threshold with the specified physical interface. The local IP
+    address <var class="Ar">&lt;local-addr&gt;</var> may be replaced by the
+    interface name (e.g., le0). If a phyint is attached to multiple IP subnets,
+    describe each additional subnet with the altnet keyword. Phyint commands
+    must precede tunnel commands.</p>
+<p class="Pp">The tunnel command can be used to establish a tunnel link between
+    local IP address <var class="Ar">&lt;local-addr&gt;</var> and remote IP
+    address <var class="Ar">&lt;remote-addr&gt;</var>, and to associate a
+    non-default metric or threshold with that tunnel. The local IP address
+    <var class="Ar">&lt;local-addr&gt;</var> may be replaced by the interface
+    name (e.g., le0). The remote IP address
+    <var class="Ar">&lt;remote-addr&gt;</var> may be replaced by a host name, if
+    and only if the host name has a single IP address associated with it. The
+    tunnel must be set up in the mrouted.conf files of both routers before it
+    can be used.</p>
+<p class="Pp">The cache_lifetime is a value that determines the amount of time
+    that a cached multicast route stays in kernel before timing out. The value
+    of this entry should lie between 300 (5 min) and 86400 (1 day). It defaults
+    to 300.</p>
+<p class="Pp">The <var class="Ar">pruning</var> option is provided for
+    <code class="Nm">mrouted</code> to act as a non-pruning router. It is also
+    possible to start <code class="Nm">mrouted</code> in a non-pruning mode
+    using the <code class="Fl">-p</code> option on the command line. It is
+    expected that a router would be configured in this manner for test purposes
+    only. The default mode is pruning enabled.</p>
+<p class="Pp">You may assign names to boundaries to make configuration easier
+    with the name keyword. The boundary option on phyint or tunnel commands can
+    accept either a name or a boundary.</p>
+<p class="Pp">The metric is the &quot;cost&quot; associated with sending a
+    datagram on the given interface or tunnel; it may be used to influence the
+    choice of routes. The metric defaults to 1. Metrics should be kept as small
+    as possible, because <code class="Nm">mrouted</code> cannot route along
+    paths with a sum of metrics greater than 31.</p>
+<p class="Pp">The threshold is the minimum IP time-to-live required for a
+    multicast datagram to be forwarded to the given interface or tunnel. It is
+    used to control the scope of multicast datagrams. (The TTL of forwarded
+    packets is only compared to the threshold, it is not decremented by the
+    threshold. Every multicast router decrements the TTL by 1.) The default
+    threshold is 1.</p>
+<p class="Pp">In general, all <code class="Nm">mrouted</code> connected to a
+    particular subnet or tunnel should use the same metric and threshold for
+    that subnet or tunnel.</p>
+<p class="Pp">The rate_limit option allows the network administrator to specify
+    a certain bandwidth in Kbits/second which would be allocated to multicast
+    traffic. It defaults to 500Kbps on tunnels, and 0 (unlimited) on physical
+    interfaces.</p>
+<p class="Pp">The boundary option allows an interface to be configured as an
+    administrative boundary for the specified scoped address. Packets belonging
+    to this address will not be forwarded on a scoped interface. The boundary
+    option accepts either a name or a boundary spec.</p>
+<p class="Pp"><code class="Nm">mrouted</code> will not initiate execution if it
+    has fewer than two enabled vifs, where a vif (virtual interface) is either a
+    physical multicast-capable interface or a tunnel. It will log a warning if
+    all of its vifs are tunnels; such an <code class="Nm">mrouted</code>
+    configuration would be better replaced by more direct tunnels (i.e.,
+    eliminate the middle man).</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLE_CONFIGURATION"><a class="permalink" href="#EXAMPLE_CONFIGURATION">EXAMPLE
+  CONFIGURATION</a></h1>
+This is an example configuration for a mythical multicast router at a big
+  school.
+<div class="Bd">
+<pre>
+#
+# mrouted.conf example
+#
+# Name our boundaries to make it easier.
+name LOCAL 239.255.0.0/16
+name EE 239.254.0.0/16
+#
+# le1 is our gateway to compsci, don't forward our
+# local groups to them.
+phyint le1 boundary EE
+#
+# le2 is our interface on the classroom net, it has four
+# different length subnets on it.
+# Note that you can use either an ip address or an
+# interface name
+phyint 172.16.12.38 boundary EE altnet 172.16.15.0/26
+	altnet 172.16.15.128/26 altnet 172.16.48.0/24
+#
+# atm0 is our ATM interface, which doesn't properly
+# support multicasting.
+phyint atm0 disable
+#
+# This is an internal tunnel to another EE subnet.
+# Remove the default tunnel rate limit, since this
+# tunnel is over ethernets.
+tunnel 192.168.5.4 192.168.55.101 metric 1 threshold 1
+	rate_limit 0
+#
+# This is our tunnel to the outside world.
+# Careful with those boundaries, Eugene.
+tunnel 192.168.5.4 10.11.12.13 metric 1 threshold 32
+	boundary LOCAL boundary EE
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SIGNALS"><a class="permalink" href="#SIGNALS">SIGNALS</a></h1>
+<code class="Nm">mrouted</code> responds to the following signals:
+<dl class="Bl-tag Bl-compact">
+  <dt>HUP</dt>
+  <dd>restarts <code class="Nm">mrouted</code>. The configuration file is reread
+      every time this signal is evoked.</dd>
+  <dt>INT</dt>
+  <dd>terminates execution gracefully (i.e., by sending good-bye messages to all
+      neighboring routers).</dd>
+  <dt>TERM</dt>
+  <dd>same as INT</dd>
+  <dt>USR1</dt>
+  <dd>dumps the internal routing tables to
+      <span class="Pa">/var/tmp/mrouted.dump</span>.</dd>
+  <dt>USR2</dt>
+  <dd>dumps the internal cache tables to
+      <span class="Pa">/var/tmp/mrouted.cache</span>.</dd>
+  <dt>QUIT</dt>
+  <dd>dumps the internal routing tables to stderr (only if
+      <code class="Nm">mrouted</code> was invoked with a non-zero debug
+    level).</dd>
+</dl>
+<p class="Pp">For convenience in sending signals,
+    <code class="Nm">mrouted</code> writes its pid to
+    <span class="Pa">/var/run/mrouted.pid</span> upon startup.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/mrouted.conf</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/var/run/mrouted.pid</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/var/tmp/mrouted.dump</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/var/tmp/mrouted.cache</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+The routing tables look like this:
+<p class="Pp"></p>
+<div class="Bd">
+<pre>
+Virtual Interface Table
+ Vif  Local-Address                    Metric  Thresh  Flags
+  0   36.2.0.8      subnet: 36.2          1       1    querier
+                    groups: 224.0.2.1
+                            224.0.0.4
+                   pkts in: 3456
+                  pkts out: 2322323
+
+  1   36.11.0.1     subnet: 36.11         1       1    querier
+                    groups: 224.0.2.1
+                            224.0.1.0
+                            224.0.0.4
+                   pkts in: 345
+                  pkts out: 3456
+
+  2   36.2.0.8      tunnel: 36.8.0.77     3       1
+                     peers: 36.8.0.77 (2.2)
+                boundaries: 239.0.1
+                          : 239.1.2
+                   pkts in: 34545433
+                  pkts out: 234342
+
+  3   36.2.0.8	    tunnel: 36.6.8.23	  3       16
+
+Multicast Routing Table (1136 entries)
+ Origin-Subnet   From-Gateway    Metric Tmr In-Vif  Out-Vifs
+ 36.2                               1    45    0    1* 2  3*
+ 36.8            36.8.0.77          4    15    2    0* 1* 3*
+ 36.11                              1    20    1    0* 2  3*
+ .
+ .
+ .
+</pre>
+</div>
+<p class="Pp">In this example, there are four vifs connecting to two subnets and
+    two tunnels. The vif 3 tunnel is not in use (no peer address). The vif 0 and
+    vif 1 subnets have some groups present; tunnels never have any groups. This
+    instance of <code class="Nm">mrouted</code> is the one responsible for
+    sending periodic group membership queries on the vif 0 and vif 1 subnets, as
+    indicated by the &quot;querier&quot; flags. The list of boundaries indicate
+    the scoped addresses on that interface. A count of the number of incoming
+    and outgoing packets is also shown at each interface.</p>
+<p class="Pp">Associated with each subnet from which a multicast datagram can
+    originate is the address of the previous hop router (unless the subnet is
+    directly- connected), the metric of the path back to the origin, the amount
+    of time since we last received an update for this subnet, the incoming vif
+    for multicasts from that origin, and a list of outgoing vifs. &quot;*&quot;
+    means that the outgoing vif is connected to a leaf of the broadcast tree
+    rooted at the origin, and a multicast datagram from that origin will be
+    forwarded on that outgoing vif only if there are members of the destination
+    group on that leaf.</p>
+<p class="Pp"><code class="Nm">mrouted</code> also maintains a copy of the
+    kernel forwarding cache table. Entries are created and deleted by
+    <code class="Nm">mrouted</code>.</p>
+<p class="Pp">The cache tables look like this:</p>
+<p class="Pp"></p>
+<div class="Bd">
+<pre>
+Multicast Routing Cache Table (147 entries)
+ Origin             Mcast-group     CTmr  Age Ptmr IVif Forwvifs
+ 13.2.116/22        224.2.127.255     3m   2m    -  0    1
+&gt;13.2.116.19
+&gt;13.2.116.196
+ 138.96.48/21       224.2.127.255     5m   2m    -  0    1
+&gt;138.96.48.108
+ 128.9.160/20       224.2.127.255     3m   2m    -  0    1
+&gt;128.9.160.45
+ 198.106.194/24     224.2.135.190     9m  28s   9m  0P
+&gt;198.106.194.22
+</pre>
+</div>
+<p class="Pp">Each entry is characterized by the origin subnet number and mask
+    and the destination multicast group. The 'CTmr' field indicates the lifetime
+    of the entry. The entry is deleted from the cache table when the timer
+    decrements to zero. The 'Age' field is the time since this cache entry was
+    originally created. Since cache entries get refreshed if traffic is flowing,
+    routing entries can grow very old. The 'Ptmr' field is simply a dash if no
+    prune was sent upstream, or the amount of time until the upstream prune will
+    time out. The 'Ivif' field indicates the incoming vif for multicast packets
+    from that origin. Each router also maintains a record of the number of
+    prunes received from neighboring routers for a particular source and group.
+    If there are no members of a multicast group on any downward link of the
+    multicast tree for a subnet, a prune message is sent to the upstream router.
+    They are indicated by a &quot;P&quot; after the vif number. The Forwvifs
+    field shows the interfaces along which datagrams belonging to the
+    source-group are forwarded. A &quot;p&quot; indicates that no datagrams are
+    being forwarded along that interface. An unlisted interface is a leaf subnet
+    with are no members of the particular group on that subnet. A &quot;b&quot;
+    on an interface indicates that it is a boundary interface, i.e., traffic
+    will not be forwarded on the scoped address on that interface. An additional
+    line with a &quot;&gt;&quot; as the first character is printed for each
+    source on the subnet. Note that there can be many sources in one subnet.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html8/map-mbone.html">map-mbone(8)</a>,
+  <a class="Xr" href="../html8/mrinfo.html">mrinfo(8)</a>,
+  <a class="Xr" href="../html8/mtrace.html">mtrace(8)</a>
+<p class="Pp">DVMRP is described, along with other multicast routing algorithms,
+    in the paper &quot;Multicast Routing in Internetworks and Extended
+    LANs&quot; by S. Deering, in the Proceedings of the ACM SIGCOMM '88
+    Conference.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+Steve Deering, Ajit Thyagarajan, Bill Fenner
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">May 8, 1995</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

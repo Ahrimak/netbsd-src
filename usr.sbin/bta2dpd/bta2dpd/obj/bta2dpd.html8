@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: bta2dpd.8,v 1.10 2023/07/20 13:31:31 nat Exp $
+  
+   Copyright (c) 2015 - 2016  Nathanial Sloss <nathanialsloss@yahoo.com.au>
+   All rights reserved.
+  
+  		This software is dedicated to the memory of -
+  	   Baron James Anlezark (Barry) - 1 Jan 1949 - 13 May 2012.
+  
+  		Barry was a man who loved his music.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>BTA2DPD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">BTA2DPD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">BTA2DPD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">bta2dpd</code> &#x2014;
+<div class="Nd">Bluetooth Advanced Audio Distribution Profile daemon</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">bta2dpd</code></td>
+    <td>[<code class="Fl">-Dnv</code>] [<code class="Fl">-A</code>
+      <var class="Ar">bitpool_allocation</var>] [<code class="Fl">-B</code>
+      <var class="Ar">bitpool</var>] [<code class="Fl">-b</code>
+      <var class="Ar">blocks</var>] [<code class="Fl">-d</code>
+      <var class="Ar">device</var>] [<code class="Fl">-e</code>
+      <var class="Ar">encoding_bands</var>] [<code class="Fl">-f</code>
+      <var class="Ar">channel_mode</var>] [<code class="Fl">-M</code>
+      <var class="Ar">mtu</var>] [<code class="Fl">-m</code>
+      <var class="Ar">mode</var>] [<code class="Fl">-r</code>
+      <var class="Ar">rate</var>] [<code class="Fl">-V</code>
+      <var class="Ar">volume</var>] <code class="Fl">-a</code>
+      <var class="Ar">address</var> <var class="Ar">files ...</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">bta2dpd</code></td>
+    <td><code class="Fl">-K</code> [<code class="Fl">-DIv</code>]
+      [<code class="Fl">-A</code> <var class="Ar">bitpool_allocation</var>]
+      [<code class="Fl">-B</code> <var class="Ar">bitpool</var>]
+      [<code class="Fl">-b</code> <var class="Ar">blocks</var>]
+      [<code class="Fl">-d</code> <var class="Ar">device</var>]
+      [<code class="Fl">-e</code> <var class="Ar">encoding_bands</var>]
+      [<code class="Fl">-f</code> <var class="Ar">channel_mode</var>]
+      [<code class="Fl">-m</code> <var class="Ar">mode</var>]
+      [<code class="Fl">-p</code> <var class="Ar">psm</var>]
+      [<code class="Fl">-r</code> <var class="Ar">rate</var>] [a
+      <var class="Ar">address</var>] <var class="Ar">file</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">bta2dpd</code></td>
+    <td><code class="Fl">-t</code> [<code class="Fl">-A</code>
+      <var class="Ar">bitpool_allocation</var>] [<code class="Fl">-B</code>
+      <var class="Ar">bitpool</var>] [<code class="Fl">-b</code>
+      <var class="Ar">blocks</var>] [<code class="Fl">-e</code>
+      <var class="Ar">encoding_bands</var>] [<code class="Fl">-f</code>
+      <var class="Ar">channel_mode</var>] [<code class="Fl">-M</code>
+      <var class="Ar">mtu</var>] [<code class="Fl">-r</code>
+      <var class="Ar">rate</var>] [<code class="Fl">-V</code>
+      <var class="Ar">volume</var>] <var class="Ar">files ...</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">bta2dpd</code></td>
+    <td><code class="Fl">-t</code> <code class="Fl">-K</code>
+      <var class="Ar">file</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">bta2dpd</code> daemon is used to transmit/receive audio
+  to/from Bluetooth devices such as speakers or headphones, using the Advanced
+  Audio Distribution Profile (A2DP).
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a>
+    <var class="Ar">address</var></dt>
+  <dd>Remote device address. The <var class="Ar">address</var> may be given as
+      BDADDR or a name.
+    <p class="Pp">If a name was specified, <code class="Nm">bta2dpd</code>
+        attempts to resolve the name via
+        <a class="Xr" href="../html3/bt_gethostbyname.html">bt_gethostbyname(3)</a>.</p>
+  </dd>
+  <dt><a class="permalink" href="#B"><code class="Fl" id="B">-B</code></a>
+    <var class="Ar">bitpool</var></dt>
+  <dd>Allows setting the maximum bitpool value for your device. This may have to
+      be lowered if audio is distorted.
+    <p class="Pp">Use <code class="Nm">bta2dpd</code> with only the
+        <code class="Fl">-v</code> option and the maximum bitpool for your
+        device will be printed to stdout.</p>
+  </dd>
+  <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a></dt>
+  <dd>Run in the background.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Do not close connection on end of file (EOF). Useful for
+      <a class="Xr" href="../html4/pad.html">pad(4)</a>.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">device</var></dt>
+  <dd>Local device address. May be given as BDADDR or device name.</dd>
+  <dt><a class="permalink" href="#I"><code class="Fl" id="I">-I</code></a></dt>
+  <dd>Initiate a Discover command. Useful when used as an audio sink as some
+      devices need this to pair.</dd>
+  <dt><a class="permalink" href="#K"><code class="Fl" id="K">-K</code></a></dt>
+  <dd>Allows registering as an audio sink receiving an incoming connection.</dd>
+  <dt><a class="permalink" href="#M"><code class="Fl" id="M">-M</code></a>
+    <var class="Ar">mtu</var></dt>
+  <dd>Allows setting the Maximum Transmission Unit (MTU) for the streaming
+      connections.
+    <p class="Pp">For most devices this would be 672 but if audio is broken or
+        has gaps lowering this value may help.</p>
+  </dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a>
+    <var class="Ar">mode</var></dt>
+  <dd>Set L2CAP connection link mode. Supported modes are:
+    <p class="Pp"></p>
+    <dl class="Bl-tag Bl-compact">
+      <dt>auth</dt>
+      <dd>Require devices to be paired.</dd>
+      <dt>encrypt</dt>
+      <dd>Auth, plus enable encryption.</dd>
+      <dt>secure</dt>
+      <dd>Encryption, plus change of link key.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a>
+    <var class="Ar">psm</var></dt>
+  <dd>Allows changing the l2cap psm for an audio sink the default is 25. Most
+      all devices will use 25.</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a></dt>
+  <dd>Test mode can be used with <code class="Fl">-K</code> to decode and
+      receive encoded music from stdout/stdin to file.</dd>
+  <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>
+    <var class="Ar">volume</var></dt>
+  <dd>Allows shifting the volume of the music by 1 or 2 bits prior to encoding
+      for increased volume.
+    <p class="Pp"><b class="Sy">USE WITH CARE</b> as this may mean the output is
+        quite loud.</p>
+  </dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Be verbose.</dd>
+  <dt><var class="Ar">files ...</var></dt>
+  <dd>Files to stream. These can be WAV files or CD-Audio Red Book data or
+      output from a <a class="Xr" href="../html4/pad.html">pad(4)</a> device. If
+      not specified, the default is stdin or stdout if
+      <code class="Fl">-K</code> applied and <code class="Nm">bta2dpd</code> is
+      used as an audio sink.
+    <p class="Pp">When writing to a file or stdout it is raw 16-bit little
+        endian (pulse coded modulation) PCM data. So a utility must be used to
+        convert the file to add a header or use the
+        <a class="Xr" href="../html1/audioplay.html">audioplay(1)</a> command as
+        stated in <a class="Sx" href="#EXAMPLES">EXAMPLES</a>.</p>
+  </dd>
+</dl>
+<section class="Ss">
+<h2 class="Ss" id="Channel_Modes"><a class="permalink" href="#Channel_Modes">Channel
+  Modes</a></h2>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">channel_mode</var></dt>
+  <dd>
+    <dl class="Bl-tag">
+      <dt><var class="Ar">0</var></dt>
+      <dd>This specifies that all possible input formats are accepted and then
+          one is chosen starting with joint stereo then stereo then 2 channel
+          then mono.</dd>
+      <dt><var class="Ar">m</var></dt>
+      <dd>This specifies that the input is monophonic.</dd>
+      <dt><var class="Ar">2</var></dt>
+      <dd>This specifies that the input is dual-channel.</dd>
+      <dt><var class="Ar">j</var></dt>
+      <dd>This specifies that the input is joint-stereo.</dd>
+      <dt><var class="Ar">s</var></dt>
+      <dd>This specifies that the input is stereo. This is the default.</dd>
+    </dl>
+    <p class="Pp">Specifying joint stereo as opposed to stereo would allow for a
+        slightly higher quality of playback as <code class="Nm">bta2dpd</code>
+        will only encode stereo and monophonic streams.</p>
+  </dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a>
+    <var class="Ar">rate</var></dt>
+  <dd>The frequency of the input. Where rate is one of 0, 16000, 32000, 44100,
+      48000. This defaults to 44.1 kHz.
+    <p class="Pp">A value of 0 will arbitrate from the highest to lowest
+        frequency.</p>
+  </dd>
+</dl>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="Sub_Band_Codec_(SBC)_Encoding_Options"><a class="permalink" href="#Sub_Band_Codec_(SBC)_Encoding_Options">Sub
+  Band Codec (SBC) Encoding Options</a></h2>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#A"><code class="Fl" id="A">-A</code></a>
+    <var class="Ar">bitpool_allocation</var></dt>
+  <dd>
+    <dl class="Bl-tag">
+      <dt><var class="Ar">0</var></dt>
+      <dd>Bit Allocation is negotiated starting with Loudness then SNR.</dd>
+      <dt><var class="Ar">S</var></dt>
+      <dd>Audio is encoded with SNR (Signal to Noise Ratio) bit allocation.</dd>
+      <dt><var class="Ar">L</var></dt>
+      <dd>Audio is encoded with Loudness bit allocation. This is the
+        default.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#b"><code class="Fl" id="b">-b</code></a>
+    <var class="Ar">blocks</var></dt>
+  <dd>Number of blocks to use for encoding. Where blocks is one of 0, 4, 8, 12,
+      16. This defaults to 16 blocks.
+    <p class="Pp">In the case of 0 the number of blocks is negotiated starting
+        from 16 down to 4.</p>
+  </dd>
+  <dt><a class="permalink" href="#e"><code class="Fl" id="e">-e</code></a>
+    <var class="Ar">bands</var></dt>
+  <dd>
+    <dl class="Bl-tag">
+      <dt><var class="Ar">0</var></dt>
+      <dd>Number of SBC bands is negotiated 8 then 4.</dd>
+      <dt><var class="Ar">4</var></dt>
+      <dd>Audio is encoded with 4 SBC bands.</dd>
+      <dt><var class="Ar">8</var></dt>
+      <dd>Audio is encoded with 8 SBC bands. This is the default.</dd>
+    </dl>
+  </dd>
+</dl>
+<p class="Pp">It may be necessary to use
+    <a class="Xr" href="../html8/btconfig.html">btconfig(8)</a> to set the class
+    of your Bluetooth adapter to that of headphones when using
+    <code class="Nm">bta2dpd</code> as an audio sink. I.e.,</p>
+<div class="Bd Bd-indent"><code class="Li">btconfig ubt0 class
+  0x200418</code></div>
+Then start <code class="Nm">bta2dpd</code> with <code class="Fl">-K</code>
+  before pairing.
+<p class="Pp">This is necessary as some devices only perform an
+    <a class="Xr" href="../html1/sdpquery.html">sdpquery(1)</a> just after
+    pairing and cache the result.</p>
+<p class="Pp">It is possible to specify multiples of <code class="Fl">-r</code>
+    <code class="Fl">-e</code> <code class="Fl">-b</code>
+    <code class="Fl">-f</code>. This will mean that the specified combinations
+    are reported as being accepted by the source/sink.</p>
+<p class="Pp">When used as a sink (<code class="Fl">-K</code>), all modes,
+    bands, blocks and allocation modes will be accepted unless specified as
+    options. I.e., <code class="Fl">-r</code> <var class="Ar">44100</var> will
+    only accept a connection with a rate of 44.1kHz.</p>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<div class="Bd Bd-indent"><code class="Li">bta2dpd -a spkr my.wav</code></div>
+Encode and send audio <span class="Pa">my.wav</span> to address
+  &#x2018;spkr&#x2019;.
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">bta2dpd -n -a spkr
+  /dev/pad</code></div>
+Encode and send audio from <a class="Xr" href="../html4/pad.html">pad(4)</a> to
+  address &#x2018;spkr&#x2019;.
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">bta2dpd -K out.pcm</code></div>
+Decode stream from any connected address and write it to
+  <span class="Pa">out.pcm</span>.
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">bta2dpd -K -a phone | audioplay -f -e
+  slinear_le -P 16 -s 44100 -c 2 --</code></div>
+Decode stream from address &#x2018;phone&#x2019; and send to speakers.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/audioplay.html">audioplay(1)</a>,
+  <a class="Xr" href="../html1/sdpquery.html">sdpquery(1)</a>,
+  <a class="Xr" href="../html4/pad.html">pad(4)</a>,
+  <a class="Xr" href="../html8/btconfig.html">btconfig(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">Nathanial Sloss</span>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+For some devices playback from file results in rapid playback or playback with
+  stutter. For best results use with
+  <a class="Xr" href="../html4/pad.html">pad(4)</a>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">July 20, 2023</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

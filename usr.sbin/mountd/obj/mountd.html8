@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: mountd.8,v 1.42 2023/03/15 20:39:12 uwe Exp $
+  
+   Copyright (c) 1989, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       @(#)mountd.8	8.4 (Berkeley) 4/28/95
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>MOUNTD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MOUNTD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">MOUNTD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">mountd</code> &#x2014;
+<div class="Nd">service remote NFS mount requests</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">mountd</code></td>
+    <td>[<code class="Fl">-dN</code>] [<code class="Fl">-P</code>
+      <var class="Ar">policy</var>] [<code class="Fl">-p</code>
+      <var class="Ar">port</var>] [<var class="Ar">exportsfile ...</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">mountd</code> is the server for NFS mount requests from other
+  client machines. <code class="Nm">mountd</code> listens for service requests
+  at the port indicated in the NFS server specification; see
+  <span class="RsT">Network File System Protocol Specification,</span> RFC 1094,
+  Appendix A, and <span class="RsT">NFS: Network File System Version 3 Protocol
+  Specification,</span> Appendix I.
+<p class="Pp">Options and operands available for
+  <code class="Nm">mountd</code>:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Enable debugging mode. <code class="Nm">mountd</code> will not detach from
+      the controlling terminal and will print debugging messages to stderr.</dd>
+  <dt><a class="permalink" href="#N"><code class="Fl" id="N">-N</code></a></dt>
+  <dd>Do not require privileged ports for mount or NFS RPC calls. This option is
+      equivalent to specifying &#x2018;<code class="Li">-noresvport
+      -noresvmnt</code>&#x2019; on every export. See
+      <a class="Xr" href="../html5/exports.html">exports(5)</a> for more
+      information. Some operating systems (notably Mac OS X) require this
+      option.</dd>
+  <dt><a class="permalink" href="#P"><code class="Fl" id="P">-P</code></a>
+    <var class="Ar">policy</var></dt>
+  <dd>IPsec <var class="Ar">policy</var> string, as described in
+      <a class="Xr" href="../html3/ipsec_set_policy.html">ipsec_set_policy(3)</a>.
+      Multiple IPsec policy strings may be specified by using a semicolon as a
+      separator. If conflicting policy strings are found in a single line, the
+      last string will take effect. If an invalid IPsec policy string is used
+      <code class="Nm">mountd</code> logs an error message and terminates
+      itself.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a>
+    <var class="Ar">port</var></dt>
+  <dd>Force <code class="Nm">mountd</code> to bind to the given port. If this
+      option is not given, <code class="Nm">mountd</code> may bind to every
+      anonymous port (in the range 600&#x2013;1023) which causes trouble when
+      trying to use NFS through a firewall.</dd>
+  <dt><var class="Ar">exportsfile</var></dt>
+  <dd>The <var class="Ar">exportsfile</var> argument specifies an alternative
+      location for the <a class="Xr" href="../html5/exports.html">exports(5)</a>
+      file. Multiple exports files can be defined.</dd>
+</dl>
+<p class="Pp">When <code class="Nm">mountd</code> is started, it loads the
+    export host addresses and options into the kernel using the
+    <a class="Xr" href="../html2/nfssvc.html">nfssvc(2)</a> system call. After
+    changing the exports file, a hangup signal should be sent to the
+    <code class="Nm">mountd</code> daemon to get it to reload the export
+    information. After sending the <code class="Dv">SIGHUP</code></p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">kill -s HUP $(cat
+  /var/run/mountd.pid)</code></div>
+<p class="Pp">check the syslog output to see if <code class="Nm">mountd</code>
+    logged any parsing errors in the exports file.</p>
+<p class="Pp">After receiving <code class="Dv">SIGTERM</code>,
+    <code class="Nm">mountd</code> sends a broadcast request to remove the mount
+    list from all the clients. This can take a long time, since the broadcast
+    request waits for each client to respond.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/exports</span></dt>
+  <dd>the list of exported filesystems</dd>
+  <dt><span class="Pa">/var/run/mountd.pid</span></dt>
+  <dd>the pid of the currently running <code class="Nm">mountd</code></dd>
+  <dt><span class="Pa">/var/db/mountdtab</span></dt>
+  <dd>the list of remotely mounted filesystems</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/nfsstat.html">nfsstat(1)</a>,
+  <a class="Xr" href="../html2/nfssvc.html">nfssvc(2)</a>,
+  <a class="Xr" href="../html3/ipsec_set_policy.html">ipsec_set_policy(3)</a>,
+  <a class="Xr" href="../html5/exports.html">exports(5)</a>,
+  <a class="Xr" href="../html8/nfsd.html">nfsd(8)</a>,
+  <a class="Xr" href="../html8/rpcbind.html">rpcbind(8)</a>,
+  <a class="Xr" href="../html8/showmount.html">showmount(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">mountd</code> utility first appeared in
+  <span class="Ux">4.4BSD</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 16, 2021</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

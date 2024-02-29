@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: arp.8,v 1.27 2021/12/05 07:11:56 msaitoh Exp $
+  
+   Copyright (c) 1985, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+  	from: @(#)arp.8	8.2 (Berkeley) 4/27/95
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>ARP(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">ARP(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">ARP(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">arp</code> &#x2014;
+<div class="Nd">address resolution display and control</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">arp</code></td>
+    <td>[<code class="Fl">-n</code>] <var class="Ar">hostname</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">arp</code></td>
+    <td>[<code class="Fl">-nv</code>] <code class="Fl">-a</code></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">arp</code></td>
+    <td>[<code class="Fl">-v</code>] <code class="Fl">-d</code>
+      <code class="Fl">-a</code></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">arp</code></td>
+    <td>[<code class="Fl">-v</code>] <code class="Fl">-d</code>
+      <var class="Ar">hostname</var> [<code class="Cm">proxy</code>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">arp</code></td>
+    <td><code class="Fl">-s</code> <var class="Ar">hostname ether_addr</var>
+      [<code class="Cm">temp</code>] [<code class="Cm">pub</code>
+      [<code class="Cm">proxy</code>]]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">arp</code></td>
+    <td><code class="Fl">-f</code> <var class="Ar">filename</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">arp</code> program displays and modifies the
+  Internet-to-Ethernet address translation tables used by the address resolution
+  protocol (<a class="Xr" href="../html4/arp.html">arp(4)</a>). With no flags,
+  the program displays the current ARP entry for <var class="Ar">hostname</var>.
+  The host may be specified by name or by number, using Internet dot notation.
+<p class="Pp">The state of the arp entry is shown as a single letter preceded by
+    the time the state is applicable for:</p>
+<dl class="Bl-tag Bl-compact">
+  <dt>D</dt>
+  <dd>Delay</dd>
+  <dt>I</dt>
+  <dd>Incomplete</dd>
+  <dt>N</dt>
+  <dd>Nostate</dd>
+  <dt>P</dt>
+  <dd>Probe</dd>
+  <dt>R</dt>
+  <dd>Reachable</dd>
+  <dt>S</dt>
+  <dd>Stale</dd>
+  <dt>U</dt>
+  <dd>Unreachable</dd>
+  <dt>W</dt>
+  <dd>Waitdelete</dd>
+  <dt>?</dt>
+  <dd>Unknown state (should never happen).</dd>
+</dl>
+<p class="Pp">Available options:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+  <dd>The program displays all of the current ARP entries.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>A super-user may delete an entry for the host called
+      <var class="Ar">hostname</var> with the <code class="Fl">-d</code> flag.
+      If the <code class="Cm">proxy</code> keyword is specified, only the
+      published &#x201C;proxy only&#x201D; ARP entry for this host will be
+      deleted. If used with <code class="Fl">-a</code> instead of a
+      <var class="Ar">hostname</var>, it will delete all arp entries.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Causes the file <var class="Ar">filename</var> to be read and multiple
+      entries to be set in the ARP tables. Entries in the file should be of the
+      form
+    <p class="Pp"></p>
+    <div class="Bd Bd-indent"><var class="Ar">hostname ether_addr</var>
+      [<code class="Cm">temp</code>] [<code class="Cm">pub</code>]</div>
+    <p class="Pp">with argument meanings as described below.</p>
+  </dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Show network addresses as numbers (normally <code class="Nm">arp</code>
+      attempts to display addresses symbolically).</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a>
+    <var class="Ar">hostname ether_addr</var></dt>
+  <dd>Create an ARP entry for the host called <var class="Ar">hostname</var>
+      with the Ethernet address <var class="Ar">ether_addr</var>. The Ethernet
+      address is given as six hex bytes separated by colons. The entry will be
+      permanent unless the word <code class="Cm">temp</code> is given in the
+      command. If the word <code class="Cm">pub</code> is given, the entry will
+      be &quot;published&quot;; i.e., this system will act as an ARP server,
+      responding to requests for <var class="Ar">hostname</var> even though the
+      host address is not its own.
+    <p class="Pp">If the word <code class="Cm">proxy</code> is also given, the
+        published entry will be a &#x201C;proxy only&#x201D; entry. In this case
+        the <var class="Ar">ether_addr</var> can be given as
+        <code class="Cm">auto</code> in which case the interfaces on this host
+        will be examined, and if one of them is found to occupy the same subnet,
+        its Ethernet address will be used.</p>
+  </dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Display verbose information when adding or deleting ARP entries.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/inet.html">inet(3)</a>,
+  <a class="Xr" href="../html4/arp.html">arp(4)</a>,
+  <a class="Xr" href="../html8/ifconfig.html">ifconfig(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">arp</code> command appeared in
+  <span class="Ux">4.3BSD</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">December 5, 2021</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

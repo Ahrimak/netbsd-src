@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: lpc.8,v 1.18 2012/04/08 22:00:40 wiz Exp $
+  
+   Copyright (c) 1983, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       @(#)lpc.8	8.5 (Berkeley) 4/28/95
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>LPC(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">LPC(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">LPC(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">lpc</code> &#x2014;
+<div class="Nd">line printer control program</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">lpc</code></td>
+    <td>[<var class="Ar">command</var> [<var class="Ar">argument
+      ...</var>]]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">lpc</code> is used by the system administrator to control the
+  operation of the line printer system. For each line printer configured in
+  <span class="Pa">/etc/printcap</span>, <code class="Nm">lpc</code> may be used
+  to:
+<ul class="Bl-bullet Bd-indent">
+  <li>disable or enable a printer,</li>
+  <li>disable or enable a printer's spooling queue,</li>
+  <li>rearrange the order of jobs in a spooling queue,</li>
+  <li>find the status of printers, and their associated spooling queues and
+      printer daemons.</li>
+</ul>
+<p class="Pp">Without any arguments, <code class="Nm">lpc</code> will prompt for
+    commands from the standard input. If arguments are supplied,
+    <code class="Nm">lpc</code> interprets the first argument as a command and
+    the remaining arguments as parameters to the command. The standard input may
+    be redirected causing <code class="Nm">lpc</code> to read commands from
+    file. Commands may be abbreviated; the following is the list of recognized
+    commands.</p>
+<p class="Pp"></p>
+<dl class="Bl-tag Bl-compact">
+  <dt><a class="permalink" href="#?"><code class="Ic" id="?">?</code></a>
+    [<span class="No">command ...</span>]</dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><a class="permalink" href="#help"><code class="Ic" id="help">help</code></a>
+    [<span class="No">command ...</span>]</dt>
+  <dd>Print a short description of each command specified in the argument list,
+      or, if no argument is given, a list of the recognized commands.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#abort"><code class="Ic" id="abort">abort</code></a>
+    <span class="No">{&#x00A0;all&#x00A0;|&#x00A0;printer&#x00A0;}</span></dt>
+  <dd>Terminate an active spooling daemon on the local host immediately and then
+      disable printing (preventing new daemons from being started by
+      <a class="Xr" href="../html1/lpr.html">lpr(1)</a>) for the specified
+      printers.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#clean"><code class="Ic" id="clean">clean</code></a>
+    <span class="No">{&#x00A0;all&#x00A0;|&#x00A0;printer&#x00A0;}</span></dt>
+  <dd>Remove any temporary files, data files, and control files that cannot be
+      printed (i.e., do not form a complete printer job) from the specified
+      printer queue(s) on the local machine.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#disable"><code class="Ic" id="disable">disable</code></a>
+    <span class="No">{&#x00A0;all&#x00A0;|&#x00A0;printer&#x00A0;}</span></dt>
+  <dd>Turn the specified printer queues off. This prevents new printer jobs from
+      being entered into the queue by
+      <a class="Xr" href="../html1/lpr.html">lpr(1)</a>.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#down"><code class="Ic" id="down">down</code></a>
+    <span class="No">{&#x00A0;all&#x00A0;|&#x00A0;printer&#x00A0;} message
+    ...</span></dt>
+  <dd>Turn the specified printer queue off, disable printing and put
+      <i class="Em">message</i> in the printer status file. The message doesn't
+      need to be quoted, the remaining arguments are treated like
+      <a class="Xr" href="../html1/echo.html">echo(1)</a>. This is normally used
+      to take a printer down and let others know why
+      <a class="Xr" href="../html1/lpq.html">lpq(1)</a> will indicate the
+      printer is down and print the status message.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#enable"><code class="Ic" id="enable">enable</code></a>
+    <span class="No">{&#x00A0;all&#x00A0;|&#x00A0;printer&#x00A0;}</span></dt>
+  <dd>Enable spooling on the local queue for the listed printers. This will
+      allow <a class="Xr" href="../html1/lpr.html">lpr(1)</a> to put new jobs in
+      the spool queue.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#exit"><code class="Ic" id="exit">exit</code></a></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><a class="permalink" href="#quit"><code class="Ic" id="quit">quit</code></a></dt>
+  <dd>Exit from lpc.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#restart"><code class="Ic" id="restart">restart</code></a>
+    <span class="No">{&#x00A0;all&#x00A0;|&#x00A0;printer&#x00A0;}</span></dt>
+  <dd>Attempt to start a new printer daemon. This is useful when some abnormal
+      condition causes the daemon to die unexpectedly, leaving jobs in the
+      queue. <a class="Xr" href="../html1/lpq.html">lpq(1)</a> will report that
+      there is no daemon present when this condition occurs. If the user is the
+      super-user, try to abort the current daemon first (i.e., kill and restart
+      a stuck daemon).
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#start"><code class="Ic" id="start">start</code></a>
+    <span class="No">{&#x00A0;all&#x00A0;|&#x00A0;printer&#x00A0;}</span></dt>
+  <dd>Enable printing and start a spooling daemon for the listed printers.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#status"><code class="Ic" id="status">status</code></a>
+    <span class="No">{&#x00A0;all&#x00A0;|&#x00A0;printer&#x00A0;}</span></dt>
+  <dd>Display the status of daemons and queues on the local machine.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#stop"><code class="Ic" id="stop">stop</code></a>
+    <span class="No">{&#x00A0;all&#x00A0;|&#x00A0;printer&#x00A0;}</span></dt>
+  <dd>Stop a spooling daemon after the current job completes and disable
+      printing.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#topq"><code class="Ic" id="topq">topq</code></a>
+    <span class="No">printer&#x00A0;[&#x00A0;jobnum&#x00A0;...&#x00A0;]&#x00A0;[&#x00A0;user&#x00A0;...&#x00A0;]</span></dt>
+  <dd>Place the jobs in the order listed at the top of the printer queue.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#up"><code class="Ic" id="up">up</code></a>
+    <span class="No">{&#x00A0;all&#x00A0;|&#x00A0;printer&#x00A0;}</span></dt>
+  <dd>Enable everything and start a new printer daemon. Undoes the effects of
+      <code class="Ic">down</code>.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/printcap</span></dt>
+  <dd>printer description file</dd>
+  <dt><span class="Pa">/var/spool/output/*</span></dt>
+  <dd>spool directories</dd>
+  <dt><span class="Pa">/var/spool/output/*/lock</span></dt>
+  <dd>lock file for queue control</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
+<dl class="Bl-tag">
+  <dt><b class="Sy">?Ambiguous command</b></dt>
+  <dd>abbreviation matches more than one command</dd>
+  <dt><b class="Sy">?Invalid command</b></dt>
+  <dd>no match was found</dd>
+  <dt><b class="Sy">?Privileged command</b></dt>
+  <dd>you must be a member of group &quot;operator&quot; or root to execute this
+      command</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/lpq.html">lpq(1)</a>,
+  <a class="Xr" href="../html1/lpr.html">lpr(1)</a>,
+  <a class="Xr" href="../html1/lprm.html">lprm(1)</a>,
+  <a class="Xr" href="../html5/printcap.html">printcap(5)</a>,
+  <a class="Xr" href="../html8/lpd.html">lpd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">lpc</code> command appeared in
+  <span class="Ux">4.2BSD</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">April 28, 1995</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

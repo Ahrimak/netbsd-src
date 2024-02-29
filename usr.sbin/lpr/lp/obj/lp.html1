@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: lp.1,v 1.11 2012/04/08 22:00:40 wiz Exp $
+  
+   Copyright (c) 1995 Joerg Wunsch
+  
+   All rights reserved.
+  
+   This program is free software.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+  	This product includes software developed by Joerg Wunsch
+   4. The name of the developer may not be used to endorse or promote
+      products derived from this software without specific prior written
+      permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE DEVELOPERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  
+   from: Id: lp.1,v 1.6 1997/09/24 06:47:40 charnier Exp
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>LP(1)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">LP(1)</td>
+    <td class="head-vol">General Commands Manual</td>
+    <td class="head-rtitle">LP(1)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">lp</code> &#x2014;
+<div class="Nd">front-end to the print spooler</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">lp</code></td>
+    <td>[<code class="Fl">-cs</code>] [<code class="Fl">-d</code>
+      <var class="Ar">printer</var>] [<code class="Fl">-n</code>
+      <var class="Ar">num</var>] [<code class="Fl">-o</code>
+      <var class="Ar">option</var>] [<var class="Ar">file ...</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">lp</code> is a front-end to the print spooler as required by
+  the <span class="St">IEEE Std 1003.2 (&#x201C;POSIX.2&#x201D;)</span>
+  specification. It effectively invokes
+  <a class="Xr" href="../html1/lpr.html">lpr(1)</a> with the proper set of
+  arguments. It generally prints the named files on the destination printer.
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>Make the <code class="Nm">lp</code> command exit only after further access
+      to any of the input files is no longer required. The application can then
+      safely delete or modify the files without affecting the output
+    operation.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">printer</var></dt>
+  <dd>Specify a particular printer. If no <code class="Fl">-d</code> is provided
+      on the command line, the contents of the environment variables
+      <code class="Ev">LPDEST</code> or <code class="Ev">PRINTER</code> (with
+      this precedence) are taken as the destination printer.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a>
+    <var class="Ar">num</var></dt>
+  <dd>Specify that <var class="Ar">num</var> copies of each of the named files
+      shall be printed.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">option</var></dt>
+  <dd>Printer specific options. Not supported, provided only as a compatibility
+      option for SVR4.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Silent operation.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+As described above, the variables <code class="Ev">LPDEST</code> and
+  <code class="Ev">PRINTER</code> are examined to select the destination
+  printer.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/lpr.html">lpr(1)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="STANDARDS"><a class="permalink" href="#STANDARDS">STANDARDS</a></h1>
+The <code class="Nm">lp</code> command is expected to comply with the
+  <span class="St">IEEE Std 1003.2 (&#x201C;POSIX.2&#x201D;)</span>
+  specification.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+This implementation of the <code class="Nm">lp</code> command has been written
+  by <span class="An">J&#x00F6;rg Wunsch</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+The <span class="St">IEEE Std 1003.2 (&#x201C;POSIX.2&#x201D;)</span>
+  specification does not provide any means to print non-text files. It rather
+  requires the files to be printed to be text files limited to reasonable line
+  lengths and printable characters.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 22, 1995</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: ldpd.8,v 1.9 2013/02/04 11:02:32 wiz Exp $
+  
+   Copyright (c) 2010 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+    1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>LDPD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">LDPD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">LDPD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">ldpd</code> &#x2014;
+<div class="Nd">Label Distribution Protocol Daemon</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">ldpd</code></td>
+    <td>[<code class="Fl">-DdfhW</code>] [<code class="Fl">-c</code>
+      <var class="Ar">config_file</var>] [<code class="Fl">-p</code>
+      <var class="Ar">port</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">ldpd</code> is a utility used to automatically distribute
+  labels between two MPLS LSRs conforming to RFC5036. Currently some features
+  described by RFC5036 are not fully implemented (see
+  <a class="Sx" href="#BUGS">BUGS</a> section). <code class="Nm">ldpd</code>
+  supports peering with IPv6 LDP speakers and IPv6 labels exchange, conforming
+  to specifications in RFC5036 and draft-ietf-mpls-ldp-ipv6.
+<p class="Pp"><code class="Nm">ldpd</code> logs information using the
+    <a class="Xr" href="../html3/syslog.html">syslog(3)</a> interface. You can
+    increase the log verbosity using the <code class="Fl">-W</code> and
+    <code class="Fl">-D</code> flags.</p>
+<p class="Pp">Administrators can use
+    <a class="Xr" href="../html1/telnet.html">telnet(1)</a> to connect to the
+    control port (default: 2626) and use this interface in order to get
+    informations about protocol status, neighbours et cetera but also to set
+    runtime parameters. The password required for connecting is the same as the
+    root password.</p>
+<p class="Pp"><code class="Nm">ldpd</code> computes existing routes and tries to
+    match them on MPLS labels announced by other LDP peers. This means that
+    usual IP routes will be changed into tagged routes, and MPLS routing table
+    will be populated. Any change in MPLS topology will also be announced to LDP
+    neighbors. <code class="Nm">ldpd</code> uses currently Independent Control
+    Mapping and Downstream Unsolicited mode for Label Advertisment.
+    <code class="Nm">ldpd</code> will listen on a route socket and compute the
+    necessary changes in order to change untagged routes into tagged routes.
+    This means that one may use one's favourite dynamic routing protocol daemon
+    without modifications.</p>
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>
+    <var class="Ar">config_file</var></dt>
+  <dd>Specifies a path to the config file. Default:
+      <span class="Pa">/etc/ldpd.conf</span> - see
+      <a class="Xr" href="../html5/ldpd.conf.html">ldpd.conf(5)</a> for
+      configuration file format.</dd>
+  <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a></dt>
+  <dd>Enable debug mode.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Don't use route interception code. <code class="Nm">ldpd</code> will not
+      make any changes to routing table if started with this option.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Run in foreground. Use STDOUT for warning and debug messages.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a></dt>
+  <dd>Outputs supported flags.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a>
+    <var class="Ar">port</var></dt>
+  <dd>Changes the TCP control port (default: 2626).</dd>
+  <dt><a class="permalink" href="#W"><code class="Fl" id="W">-W</code></a></dt>
+  <dd>Enable output of warning messages.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<p class="Pp"><cite class="Rs"><span class="RsT">LDP Specification</span>,
+    <span class="RsR">RFC</span>, <span class="RsN">5036</span>,
+    <span class="RsD">October 2007</span>.</cite></p>
+<p class="Pp"><cite class="Rs"><span class="RsT">LDP Applicability</span>,
+    <span class="RsR">RFC</span>, <span class="RsN">3037</span>,
+    <span class="RsD">January 2001</span>.</cite></p>
+<p class="Pp"><cite class="Rs"><span class="RsT">Updates to LDP for IPv6</span>,
+    <span class="RsR">DRAFT</span>,
+    <span class="RsN">draft-ietf-mpls-ldp-ipv6-07</span>, <span class="RsD">June
+    2012</span>.</cite></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">ldpd</code> command appeared in <span class="Ux">NetBSD
+  6.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+<code class="Nm">ldpd</code> doesn't implement Path Vector and Hop Count TLVs.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SECURITY_CONSIDERATIONS"><a class="permalink" href="#SECURITY_CONSIDERATIONS">SECURITY
+  CONSIDERATIONS</a></h1>
+As a security measure you SHOULD filter the LDP well-known (646) TCP and UDP
+  ports using your favourite packet filter before starting
+  <code class="Nm">ldpd</code>. This is the current way used to filter
+  neighbours and to protect the system from possible external attacks like route
+  injections.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 4, 2013</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

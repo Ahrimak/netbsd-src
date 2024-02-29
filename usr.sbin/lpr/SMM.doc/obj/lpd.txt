@@ -1,0 +1,792 @@
+
+
+
+
+
+
+
+
+
+             44..33BBSSDD LLiinnee PPrriinntteerr SSppoooolleerr MMaannuuaall
+
+
+                       _R_a_l_p_h _C_a_m_p_b_e_l_l
+              Computer Systems Research Group
+                 Computer Science Division
+ Department of Electrical Engineering and Computer Science
+             University of California, Berkeley
+                    Berkeley, CA  94720
+
+
+                          _A_B_S_T_R_A_C_T
+
+          This  document  describes  the  structure and
+     installation procedure for the line printer spool-
+     ing system developed for the 4.3BSD version of the
+     UNIX* operating system.
+
+
+
+     Revised June 8, 1993
+
+
+11..  OOvveerrvviieeww
+
+     The line printer system supports:
+
++o  multiple printers,
+
++o  multiple spooling queues,
+
++o  both local and remote printers, and
+
++o  printers attached via serial lines that require line ini-
+   tialization such as the baud rate.
+
+Raster  output  devices  such  as  a Varian or Versatec, and
+laser printers such as an Imagen, are also supported by  the
+line printer system.
+
+     The  line printer system consists mainly of the follow-
+ing files and commands:
+
+
+
+
+
+
+
+-----------
+* UNIX is a trademark of Bell Laboratories.
+
+
+
+
+
+
+
+
+
+SMM:7-2                   4.3BSD Line Printer Spooler Manual
+
+
+     /etc/printcap      printer configuration and capability data base
+     /usr/sbin/lpd      line printer daemon, does all the real work
+     /usr/bin/lpr       program to enter a job in a printer queue
+     /usr/bin/lpq       spooling queue examination program
+     /usr/bin/lprm      program to delete jobs from a queue
+     /usr/sbin/lpc      program to administer printers and spooling queues
+     /var/run/printer   socket on which lpd listens
+
+
+The file /etc/printcap is a master data base describing line
+printers  directly attached to a machine and, also, printers
+accessible across a network. The manual  page  entry  _p_r_i_n_t_-
+_c_a_p(5)  provides  the authoritative definition of the format
+of this data base, as well as specifying default values  for
+important  items  such as the directory in which spooling is
+performed.  This document introduces some of the information
+that may be placed _p_r_i_n_t_c_a_p.
+
+22..  CCoommmmaannddss
+
+22..11..  llppdd -- lliinnee pprriinntteerr ddaaeemmoonn
+
+     The  program  _l_p_d(8), usually invoked at boot time from
+the /etc/rc file, acts as a master server  for  coordinating
+and controlling the spooling queues configured in the print-
+cap file.  When _l_p_d  is  started  it  makes  a  single  pass
+through  the  _p_r_i_n_t_c_a_p database restarting any printers that
+have jobs.  In normal  operation  _l_p_d  listens  for  service
+requests  on multiple sockets, one in the UNIX domain (named
+``/var/run/printer'') for local requests,  and  one  in  the
+Internet  domain  (under  the ``printer'' service specifica-
+tion) for requests for printer access from off machine;  see
+_s_o_c_k_e_t(2)  and  _s_e_r_v_i_c_e_s(5)  for more information on sockets
+and service specifications, respectively.  _L_p_d spawns a copy
+of  itself to process the request; the master daemon contin-
+ues to listen for new requests.
+
+     Clients communicate with _l_p_d using a simple transaction
+oriented protocol.  Authentication of remote clients is done
+based on the ``privilege port'' scheme employed by  _r_s_h_d(8C)
+and _r_c_m_d(3X).  The following table shows the requests under-
+stood by _l_p_d.  In each request the first byte indicates  the
+``meaning''  of  the  request,  followed  by the name of the
+printer to which it should be  applied.   Additional  quali-
+fiers may follow, depending on the request.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4.3BSD Line Printer Spooler Manual                   SMM:7-3
+
+
+     Request                                     Interpretation
+     -----------------------------------------------------------------------------------------
+     ^Aprinter\n                                 check the queue for jobs and print any found
+     ^Bprinter\n                                 receive and queue a job from another machine
+     ^Cprinter [users ...] [jobs ...]\n          return short list of current queue state
+     ^Dprinter [users ...] [jobs ...]\n          return long list of current queue state
+     ^Eprinter person [users ...] [jobs ...]\n   remove jobs from a queue
+
+
+
+     The  _l_p_r(1)  command  is used by users to enter a print
+job in a local queue and to notify the local _l_p_d that  there
+are new jobs in the spooling area.  _L_p_d either schedules the
+job to be printed locally, or if printing remotely, attempts
+to  forward  the  job  to  the  appropriate machine.  If the
+printer cannot be  opened  or  the  destination  machine  is
+unreachable, the job will remain queued until it is possible
+to complete the work.
+
+22..22..  llppqq -- sshhooww lliinnee pprriinntteerr qquueeuuee
+
+     The _l_p_q(1) program works recursively backwards display-
+ing  the  queue of the machine with the printer and then the
+queue(s) of the machine(s) that lead to  it.   _L_p_q  has  two
+forms  of  output:  in the default, short, format it gives a
+single line of output per queued job; in the long format  it
+shows  the  list  of files, and their sizes, that comprise a
+job.
+
+22..33..  llpprrmm -- rreemmoovvee jjoobbss ffrroomm aa qquueeuuee
+
+     The _l_p_r_m(1) command deletes jobs from a spooling queue.
+If necessary, _l_p_r_m will first kill off a running daemon that
+is servicing the queue and restart  it  after  the  required
+files are removed.  When removing jobs destined for a remote
+printer, _l_p_r_m acts similarly to _l_p_q except it  first  checks
+locally for jobs to remove and then tries to remove files in
+queues off-machine.
+
+22..44..  llppcc -- lliinnee pprriinntteerr ccoonnttrrooll pprrooggrraamm
+
+     The _l_p_c(8) program is used by the system  administrator
+to  control  the  operation of the line printer system.  For
+each line printer configured in /etc/printcap,  _l_p_c  may  be
+used to:
+
++o    disable or enable a printer,
+
++o    disable or enable a printer's spooling queue,
+
++o    rearrange the order of jobs in a spooling queue,
+
++o    find  the  status  of  printers,  and  their associated
+     spooling queues and printer daemons.
+
+
+
+
+
+
+
+
+
+SMM:7-4                   4.3BSD Line Printer Spooler Manual
+
+
+33..  AAcccceessss ccoonnttrrooll
+
+     The printer system maintains protected  spooling  areas
+so that users cannot circumvent printer accounting or remove
+files other than their own.  The strategy used  to  maintain
+protected spooling areas is as follows:
+
++o  The  spooling  area is writable only by a _d_a_e_m_o_n user and
+   _d_a_e_m_o_n group.
+
++o  The _l_p_r program runs set-user-id to _r_o_o_t and set-group-id
+   to  group  _d_a_e_m_o_n.   The  _r_o_o_t access permits reading any
+   file  required.  Accessibility  is   verified   with   an
+   _a_c_c_e_s_s(2)  call.   The  group  ID  is  used in setting up
+   proper ownership of files in the spooling area for  _l_p_r_m.
+
++o  Control  files  in  a  spooling area are made with _d_a_e_m_o_n
+   ownership and group  ownership  _d_a_e_m_o_n.   Their  mode  is
+   0660.   This  insures control files are not modified by a
+   user and that no user can  remove  files  except  through
+   _l_p_r_m.
+
++o  The spooling programs, _l_p_d, _l_p_q, and _l_p_r_m run set-user-id
+   to _r_o_o_t and set-group-id to group _d_a_e_m_o_n to access  spool
+   files and printers.
+
++o  The  printer server, _l_p_d, uses the same verification pro-
+   cedures as _r_s_h_d(8C)  in  authenticating  remote  clients.
+   The host on which a client resides must be present in the
+   file /etc/hosts.equiv or /etc/hosts.lpd and  the  request
+   message must come from a reserved port number.
+
+     In  practice,  none  of _l_p_d, _l_p_q, or _l_p_r_m would have to
+run as user _r_o_o_t if remote spooling were not supported.   In
+previous  incarnations  of  the  printer system _l_p_d ran set-
+user-id to _d_a_e_m_o_n, set-group-id to group _s_p_o_o_l_i_n_g,  and  _l_p_q
+and _l_p_r_m ran set-group-id to group _s_p_o_o_l_i_n_g.
+
+44..  SSeettttiinngg uupp
+
+     The  4.3BSD  release  comes with the necessary programs
+installed and with the default line printer  queue  created.
+If  the  system must be modified, the makefile in the direc-
+tory /usr/src/usr.lib/lpr should be used in recompiling  and
+reinstalling the necessary programs.
+
+     The  real  work in setting up is to create the _p_r_i_n_t_c_a_p
+file and any printer filters for printers not  supported  in
+the distribution system.
+
+44..11..  CCrreeaattiinngg aa pprriinnttccaapp ffiillee
+
+     The  _p_r_i_n_t_c_a_p database contains one or more entries per
+printer.   A  printer  should  have  a   separate   spooling
+
+
+
+
+
+
+
+
+
+4.3BSD Line Printer Spooler Manual                   SMM:7-5
+
+
+directory;  otherwise,  jobs  will  be  printed on different
+printers depending on which  printer  daemon  starts  first.
+This  section  describes  how to create entries for printers
+that do not conform to the default printer  description  (an
+LP-11 style interface to a standard, band printer).
+
+44..11..11..  PPrriinntteerrss oonn sseerriiaall lliinneess
+
+     When  a printer is connected via a serial communication
+line it must have the proper baud rate  and  terminal  modes
+set.   The  following example is for a DecWriter III printer
+connected locally via a 1200 baud serial line.
+
+     lp|LA-180 DecWriter III:\
+          :lp=/dev/lp:br#1200:fs#06320:\
+          :tr=\f:of=/usr/lib/lpf:lf=/usr/adm/lpd-errs:
+
+The llpp entry specifies the file name  to  open  for  output.
+Here  it could be left out since ``/dev/lp'' is the default.
+The bbrr entry sets the baud rate for the tty line and the  ffss
+entry sets CRMOD, no parity, and XTABS (see _t_t_y(4)).  The ttrr
+entry indicates that a form-feed should be printed when  the
+queue  empties  so the paper can be torn off without turning
+the printer off-line and pressing form feed.  The  ooff  entry
+specifies the filter program _l_p_f should be used for printing
+the files; more will be said about filters later.  The  last
+entry   causes   errors   to   be   written   to   the  file
+``/usr/adm/lpd-errs'' instead of the console.   Most  errors
+from  _l_p_d are logged using _s_y_s_l_o_g_d(8) and will not be logged
+in the specified file.  The filters should  use  _s_y_s_l_o_g_d  to
+report  errors; only those that write to standard error out-
+put will end up with errors in the llff  file.   (Occasionally
+errors  sent  to  standard error output have not appeared in
+the log file; the use of _s_y_s_l_o_g_d is highly recommended.)
+
+44..11..22..  RReemmoottee pprriinntteerrss
+
+     Printers that reside on remote  hosts  should  have  an
+empty  llpp  entry.  For example, the following printcap entry
+would send output to the printer named ``lp'' on the machine
+``ucbvax''.
+
+     lp|default line printer:\
+          :lp=:rm=ucbvax:rp=lp:sd=/var/spool/output/vaxlpd:
+
+The  rrmm  entry  is the name of the remote machine to connect
+to; this name must be a known host name for a machine on the
+network.   The  rrmm entry can also specify the port number of
+the  _l_p_d  server  on  the  remote   host   with   the   form
+``port@host''.   The rrpp capability indicates the name of the
+printer on the remote machine is ``lp''; here  it  could  be
+left  out  since  this  is  the default value.  The ssdd entry
+specifies  ``/var/spool/output/vaxlpd''  as   the   spooling
+directory     instead    of    the    default    value    of
+
+
+
+
+
+
+
+
+
+SMM:7-6                   4.3BSD Line Printer Spooler Manual
+
+
+``/var/spool/output/lpd''.
+
+44..22..  OOuuttppuutt ffiilltteerrss
+
+     Filters are used to handle device dependencies  and  to
+do accounting functions.  The output filtering of ooff is used
+when accounting is not being done or when all text data must
+be  passed  through  a  filter.   It  is  not intended to do
+accounting since it is started only once, all text files are
+filtered  through  it,  and no provision is made for passing
+owners' login name, identifying the beginning and ending  of
+jobs, etc.  The other filters (if specified) are started for
+each file printed and do accounting if there is an aaff entry.
+If  entries for both ooff and other filters are specified, the
+output filter is used only to print the banner page;  it  is
+then  stopped  to allow other filters access to the printer.
+An example of a printer that requires output filters is  the
+Benson-Varian.
+
+     va|varian|Benson-Varian:\
+          :lp=/dev/va0:sd=/var/spool/output/vad:of=/usr/lib/vpf:\
+          :tf=/usr/lib/rvcat:mx#2000:pl#58:px=2112:py=1700:tr=\f:
+
+The  ttff  entry specifies ``/usr/lib/rvcat'' as the filter to
+be used in printing _t_r_o_f_f(1) output.  This filter is  needed
+to  set  the  device into print mode for text, and plot mode
+for printing _t_r_o_f_f files and  raster  images  (see  _v_a(4V)).
+Note that the page length is set to 58 lines by the ppll entry
+for 8.5" by 11" fan-fold paper.  To enable  accounting,  the
+varian  entry  would be augmented with an aaff filter as shown
+below.
+
+     va|varian|Benson-Varian:\
+          :lp=/dev/va0:sd=/var/spool/output/vad:of=/usr/lib/vpf:\
+          :if=/usr/lib/vpf:tf=/usr/lib/rvcat:af=/usr/adm/vaacct:\
+          :mx#2000:pl#58:px=2112:py=1700:tr=\f:
+
+
+44..33..  AAcccceessss CCoonnttrrooll
+
+     Local access to printer queues is controlled  with  the
+rrgg printcap entry.
+
+          :rg=lprgroup:
+
+Users  must  be  in the group _l_p_r_g_r_o_u_p to submit jobs to the
+specified printer.   The  default  is  to  allow  all  users
+access.   Note  that  once the files are in the local queue,
+they can be printed locally or  forwarded  to  another  host
+depending on the configuration.
+
+     Remote  access  is  controlled  by listing the hosts in
+either the file /etc/hosts.equiv or /etc/hosts.lpd, one host
+per    line.    Note   that   _r_s_h(1)   and   _r_l_o_g_i_n(1)   use
+
+
+
+
+
+
+
+
+
+4.3BSD Line Printer Spooler Manual                   SMM:7-7
+
+
+/etc/hosts.equiv to determine which hosts are equivalent for
+allowing  logins without passwords.  The file /etc/hosts.lpd
+is only used  to  control  which  hosts  have  line  printer
+access.   Remote  access  can  be further restricted to only
+allow remote users with accounts on the local host to  print
+jobs by using the rrss printcap entry.
+
+          :rs:
+
+
+55..  OOuuttppuutt ffiilltteerr ssppeecciiffiiccaattiioonnss
+
+     The  filters  supplied  with 4.3BSD handle printing and
+accounting for most common line printers, the Benson-Varian,
+the  wide  (36") and narrow (11") Versatec printer/plotters.
+For other devices or accounting methods, it may be necessary
+to create a new filter.
+
+     Filters  are  spawned  by _l_p_d with their standard input
+the data to be printed, and  standard  output  the  printer.
+The  standard  error  is attached to the llff file for logging
+errors or _s_y_s_l_o_g_d may be used for logging errors.  A  filter
+must  return a 0 exit code if there were no errors, 1 if the
+job should be reprinted, and 2 if the job should  be  thrown
+away.  When _l_p_r_m sends a kill signal to the _l_p_d process con-
+trolling printing, it sends a SIGINT signal to  all  filters
+and  descendents  of filters.  This signal can be trapped by
+filters that need to do cleanup operations such as  deleting
+temporary files.
+
+     Arguments  passed  to a filter depend on its type.  The
+ooff filter is called with the following arguments.
+
+     _f_i_l_t_e_r --wwwidth --lllength
+
+The _w_i_d_t_h and _l_e_n_g_t_h values come from the ppww and ppll  entries
+in  the printcap database.  The iiff filter is passed the fol-
+lowing parameters.
+
+     _f_i_l_t_e_r [--cc] --wwwidth --lllength --iiindent --nn login --jj jobname --hh host accounting_file
+
+The --cc flag is optional,  and  only  supplied  when  control
+characters  are  to  be  passed uninterpreted to the printer
+(when using the --ll option of _l_p_r to print the file).  The --ww
+and --ll parameters are the same as for the ooff filter.  The --nn
+and --hh parameters specify the login name and  host  name  of
+the  job  owner.   The  last  argument  is  the  name of the
+accounting file from _p_r_i_n_t_c_a_p.  The --jj parameter is optional
+and specifies the name of the print job if available.
+
+     All  other  filters are called with the following argu-
+ments:
+
+
+
+
+
+
+
+
+
+
+
+SMM:7-8                   4.3BSD Line Printer Spooler Manual
+
+
+     _f_i_l_t_e_r --xxwidth --yylength --nn login --jj jobname --hh host accounting_file
+
+The --xx and --yy options specify the  horizontal  and  vertical
+page  size  in  pixels  (from  the  ppxx and ppyy entries in the
+printcap file).  The rest of the arguments are the  same  as
+for the iiff filter.
+
+66..  LLiinnee pprriinntteerr AAddmmiinniissttrraattiioonn
+
+     The  _l_p_c  program  provides  local  control  over  line
+printer activity.  The major commands and their intended use
+will  be  described.   The command format and remaining com-
+mands are described in _l_p_c(8).
+
+aabboorrtt and ssttaarrtt
+
+     _A_b_o_r_t terminates an active spooling daemon on the local
+     host immediately and then disables printing (preventing
+     new daemons from being started by _l_p_r).  This  is  nor-
+     mally used to forcibly restart a hung line printer dae-
+     mon (i.e., _l_p_q reports that there is a  daemon  present
+     but nothing is happening).  It does not remove any jobs
+     from the queue (use the _l_p_r_m command  instead).   _S_t_a_r_t
+     enables  printing  and  requests  _l_p_d to start printing
+     jobs.
+
+eennaabbllee and ddiissaabbllee
+
+     _E_n_a_b_l_e and _d_i_s_a_b_l_e allow spooling in the local queue to
+     be  turned  on/off.   This  will allow/prevent _l_p_r from
+     putting new jobs in the spool queue.  It is  frequently
+     convenient  to turn spooling off while testing new line
+     printer filters since the _r_o_o_t user can still  use  _l_p_r
+     to  put  jobs  in  the  queue but no one else can.  The
+     other main use is to prevent users from putting jobs in
+     the  queue  when the printer is expected to be unavail-
+     able for a long time.
+
+rreessttaarrtt
+
+     _R_e_s_t_a_r_t allows ordinary users to restart  printer  dae-
+     mons  when _l_p_q reports that there is no daemon present.
+
+ssttoopp
+
+     _S_t_o_p halts a spooling daemon after the current job com-
+     pletes;  this  also disables printing.  This is a clean
+     way to shutdown a printer to do maintenance, etc.  Note
+     that  users can still enter jobs in a spool queue while
+     a printer is _s_t_o_p_p_e_d.
+
+ttooppqq
+
+
+
+
+
+
+
+
+
+
+
+4.3BSD Line Printer Spooler Manual                   SMM:7-9
+
+
+     _T_o_p_q places jobs at the top of a printer  queue.   This
+     can  be  used  to  reorder high priority jobs since _l_p_r
+     only provides first-come-first-serve ordering of  jobs.
+
+77..  TTrroouubblleesshhoooottiinngg
+
+     There are several messages that may be generated by the
+the line printer system.  This section categorizes the  most
+common  and  explains the cause for their generation.  Where
+the message implies a failure, directions are given to  rem-
+edy the problem.
+
+     In  the examples below, the name _p_r_i_n_t_e_r is the name of
+the printer from the _p_r_i_n_t_c_a_p database.
+
+77..11..  LLPPRR
+
+llpprr:: _p_r_i_n_t_e_r:: uunnkknnoowwnn pprriinntteerr
+
+     The _p_r_i_n_t_e_r was not found  in  the  _p_r_i_n_t_c_a_p  database.
+     Usually this is a typing mistake; however, it may indi-
+     cate a missing or incorrect entry in the  /etc/printcap
+     file.
+
+llpprr:: _p_r_i_n_t_e_r:: jjoobbss qquueeuueedd,, bbuutt ccaannnnoott ssttaarrtt ddaaeemmoonn..
+
+     The  connection  to  _l_p_d  on  the local machine failed.
+     This usually means the printer server started  at  boot
+     time  has  died  or  is  hung.   Check the local socket
+     /var/run/printer to be sure it still exists (if it does
+     not  exist,  there is no _l_p_d process running).  Usually
+     it is enough to get a super-user to type the  following
+     to restart _l_p_d.
+
+          % /usr/lib/lpd
+
+     You can also check the state of the master printer dae-
+     mon with the following.
+
+          % ps l`cat /var/spool/output/lpd.lock`
+
+
+     Another possibility is that the _l_p_r program is not set-
+     user-id  to  _r_o_o_t,  set-group-id to group _d_a_e_m_o_n.  This
+     can be checked with
+
+          % ls -lg /usr/bin/lpr
+
+
+llpprr:: _p_r_i_n_t_e_r:: pprriinntteerr qquueeuuee iiss ddiissaabblleedd
+
+     This means the queue was turned off with
+
+
+
+
+
+
+
+
+
+
+
+SMM:7-10                  4.3BSD Line Printer Spooler Manual
+
+
+          % lpc disable _p_r_i_n_t_e_r
+
+     to prevent _l_p_r from putting files in the  queue.   This
+     is  normally  done by the system manager when a printer
+     is going to be down for a long time.  The  printer  can
+     be turned back on by a super-user with _l_p_c.
+
+77..22..  LLPPQQ
+
+wwaaiittiinngg ffoorr _p_r_i_n_t_e_r ttoo bbeeccoommee rreeaaddyy ((oofffflliinnee ??))
+
+     The  printer  device could not be opened by the daemon.
+     This can happen for several reasons, the most common is
+     that  the printer is turned off-line.  This message can
+     also be generated if the printer is out of  paper,  the
+     paper  is  jammed, etc.  The actual reason is dependent
+     on the meaning of error codes returned by system device
+     driver.   Not all printers supply enough information to
+     distinguish when a printer is off-line or having  trou-
+     ble  (e.g.  a printer connected through a serial line).
+     Another possible cause of this message  is  some  other
+     process,  such  as  an  output filter, has an exclusive
+     open on the device.  Your only recourse here is to kill
+     off  the  offending  program(s) and restart the printer
+     with _l_p_c.
+
+_p_r_i_n_t_e_r iiss rreeaaddyy aanndd pprriinnttiinngg
+
+     The _l_p_q program checks  to  see  if  a  daemon  process
+     exists  for  _p_r_i_n_t_e_r and prints the file _s_t_a_t_u_s located
+     in the spooling directory.  If the daemon  is  hung,  a
+     super  user can use _l_p_c to abort the current daemon and
+     start a new one.
+
+wwaaiittiinngg ffoorr _h_o_s_t ttoo ccoommee uupp
+
+     This implies there is a daemon trying to connect to the
+     remote  machine  named  _h_o_s_t  to  send the files in the
+     local queue.  If the remote machine is up, _l_p_d  on  the
+     remote  machine  is probably dead or hung and should be
+     restarted as mentioned for _l_p_r.
+
+sseennddiinngg ttoo _h_o_s_t
+
+     The files should be in the process of being transferred
+     to the remote _h_o_s_t.  If not, the local daemon should be
+     aborted and started with _l_p_c.
+
+WWaarrnniinngg:: _p_r_i_n_t_e_r iiss ddoowwnn
+
+     The printer has been marked as being  unavailable  with
+     _l_p_c.
+
+
+
+
+
+
+
+
+
+
+
+4.3BSD Line Printer Spooler Manual                  SMM:7-11
+
+
+WWaarrnniinngg:: nnoo ddaaeemmoonn pprreesseenntt
+
+     The _l_p_d process overseeing the spooling queue, as spec-
+     ified in the ``lock'' file in that directory, does  not
+     exist.   This  normally occurs only when the daemon has
+     unexpectedly died.  The error log file for the  printer
+     and the _s_y_s_l_o_g_d logs should be checked for a diagnostic
+     from the deceased process.  To restart an _l_p_d, use
+
+          % lpc restart _p_r_i_n_t_e_r
+
+
+nnoo ssppaaccee oonn rreemmoottee;; wwaaiittiinngg ffoorr qquueeuuee ttoo ddrraaiinn
+
+     This implies that there is insufficient disk  space  on
+     the  remote.   If  the file is large enough, there will
+     never be enough space on the  remote  (even  after  the
+     queue  on the remote is empty). The solution here is to
+     move the spooling queue or make more free space on  the
+     remote.
+
+77..33..  LLPPRRMM
+
+llpprrmm:: _p_r_i_n_t_e_r:: ccaannnnoott rreessttaarrtt pprriinntteerr ddaaeemmoonn
+
+     This  case is the same as when _l_p_r prints that the dae-
+     mon cannot be started.
+
+77..44..  LLPPDD
+
+     The _l_p_d program can log many different  messages  using
+_s_y_s_l_o_g_d(8).  Most of these messages are about files that can
+not be opened and usually imply that the  _p_r_i_n_t_c_a_p  file  or
+the protection modes of the files are incorrect.   Files may
+also be inaccessible if people manually manipulate the  line
+printer system (i.e. they bypass the _l_p_r program).
+
+     In  addition  to  messages generated by _l_p_d, any of the
+filters that _l_p_d spawns may log messages using _s_y_s_l_o_g_d or to
+the  error  log  file (the file specified in the llff entry in
+_p_r_i_n_t_c_a_p).
+
+77..55..  LLPPCC
+
+
+ccoouullddnn''tt ssttaarrtt pprriinntteerr
+
+     This case is the same as when _l_p_r reports that the dae-
+     mon cannot be started.
+
+ccaannnnoott eexxaammiinnee ssppooooll ddiirreeccttoorryy
+
+     Error  messages  beginning with ``cannot ...'' are usu-
+     ally because of incorrect ownership or protection  mode
+
+
+
+
+
+
+
+
+
+SMM:7-12                  4.3BSD Line Printer Spooler Manual
+
+
+     of  the  lock  file, spooling directory or the _l_p_c pro-
+     gram.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

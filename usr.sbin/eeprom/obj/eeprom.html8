@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: eeprom.8,v 1.17 2017/07/03 21:35:30 wiz Exp $
+  
+   Copyright (c) 1996 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Jason R. Thorpe.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>EEPROM(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">EEPROM(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">EEPROM(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">eeprom</code> &#x2014;
+<div class="Nd">display or modify contents of the EEPROM or openprom</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SUN_3_SYNOPSIS"><a class="permalink" href="#SUN_3_SYNOPSIS">SUN
+  3 SYNOPSIS</a></h1>
+<code class="Nm">eeprom</code> [<code class="Fl">-</code>]
+  [<code class="Fl">-c</code>] [<code class="Fl">-f</code>
+  <var class="Ar">device</var>] [<code class="Fl">-i</code>]
+  [<var class="Ar">field</var>[<code class="Li">=</code><var class="Ar">value</var>]
+  ...]
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SPARC,_SPARC64,_MACPPC_and_PREP_SYNOPSIS"><a class="permalink" href="#SPARC,_SPARC64,_MACPPC_and_PREP_SYNOPSIS">SPARC,
+  SPARC64, MACPPC and PREP SYNOPSIS</a></h1>
+<code class="Nm">eeprom</code> [<code class="Fl">-</code>]
+  [<code class="Fl">-c</code>] [<code class="Fl">-f</code>
+  <var class="Ar">device</var>] [<code class="Fl">-i</code>]
+  [<code class="Fl">-v</code>]
+  [<var class="Ar">field</var>[<code class="Li">=</code><var class="Ar">value</var>]
+  ...]
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">eeprom</code> provides an interface for displaying and changing
+  the contents of the EEPROM or openprom. The <code class="Nm">eeprom</code>
+  tool is only installed on supported platforms.
+<p class="Pp">Without any arguments, <code class="Nm">eeprom</code> will list
+    all of the known fields and their corresponding values. When given the name
+    of a specific field, <code class="Nm">eeprom</code> will display that value
+    or set it if the field name is followed by &#x2018;=&#x2019; and a value.
+    Only the super-user may modify the contents of the EEPROM or openprom.</p>
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><code class="Fl">-</code></dt>
+  <dd>Commands are taken from stdin and displayed on stdout.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd><code class="Nm">eeprom</code> will fix incorrect checksum values and
+      exit. This flag is quietly ignored on systems with an openprom.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">device</var></dt>
+  <dd>On systems with an EEPROM, use <var class="Ar">device</var> instead of the
+      default <span class="Pa">/dev/eeprom</span>. On systems with an openprom,
+      use <var class="Ar">device</var> instead of the default
+      <span class="Pa">/dev/openprom</span>.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a></dt>
+  <dd>If checksum values are incorrect, <code class="Nm">eeprom</code> will
+      ignore them and continue after displaying a warning. This flag is quietly
+      ignored on systems with an openprom.</dd>
+</dl>
+<p class="Pp">The following options are valid only on the SPARC and will produce
+    an error when used on a Sun 3:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>On systems with an openprom, be verbose when setting a value. Systems with
+      an EEPROM are always verbose.</dd>
+</dl>
+<p class="Pp">The <code class="Fl">-v</code> option is also present on sparc64,
+    macppc, and prep systems.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FIELDS_AND_VALUES"><a class="permalink" href="#FIELDS_AND_VALUES">FIELDS
+  AND VALUES</a></h1>
+The following fields and values are for systems with an EEPROM:
+<dl class="Bl-tag">
+  <dt>hwupdate</dt>
+  <dd>A valid date, such as &#x201C;7/12/95&#x201D;. The strings
+      &#x201C;today&#x201D; and &#x201C;now&#x201D; are also acceptable.</dd>
+  <dt>memsize</dt>
+  <dd>How much memory, in megabytes, is installed in the system.</dd>
+  <dt>memtest</dt>
+  <dd>How much memory, in megabytes, is to be tested upon power-up.</dd>
+  <dt>scrsize</dt>
+  <dd>The size of the screen. Acceptable values are &#x201C;1024x1024&#x201D;,
+      &#x201C;1152x900&#x201D;, &#x201C;1600x1280&#x201D;, and
+      &#x201C;1440x1440&#x201D;.</dd>
+  <dt>watchdog_reboot</dt>
+  <dd>If true, the system will reboot upon reset. Otherwise, the system will
+      fall into the monitor.</dd>
+  <dt>default_boot</dt>
+  <dd>If true, the system will use the boot device stored in
+      <span class="Pa">bootdev</span>.</dd>
+  <dt>bootdev</dt>
+  <dd>Specifies the default boot device in the form cc(x,x,x), where
+      &#x2018;cc&#x2019; is a combination of two letters such as
+      &#x2018;sd&#x2019; or &#x2018;le&#x2019; and each &#x2018;x&#x2019; is a
+      hexadecimal number between 0 and ff, less the prepending
+      &#x2018;0x&#x2019;.</dd>
+  <dt>kbdtype</dt>
+  <dd>This value is &#x201C;0&#x201D; for all Sun keyboards.</dd>
+  <dt>console</dt>
+  <dd>Specifies the console type. Valid values are &#x201C;b&amp;w&#x201D;,
+      &#x201C;ttya&#x201D;, &#x201C;ttyb&#x201D;, &#x201C;color&#x201D;, and
+      &#x201C;p4opt&#x201D;.</dd>
+  <dt>keyclick</dt>
+  <dd>If true, the keys click annoyingly.</dd>
+  <dt>diagdev</dt>
+  <dd>This is a string very similar to that used by
+      <span class="Pa">bootdev</span>. It specifies the default boot device when
+      the diagnostic switch is turned on.</dd>
+  <dt>diagpath</dt>
+  <dd>A 40-character, NULL-terminated string specifying the kernel or standalone
+      program to load when the diagnostic switch is turned on.</dd>
+  <dt>columns</dt>
+  <dd>An 8-bit integer specifying the number of columns on the console.</dd>
+  <dt>rows</dt>
+  <dd>An 8-bit integer specifying the number of rows on the console.</dd>
+  <dt>ttya_use_baud</dt>
+  <dd>Use the baud rate stored in <span class="Pa">ttya_baud</span> instead of
+      the default 9600.</dd>
+  <dt>ttya_baud</dt>
+  <dd>A 16-bit integer specifying the baud rate to use on ttya.</dd>
+  <dt>ttya_no_rtsdtr</dt>
+  <dd>If true, disables RTS/DTR.</dd>
+  <dt>ttyb_use_baud</dt>
+  <dd>Similar to <span class="Pa">ttya_use_baud</span>, but for ttyb.</dd>
+  <dt>ttyb_baud</dt>
+  <dd>Similar to <span class="Pa">ttya_baud</span>, but for ttyb.</dd>
+  <dt>ttyb_no_rtsdtr</dt>
+  <dd>Similar to <span class="Pa">ttya_no_rtsdtr</span>, but for ttyb.</dd>
+  <dt>banner</dt>
+  <dd>An 80-character, NULL-terminated string to use at power-up instead of the
+      default Sun banner.</dd>
+</dl>
+<p class="Pp">Note that the <span class="Pa">secure</span>,
+    <span class="Pa">bad_login</span>, and <span class="Pa">password</span>
+    fields are not currently supported.</p>
+<p class="Pp">Since the openprom is designed such that the field names are
+    arbitrary, explaining them here is dubious. Below are field names and values
+    that one is likely to see on a system with an openprom. NOTE: this list may
+    be incomplete or incorrect due to differences between revisions of the
+    openprom.</p>
+<dl class="Bl-tag">
+  <dt>sunmon-compat?</dt>
+  <dd>If true, the old EEPROM-style interface will be used while in the monitor,
+      rather than the openprom-style interface.</dd>
+  <dt>selftest-#megs</dt>
+  <dd>A 32-bit integer specifying the number of megabytes of memory to test upon
+      power-up.</dd>
+  <dt>oem-logo</dt>
+  <dd>A 64bitx64bit bitmap in Sun Iconedit format. To set the bitmap, give the
+      pathname of the file containing the image. NOTE: this property is not yet
+      supported.</dd>
+  <dt>oem-logo?</dt>
+  <dd>If true, enables the use of the bitmap stored in
+      <span class="Pa">oem-logo</span> rather than the default Sun logo.</dd>
+  <dt>oem-banner</dt>
+  <dd>A string to use at power up, rather than the default Sun banner.</dd>
+  <dt>oem-banner?</dt>
+  <dd>If true, enables the use of the banner stored in
+      <span class="Pa">oem-banner</span> rather than the default Sun
+    banner.</dd>
+  <dt>ttya-mode</dt>
+  <dd>A string of five comma separated fields in the format
+      &#x201C;9600,8,n,1,-&#x201D;. The first field is the baud rate. The second
+      field is the number of data bits. The third field is the parity;
+      acceptable values for parity are &#x2018;n&#x2019; (none),
+      &#x2018;e&#x2019; (even), &#x2018;o&#x2019; (odd), &#x2018;m&#x2019;
+      (mark), and &#x2018;s&#x2019; (space). The fourth field is the number of
+      stop bits. The fifth field is the &#x2018;handshake&#x2019; field;
+      acceptable values are &#x2018;-&#x2019; (none), &#x2018;h&#x2019;
+      (RTS/CTS), and &#x2018;s&#x2019; (Xon/Xoff).</dd>
+  <dt>ttya-rts-dtr-off</dt>
+  <dd>If true, the system will ignore RTS/DTR.</dd>
+  <dt>ttya-ignore-cd</dt>
+  <dd>If true, the system will ignore carrier detect.</dd>
+  <dt>ttyb-mode</dt>
+  <dd>Similar to <span class="Pa">ttya-mode</span>, but for ttyb.</dd>
+  <dt>ttyb-rts-dtr-off</dt>
+  <dd>Similar to <span class="Pa">ttya-rts-dtr-off</span>, but for ttyb.</dd>
+  <dt>ttyb-ignore-cd</dt>
+  <dd>Similar to <span class="Pa">ttya-ignore-cd</span>, but for ttyb.</dd>
+  <dt>sbus-probe-list</dt>
+  <dd>Four digits in the format &#x201C;0123&#x201D; specifying which order to
+      probe the sbus at power-up. It is unlikely that this value should ever be
+      changed.</dd>
+  <dt>screen-#columns</dt>
+  <dd>An 8-bit integer specifying the number of columns on the console.</dd>
+  <dt>screen-#rows</dt>
+  <dd>An 8-bit integer specifying the number of rows on the console.</dd>
+  <dt>auto-boot?</dt>
+  <dd>If true, the system will boot automatically at power-up.</dd>
+  <dt>watchdog-reboot?</dt>
+  <dd>If true, the system will reboot upon reset. Otherwise, system will fall
+      into the monitor.</dd>
+  <dt>input-device</dt>
+  <dd>One of the strings &#x201C;keyboard&#x201D;, &#x201C;ttya&#x201D;, or
+      &#x201C;ttyb&#x201D; specifying the default console input device.</dd>
+  <dt>output-device</dt>
+  <dd>One of the strings &#x201C;screen&#x201D;, &#x201C;ttya&#x201D;, or
+      &#x201C;ttyb&#x201D; specifying the default console output device.</dd>
+  <dt>keyboard-click?</dt>
+  <dd>If true, the keys click annoyingly.</dd>
+  <dt>sd-targets</dt>
+  <dd>A string in the format &#x201C;31204567&#x201D; describing the translation
+      of physical to logical target.</dd>
+  <dt>st-targets</dt>
+  <dd>Similar to <span class="Pa">sd-targets</span>, but for tapes. The default
+      translation is &#x201C;45670123&#x201D;.</dd>
+  <dt>scsi-initiator-id</dt>
+  <dd>The SCSI ID of the on-board SCSI controller.</dd>
+  <dt>hardware-revision</dt>
+  <dd>A 7-character string describing a date, such as
+    &#x201C;25May95&#x201D;.</dd>
+  <dt>last-hardware-update</dt>
+  <dd>Similar to <span class="Pa">hardware-revision</span>, describing when the
+      CPU was last updated.</dd>
+  <dt>diag-switch?</dt>
+  <dd>If true, the system will boot and run in diagnostic mode.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag">
+  <dt>/dev/eeprom</dt>
+  <dd>The EEPROM device on systems with an EEPROM.</dd>
+  <dt>/dev/openprom</dt>
+  <dd>The openprom device on systems with an openprom.</dd>
+  <dt>/dev/nvram</dt>
+  <dd>The nvram device on PReP systems.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html8/ofctl.html">ofctl(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+The fields and their values are not necessarily well defined on systems with an
+  openprom. Your mileage may vary.
+<p class="Pp">There are a few fields known to exist in some revisions of the
+    EEPROM and/or openprom that are not yet supported. Most notable are those
+    relating to password protection of the EEPROM or openprom.</p>
+<p class="Pp">Avoid gratuitously changing the contents of the EEPROM. It has a
+    limited number of write cycles.</p>
+<p class="Pp">The date parser isn't very intelligent.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 27, 2007</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

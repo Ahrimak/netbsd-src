@@ -768,6 +768,25 @@ init_intel_skylake_x(void)
 	return &intel_skylake_x;
 }
 
+static struct name_to_event intel_alderlake_n_names[] = {
+	{ "LD_BLOCKS.DATA_UNKNOWN",			0x03, 0x01, true },
+};
+
+static struct event_table intel_alderlake_n = {
+	.tablename = "Intel Alderlake-N",
+	.names = intel_alderlake_n_names,
+	.nevents = sizeof(intel_alderlake_n_names) /
+		sizeof(struct name_to_event),
+	.next = NULL
+};
+
+static struct event_table *
+init_intel_alderlake_n(void)
+{
+
+	return &intel_alderlake_n;
+}
+
 /*
  * Intel Cascade Lake.
  */
@@ -842,6 +861,9 @@ init_intel_generic(void)
 			table->next = init_intel_skylake_kabylake();
 			break;
 
+		case 0xbe:
+			table->next = init_intel_alderlake_n();
+			break;
 		case 0x55: /* Skylake-X, Cascade Lake */
 			stepping = CPUID_TO_STEPPING(eax);
 			if (stepping <= 4)

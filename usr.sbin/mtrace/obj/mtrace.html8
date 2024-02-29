@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: mtrace.8,v 1.8 2003/03/05 22:02:03 wiz Exp $
+  
+   Copyright (c) 1995 by the University of Southern California
+   All rights reserved.
+  
+   Permission to use, copy, modify, and distribute this software and its
+   documentation in source and binary forms for non-commercial purposes
+   and without fee is hereby granted, provided that the above copyright
+   notice appear in all copies and that both the copyright notice and
+   this permission notice appear in supporting documentation, and that
+   any documentation, advertising materials, and other materials related
+   to such distribution and use acknowledge that the software was
+   developed by the University of Southern California, Information
+   Sciences Institute.  The name of the University may not be used to
+   endorse or promote products derived from this software without
+   specific prior written permission.
+  
+   THE UNIVERSITY OF SOUTHERN CALIFORNIA makes no representations about
+   the suitability of this software for any purpose.  THIS SOFTWARE IS
+   PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES,
+   INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+   MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  
+   Other copyrights might apply to parts of this software and are so
+   noted when applicable.
+  
+   This manual page (but not the software) was derived from the
+   manual page for the traceroute program which bears the following
+   copyright notice:
+  
+   Copyright (c) 1988 The Regents of the University of California.
+   All rights reserved.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>MTRACE(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MTRACE(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">MTRACE(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+mtrace - print multicast path from a source to a receiver
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<b>mtrace</b> [ <b>-g</b> <i>gateway</i> ] [ <b>-i</b> <i>if_addr</i> ] [
+  <b>-l</b> ] [ <b>-M</b> ] [ <b>-m</b> <i>max_hops</i> ] [ <b>-n</b> ] [
+  <b>-p</b> ] [ <b>-q</b> <i>nqueries</i> ] [ <b>-r</b> <i>resp_dest</i> ] [
+  <b>-s</b> ] [ <b>-S</b> <i>stat_int</i> ] [ <b>-t</b> <i>ttl</i> ] [ <b>-v</b>
+  ] [ <b>-w</b> <i>waittime</i> ] <i>source</i> [ <i>receiver</i> ] [
+  <i>group</i> ]
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+Assessing problems in the distribution of IP multicast traffic can be difficult.
+  <b>mtrace</b> uses a tracing feature implemented in multicast routers
+  (<b>mrouted</b> version 3.3 and later) that is accessed via an extension to
+  the IGMP protocol. A trace query is passed hop-by-hop along the reverse path
+  from the <i>receiver</i> to the <i>source</i>, collecting hop addresses,
+  packet counts, and routing error conditions along the path, and then the
+  response is returned to the requestor.
+<p class="Pp">The only required parameter is the <i>source</i> host name or
+    address. The default <i>receiver</i> is the host running mtrace, and the
+    default <i>group</i> is &quot;MBone Audio&quot; (224.2.0.1), which is
+    sufficient if packet loss statistics for a particular multicast group are
+    not needed. These two optional parameters may be specified to test the path
+    to some other receiver in a particular group, subject to some constraints as
+    detailed below. The two parameters can be distinguished because the
+    <i>receiver</i> is a unicast address and the <i>group</i> is a multicast
+    address.</p>
+<p class="Pp">NOTE: For Solaris 2.4/2.5, if the multicast interface is not the
+    default interface, the -i option must be used to set the local address.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h1>
+<dl class="Bl-tag">
+  <dt><b>-g&#x00A0;</b><i>gwy</i></dt>
+  <dd>Send the trace query via unicast directly to the multicast router
+      <i>gwy</i> rather than multicasting the query. This must be the last-hop
+      router on the path from the intended <i>source</i> to the
+    <i>receiver</i>.</dd>
+</dl>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><i>CAUTION!!</i></dt>
+  <dd>Versions 3.3 and 3.5 of <b>mrouted</b> will crash if a trace query is
+      received via a unicast packet and <b>mrouted</b> has no route for the
+      <i>source</i> address. Therefore, do not use the <b>-g</b> option unless
+      the target <b>mrouted</b> has been verified to be 3.4 or newer than
+    3.5.</dd>
+</dl>
+</div>
+<dl class="Bl-tag">
+  <dt><b>-i&#x00A0;</b><i>addr</i></dt>
+  <dd>Use <i>addr</i> as the local interface address (on a multi-homed host) for
+      sending the trace query and as the default for the <i>receiver</i> and the
+      response destination.</dd>
+  <dt><b>-l</b></dt>
+  <dd>Loop indefinitely printing packet rate and loss statistics for the
+      multicast path every 10 seconds (see <b>-S</b> <i>stat_int</i>).</dd>
+  <dt><b>-M</b></dt>
+  <dd>Always send the response using multicast rather than attempting unicast
+      first.</dd>
+  <dt><b>-m&#x00A0;</b><i>n</i></dt>
+  <dd>Set to <i>n</i> the maximum number of hops that will be traced from the
+      <i>receiver</i> back toward the <i>source</i>. The default is 32 hops
+      (infinity for the DVMRP routing protocol).</dd>
+  <dt><b>-n</b></dt>
+  <dd>Print hop addresses numerically rather than symbolically and numerically
+      (saves a nameserver address-to-name lookup for each router found on the
+      path).</dd>
+  <dt><b>-q&#x00A0;</b><i>n</i></dt>
+  <dd>Set the maximum number of query attempts for any hop to <i>n</i>. The
+      default is 3.</dd>
+  <dt><b>-p</b></dt>
+  <dd>Listen passively for multicast responses from traces initiated by others.
+      This works best when run on a multicast router.</dd>
+  <dt><b>-r&#x00A0;</b><i>host</i></dt>
+  <dd>Send the trace response to <i>host</i> rather than to the host on which
+      <b>mtrace</b> is being run, or to a multicast address other than the one
+      registered for this purpose (224.0.1.32).</dd>
+  <dt><b>-s</b></dt>
+  <dd>Print a short form output including only the multicast path and not the
+      packet rate and loss statistics.</dd>
+  <dt><b>-S&#x00A0;</b><i>n</i></dt>
+  <dd>Change the interval between statistics gathering traces to <i>n</i>
+      seconds (default 10 seconds).</dd>
+  <dt><b>-t&#x00A0;</b><i>ttl</i></dt>
+  <dd>Set the <i>ttl</i> (time-to-live, or number of hops) for multicast trace
+      queries and responses. The default is 64, except for local queries to the
+      &quot;all routers&quot; multicast group which use ttl 1.</dd>
+  <dt><b>-v</b></dt>
+  <dd>Verbose mode; show hop times on the initial trace and statistics
+    display.</dd>
+  <dt><b>-w&#x00A0;</b><i>n</i></dt>
+  <dd>Set the time to wait for a trace response to <i>n</i> seconds (default 3
+      seconds).</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="USAGE"><a class="permalink" href="#USAGE">USAGE</a></h1>
+<section class="Ss">
+<h2 class="Ss" id="How_It_Works"><a class="permalink" href="#How_It_Works">How
+  It Works</a></h2>
+The technique used by the <b>traceroute</b> tool to trace unicast network paths
+  will not work for IP multicast because ICMP responses are specifically
+  forbidden for multicast traffic. Instead, a tracing feature has been built
+  into the multicast routers. This technique has the advantage that additional
+  information about packet rates and losses can be accumulated while the number
+  of packets sent is minimized.
+<p class="Pp">Since multicast uses reverse path forwarding, the trace is run
+    backwards from the <i>receiver</i> to the <i>source</i>. A trace query
+    packet is sent to the last hop multicast router (the leaf router for the
+    desired <i>receiver</i> address). The last hop router builds a trace
+    response packet, fills in a report for its hop, and forwards the trace
+    packet using unicast to the router it believes is the previous hop for
+    packets originating from the specified <i>source</i>. Each router along the
+    path adds its report and forwards the packet. When the trace response packet
+    reaches the first hop router (the router that is directly connected to the
+    source's net), that router sends the completed response to the response
+    destination address specified in the trace query.</p>
+<p class="Pp">If some multicast router along the path does not implement the
+    multicast traceroute feature or if there is some outage, then no response
+    will be returned. To solve this problem, the trace query includes a maximum
+    hop count field to limit the number of hops traced before the response is
+    returned. That allows a partial path to be traced.</p>
+<p class="Pp">The reports inserted by each router contain not only the address
+    of the hop, but also the ttl required to forward and some flags to indicate
+    routing errors, plus counts of the total number of packets on the incoming
+    and outgoing interfaces and those forwarded for the specified <i>group</i>.
+    Taking differences in these counts for two traces separated in time and
+    comparing the output packet counts from one hop with the input packet counts
+    of the next hop allows the calculation of packet rate and packet loss
+    statistics for each hop to isolate congestion problems.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="Finding_the_Last-Hop_Router"><a class="permalink" href="#Finding_the_Last-Hop_Router">Finding
+  the Last-Hop Router</a></h2>
+The trace query must be sent to the multicast router which is the last hop on
+  the path from the <i>source</i> to the <i>receiver</i>. If the receiver is on
+  the local subnet (as determined using the subnet mask), then the default
+  method is to multicast the trace query to all-routers.mcast.net (224.0.0.2)
+  with a ttl of 1. Otherwise, the trace query is multicast to the <i>group</i>
+  address since the last hop router will be a member of that group if the
+  receiver is. Therefore it is necessary to specify a group that the intended
+  receiver has joined. This multicast is sent with a default ttl of 64, which
+  may not be sufficient for all cases (changed with the <b>-t</b> option). If
+  the last hop router is known, it may also be addressed directly using the
+  <b>-g</b> option). Alternatively, if it is desired to trace a group that the
+  receiver has not joined, but it is known that the last-hop router is a member
+  of another group, the <b>-g</b> option may also be used to specify a different
+  multicast address for the trace query.
+<p class="Pp">When tracing from a multihomed host or router, the default
+    receiver address may not be the desired interface for the path from the
+    source. In that case, the desired interface should be specified explicitly
+    as the <i>receiver</i>.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="Directing_the_Response"><a class="permalink" href="#Directing_the_Response">Directing
+  the Response</a></h2>
+By default, <b>mtrace</b> first attempts to trace the full reverse path, unless
+  the number of hops to trace is explicitly set with the <b>-m</b> option. If
+  there is no response within a 3 second timeout interval (changed with the
+  <b>-w</b> option), a &quot;*&quot; is printed and the probing switches to
+  hop-by-hop mode. Trace queries are issued starting with a maximum hop count of
+  one and increasing by one until the full path is traced or no response is
+  received. At each hop, multiple probes are sent (default is three, changed
+  with <b>-q</b> option). The first half of the attempts (default is one) are
+  made with the unicast address of the host running <b>mtrace</b> as the
+  destination for the response. Since the unicast route may be blocked, the
+  remainder of attempts request that the response be multicast to
+  mtrace.mcast.net (224.0.1.32) with the ttl set to 32 more than what's needed
+  to pass the thresholds seen so far along the path to the receiver. For the
+  last quarter of the attempts (default is one), the ttl is increased by another
+  32 each time up to a maximum of 192. Alternatively, the ttl may be set
+  explicitly with the <b>-t</b> option and/or the initial unicast attempts can
+  be forced to use multicast instead with the <b>-M</b> option. For each
+  attempt, if no response is received within the timeout, a &quot;*&quot; is
+  printed. After the specified number of attempts have failed, <b>mtrace</b>
+  will try to query the next hop router with a DVMRP_ASK_NEIGHBORS2 request (as
+  used by the <b>mrinfo</b> program) to see what kind of router it is.
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+The output of <b>mtrace</b> is in two sections. The first section is a short
+  listing of the hops in the order they are queried, that is, in the reverse of
+  the order from the <i>source</i> to the <i>receiver</i>. For each hop, a line
+  is printed showing the hop number (counted negatively to indicate that this is
+  the reverse path); the multicast routing protocol (DVMRP, MOSPF, PIM, etc.);
+  the threshold required to forward data (to the previous hop in the listing as
+  indicated by the up-arrow character); and the cumulative delay for the query
+  to reach that hop (valid only if the clocks are synchronized). This first
+  section ends with a line showing the round-trip time which measures the
+  interval from when the query is issued until the response is received, both
+  derived from the local system clock. A sample use and output might be:
+<p class="Pp"></p>
+<pre>
+oak.isi.edu 80# mtrace -l caraway.lcs.mit.edu 224.2.0.3
+Mtrace from 18.26.0.170 to 128.9.160.100 via group 224.2.0.3
+Querying full reverse path...
+  0  oak.isi.edu (128.9.160.100)
+ -1  cub.isi.edu (128.9.160.153)  DVMRP  thresh^ 1  3 ms
+ -2  la.dart.net (140.173.128.1)  DVMRP  thresh^ 1  14 ms
+ -3  dc.dart.net (140.173.64.1)  DVMRP  thresh^ 1  50 ms
+ -4  bbn.dart.net (140.173.32.1)  DVMRP  thresh^ 1  63 ms
+ -5  mit.dart.net (140.173.48.2)  DVMRP  thresh^ 1  71 ms
+ -6  caraway.lcs.mit.edu (18.26.0.170)
+Round trip time 124 ms
+</pre>
+<p class="Pp">The second section provides a pictorial view of the path in the
+    forward direction with data flow indicated by arrows pointing downward and
+    the query path indicated by arrows pointing upward. For each hop, both the
+    entry and exit addresses of the router are shown if different, along with
+    the initial ttl required on the packet in order to be forwarded at this hop
+    and the propagation delay across the hop assuming that the routers at both
+    ends have synchronized clocks. The right half of this section is composed of
+    several columns of statistics in two groups. Within each group, the columns
+    are the number of packets lost, the number of packets sent, the percentage
+    lost, and the average packet rate at each hop. These statistics are
+    calculated from differences between traces and from hop to hop as explained
+    above. The first group shows the statistics for all traffic flowing out the
+    interface at one hop and in the interface at the next hop. The second group
+    shows the statistics only for traffic forwarded from the specified
+    <i>source</i> to the specified <i>group</i>.</p>
+<p class="Pp">These statistics are shown on one or two lines for each hop.
+    Without any options, this second section of the output is printed only once,
+    approximately 10 seconds after the initial trace. One line is shown for each
+    hop showing the statistics over that 10-second period. If the <b>-l</b>
+    option is given, the second section is repeated every 10 seconds and two
+    lines are shown for each hop. The first line shows the statistics for the
+    last 10 seconds, and the second line shows the cumulative statistics over
+    the period since the initial trace, which is 101 seconds in the example
+    below. The second section of the output is omitted if the <b>-s</b> option
+    is set.</p>
+<p class="Pp"></p>
+<pre>
+Waiting to accumulate statistics... Results after 101 seconds:
+  Source       Response Dest  Packet Statistics For  Only For Traffic
+18.26.0.170    128.9.160.100  All Multicast Traffic  From 18.26.0.170
+     |       __/ rtt  125 ms  Lost/Sent = Pct  Rate    To 224.2.0.3
+     v      /    hop   65 ms  ---------------------  ------------------
+18.26.0.144
+140.173.48.2   mit.dart.net
+     |     ^     ttl    1      0/6    = --%   0 pps   0/2  = --%  0 pps
+     v     |     hop    8 ms   1/52   =  2%   0 pps   0/18 =  0%  0 pps
+140.173.48.1
+140.173.32.1   bbn.dart.net
+     |     ^     ttl    2      0/6    = --%   0 pps   0/2  = --%  0 pps
+     v     |     hop   12 ms   1/52   =  2%   0 pps   0/18 =  0%  0 pps
+140.173.32.2
+140.173.64.1   dc.dart.net
+     |     ^     ttl    3      0/271  =  0%  27 pps   0/2  = --%  0 pps
+     v     |     hop   34 ms  -1/2652 =  0%  26 pps   0/18 =  0%  0 pps
+140.173.64.2
+140.173.128.1  la.dart.net
+     |     ^     ttl    4     -2/831  =  0%  83 pps   0/2  = --%  0 pps
+     v     |     hop   11 ms  -3/8072 =  0%  79 pps   0/18 =  0%  0 pps
+140.173.128.2
+128.9.160.153  cub.isi.edu
+     |      \__  ttl    5        833         83 pps     2         0 pps
+     v         \ hop   -8 ms     8075        79 pps     18        0 pps
+128.9.160.100  128.9.160.100
+  Receiver     Query Source
+</pre>
+<p class="Pp">Because the packet counts may be changing as the trace query is
+    propagating, there may be small errors (off by 1 or 2) in these statistics.
+    However, those errors should not accumulate, so the cumulative statistics
+    line should increase in accuracy as a new trace is run every 10 seconds.
+    There are two sources of larger errors, both of which show up as negative
+    losses:</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt>&#x2022;</dt>
+  <dd>If the input to a node is from a multi-access network with more than one
+      other node attached, then the input count will be (close to) the sum of
+      the output counts from all the attached nodes, but the output count from
+      the previous hop on the traced path will be only part of that. Hence the
+      output count minus the input count will be negative.</dd>
+  <dt>&#x2022;</dt>
+  <dd>In release 3.3 of the DVMRP multicast forwarding software for SunOS and
+      other systems, a multicast packet generated on a router will be counted as
+      having come in an interface even though it did not. This creates the
+      negative loss that can be seen in the example above.</dd>
+</dl>
+</div>
+<p class="Pp">Note that these negative losses may mask positive losses.</p>
+<p class="Pp">In the example, there is also one negative hop time. This simply
+    indicates a lack of synchronization between the system clocks across that
+    hop. This example also illustrates how the percentage loss is shown as two
+    dashes when the number of packets sent is less than 10 because the
+    percentage would not be statistically valid.</p>
+<p class="Pp">A second example shows a trace to a receiver that is not local;
+    the query is sent to the last-hop router with the <b>-g</b> option. In this
+    example, the trace of the full reverse path resulted in no response because
+    there was a node running an old version of <b>mrouted</b> that did not
+    implement the multicast traceroute function, so <b>mtrace</b> switched to
+    hop-by-hop mode. The &#x201C;Route pruned&#x201D; error code indicates that
+    traffic for group 224.2.143.24 would not be forwarded.</p>
+<p class="Pp"></p>
+<pre>
+oak.isi.edu 108# mtrace -g 140.173.48.2 204.62.246.73 \
+                           butter.lcs.mit.edu 224.2.143.24
+Mtrace from 204.62.246.73 to 18.26.0.151 via group 224.2.143.24
+Querying full reverse path... * switching to hop-by-hop:
+  0  butter.lcs.mit.edu (18.26.0.151)
+ -1  jam.lcs.mit.edu (18.26.0.144)  DVMRP  thresh^ 1  33 ms  Route pruned
+ -2  bbn.dart.net (140.173.48.1)  DVMRP  thresh^ 1  36 ms
+ -3  dc.dart.net (140.173.32.2)  DVMRP  thresh^ 1  44 ms
+ -4  darpa.dart.net (140.173.240.2)  DVMRP  thresh^ 16  47 ms
+ -5  * * * noc.hpc.org (192.187.8.2) [mrouted 2.2] didn't respond
+Round trip time 95 ms
+</pre>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHOR"><a class="permalink" href="#AUTHOR">AUTHOR</a></h1>
+Implemented by Steve Casner based on an initial prototype written by Ajit
+  Thyagarajan. The multicast traceroute mechanism was designed by Van Jacobson
+  with help from Steve Casner, Steve Deering, Dino Farinacci, and Deb Agrawal;
+  it was implemented in <b>mrouted</b> by Ajit Thyagarajan and Bill Fenner. The
+  option syntax and the output format of <b>mtrace</b> are modeled after the
+  unicast <b>traceroute</b> program written by Van Jacobson.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<b>mrouted</b>(8)<b>,</b> <b>mrinfo</b>(8)<b>,</b> <b>map-mbone</b>(8)<b>,</b>
+  <b>traceroute</b>(8)
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">May 8, 1995</td>
+    <td class="foot-os">4.3 Berkeley Distribution</td>
+  </tr>
+</table>
+</body>
+</html>

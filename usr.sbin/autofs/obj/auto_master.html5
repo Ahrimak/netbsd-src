@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: auto_master.5,v 1.8 2019/11/21 15:24:17 tkusumi Exp $
+   Copyright (c) 2017 The NetBSD Foundation, Inc.
+   Copyright (c) 2016 The DragonFly Project
+   Copyright (c) 2014 The FreeBSD Foundation
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Tomohiro Kusumi.
+  
+   This software was developed by Edward Tomasz Napierala under sponsorship
+   from the FreeBSD Foundation.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+   $FreeBSD$
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>AUTO_MASTER(5)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">AUTO_MASTER(5)</td>
+    <td class="head-vol">File Formats Manual</td>
+    <td class="head-rtitle">AUTO_MASTER(5)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">auto_master</code> &#x2014;
+<div class="Nd">auto_master and map file format</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The automounter configuration consists of the
+  <code class="Nm">auto_master</code> configuration file, which assigns file
+  system paths to map names, and maps, which contain actual mount information.
+  The <code class="Nm">auto_master</code> configuration file is used by the
+  <a class="Xr" href="../html8/automount.html">automount(8)</a> command. Map
+  files are read by the
+  <a class="Xr" href="../html8/automountd.html">automountd(8)</a> daemon.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTO_MASTER_SYNTAX"><a class="permalink" href="#AUTO_MASTER_SYNTAX">AUTO_MASTER
+  SYNTAX</a></h1>
+The <code class="Nm">auto_master</code> file consists of lines with two or three
+  entries separated by whitespace and terminated by a newline character:
+<div class="Bd Pp Bd-indent">
+<pre>
+<var class="Ar">mountpoint
+</var> <var class="Ar">map_name
+</var> [<code class="Fl">-</code><var class="Ar">options
+</var>
+]
+
+</pre>
+</div>
+<p class="Pp"><var class="Ar">mountpoint</var> is either a fully specified path,
+    or <span class="Pa">/-</span>. When <var class="Ar">mountpoint</var> is a
+    full path, <var class="Ar">map_name</var> must reference an indirect map.
+    Otherwise, <var class="Ar">map_name</var> must reference a direct map. See
+    <a class="Sx" href="#MAP_SYNTAX">MAP SYNTAX</a> below.</p>
+<p class="Pp"><var class="Ar">map_name</var> specifies map to use. If
+    <var class="Ar">map_name</var> begins with <code class="Li">-</code>, it
+    specifies a special map. See <a class="Sx" href="#MAP_SYNTAX">MAP SYNTAX</a>
+    below. If <var class="Ar">map_name</var> is not a fully specified path (it
+    does not start with <code class="Li">/</code>),
+    <a class="Xr" href="../html8/automountd.html">automountd(8)</a> will search
+    for that name in <span class="Pa">/etc</span>. Otherwise it will use the
+    path as given. If the file indicated by <var class="Ar">map_name</var> is
+    executable, <a class="Xr" href="../html8/automountd.html">automountd(8)</a>
+    will assume it is an executable map. See
+    <a class="Sx" href="#MAP_SYNTAX">MAP SYNTAX</a> below. Otherwise, the file
+    is opened and the contents parsed.</p>
+<p class="Pp">[<code class="Fl">-</code><var class="Ar">options</var>] is an
+    optional field that starts with <code class="Fl">-</code> and can contain
+    generic file system mount options.</p>
+<p class="Pp">The following example specifies that the
+    <span class="Pa">/etc/auto_example</span> indirect map will be mounted on
+    <span class="Pa">/example</span>.</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+/example auto_example
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="MAP_SYNTAX"><a class="permalink" href="#MAP_SYNTAX">MAP
+  SYNTAX</a></h1>
+Map files consist of lines with a number of entries separated by whitespace and
+  terminated by newline character:
+<div class="Bd Pp Bd-indent">
+<pre>
+<var class="Ar">key
+</var> [<code class="Fl">-</code><var class="Ar">options
+</var>
+]
+[<var class="Ar">mountpoint
+</var> [<code class="Fl">-</code><var class="Ar">options
+</var>
+]
+
+]
+<var class="Ar">location
+</var> [...
+]
+
+</pre>
+</div>
+<p class="Pp">In most cases, it can be simplified to:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+<var class="Ar">key
+</var> [<code class="Fl">-</code><var class="Ar">options
+</var>
+]
+<var class="Ar">location
+</var>
+</pre>
+</div>
+<p class="Pp"><var class="Ar">key</var> is the path component used by
+    <a class="Xr" href="../html8/automountd.html">automountd(8)</a> to find the
+    right map entry to use. It is also used to form the final mountpoint. A
+    wildcard (&#x2018;<code class="Li">*</code>&#x2019;) can be used for the
+    key. It matches every directory that does not match other keys. Those
+    directories will not be visible to the user until accessed.</p>
+<p class="Pp">The <var class="Ar">options</var> field, if present, must begin
+    with <code class="Fl">-</code>. When mounting the file system, options
+    supplied to <code class="Nm">auto_master</code> and options specified in the
+    map entry are concatenated together. The special option
+    <code class="Ic">fstype</code> is used to specify file system type. It is
+    not passed to the mount program as an option. Instead, it is passed as an
+    argument to <code class="Cm">mount -t</code>. The default
+    <code class="Ic">fstype</code> is
+    &#x2018;<code class="Li">nfs</code>&#x2019;. The special option
+    <code class="Ic">nobrowse</code> is used to disable creation of top-level
+    directories for special and executable maps.</p>
+<p class="Pp">The optional <var class="Ar">mountpoint</var> field is used to
+    specify multiple mount points for a single key.</p>
+<p class="Pp">The <var class="Ar">location</var> field specifies the file system
+    to be mounted. Ampersands (&#x2018;<code class="Li">&amp;</code>&#x2019;) in
+    the <var class="Ar">location</var> field are replaced with the value of
+    <var class="Ar">key</var>. This is typically used with wildcards, like:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+*	192.168.1.1:/share/&amp;
+</pre>
+</div>
+<p class="Pp">The <var class="Ar">location</var> field may contain references to
+    variables, like:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+sys	192.168.1.1:/sys/${OSNAME}
+</pre>
+</div>
+<p class="Pp">Defined variables are:</p>
+<p class="Pp"></p>
+<dl class="Bl-tag Bl-compact">
+  <dt><a class="permalink" href="#ARCH"><code class="Dv" id="ARCH">ARCH</code></a></dt>
+  <dd>Expands to the output of <code class="Li">uname -p</code>.</dd>
+  <dt><a class="permalink" href="#CPU"><code class="Dv" id="CPU">CPU</code></a></dt>
+  <dd>Same as <code class="Dv">ARCH</code>.</dd>
+  <dt><a class="permalink" href="#DOLLAR"><code class="Dv" id="DOLLAR">DOLLAR</code></a></dt>
+  <dd>A literal $ sign.</dd>
+  <dt><a class="permalink" href="#HOST"><code class="Dv" id="HOST">HOST</code></a></dt>
+  <dd>Expands to the output of <code class="Li">uname -n</code>.</dd>
+  <dt><a class="permalink" href="#OSNAME"><code class="Dv" id="OSNAME">OSNAME</code></a></dt>
+  <dd>Expands to the output of <code class="Li">uname -s</code>.</dd>
+  <dt><a class="permalink" href="#OSREL"><code class="Dv" id="OSREL">OSREL</code></a></dt>
+  <dd>Expands to the output of <code class="Li">uname -r</code>.</dd>
+  <dt><a class="permalink" href="#OSVERS"><code class="Dv" id="OSVERS">OSVERS</code></a></dt>
+  <dd>Expands to the output of <code class="Li">uname -v</code>.</dd>
+</dl>
+<p class="Pp">Additional variables can be defined with the
+    <code class="Fl">-D</code> option of
+    <a class="Xr" href="../html8/automount.html">automount(8)</a> and
+    <a class="Xr" href="../html8/automountd.html">automountd(8)</a>.</p>
+<p class="Pp">To pass a location that begins with <span class="Pa">/</span>,
+    prefix it with a colon. For example, <code class="Li">:/dev/cd0</code>.</p>
+<p class="Pp">This example, when put into
+    <span class="Pa">/etc/auto_example</span>, and with
+    <code class="Nm">auto_master</code> referring to the map as described above,
+    specifies that the NFS share
+    <code class="Li">192.168.1.1:/share/example/x</code> will be mounted on
+    <span class="Pa">/example/x/</span> when any process attempts to access that
+    mountpoint, with <code class="Ic">intr</code> and
+    <code class="Ic">nfsv4</code> mount options, described in
+    <a class="Xr" href="../html8/mount_nfs.html">mount_nfs(8)</a>:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+x -intr,nfsv4 192.168.1.1:/share/example/x
+</pre>
+</div>
+<p class="Pp">Automatically mount an SMB share on access, as a guest user,
+    without prompting for a password:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+share -fstype=smbfs,-N ://@server/share
+</pre>
+</div>
+<p class="Pp">Automatically mount the CD drive on access:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+cd -fstype=cd9660 :/dev/cd0
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SPECIAL_MAPS"><a class="permalink" href="#SPECIAL_MAPS">SPECIAL
+  MAPS</a></h1>
+Special maps have names beginning with <code class="Li">-</code>. Supported
+  special maps are:
+<p class="Pp"></p>
+<dl class="Bl-tag Bl-compact">
+  <dt><a class="permalink" href="#-hosts"><code class="Ic" id="-hosts">-hosts</code></a></dt>
+  <dd>Query the remote NFS server and map exported shares. This map is
+      traditionally mounted on <span class="Pa">/net</span>. Access to files on
+      a remote NFS server is provided through the
+      <span class="Pa">/net/</span><var class="Ar">nfs-server-ip</var>/<var class="Ar">share-name</var>/
+      directory without any additional configuration. Directories for individual
+      NFS servers are not present until the first access, when they are
+      automatically created.</dd>
+  <dt><a class="permalink" href="#-media"><code class="Ic" id="-media">-media</code></a></dt>
+  <dd>Query devices that are not yet mounted, but contain valid file systems.
+      Generally used to access files on removable media.</dd>
+  <dt><a class="permalink" href="#-noauto"><code class="Ic" id="-noauto">-noauto</code></a></dt>
+  <dd>Mount file systems configured in
+      <a class="Xr" href="../html5/fstab.html">fstab(5)</a> as
+      &quot;noauto&quot;. This needs to be set up as a direct map.</dd>
+  <dt><a class="permalink" href="#-null"><code class="Ic" id="-null">-null</code></a></dt>
+  <dd>Prevent <a class="Xr" href="../html8/automountd.html">automountd(8)</a>
+      from mounting anything on the mountpoint.</dd>
+</dl>
+<p class="Pp">It is possible to add custom special maps by adding them, as
+    executable maps named <span class="Pa">special_foo</span>, to the
+    <span class="Pa">/etc/autofs/</span> directory.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXECUTABLE_MAPS"><a class="permalink" href="#EXECUTABLE_MAPS">EXECUTABLE
+  MAPS</a></h1>
+If the map file specified in <code class="Nm">auto_master</code> has the execute
+  bit set, <a class="Xr" href="../html8/automountd.html">automountd(8)</a> will
+  execute it and parse the standard output instead of parsing the file contents.
+  When called without command line arguments, the executable is expected to
+  output a list of available map keys separated by newline characters.
+  Otherwise, the executable will be called with a key name as a command line
+  argument. Output from the executable is expected to be the entry for that key,
+  not including the key itself.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="INDIRECT_VERSUS_DIRECT_MAPS"><a class="permalink" href="#INDIRECT_VERSUS_DIRECT_MAPS">INDIRECT
+  VERSUS DIRECT MAPS</a></h1>
+Indirect maps are referred to in <code class="Nm">auto_master</code> by entries
+  with a fully qualified path as a mount point, and must contain only relative
+  paths as keys. Direct maps are referred to in
+  <code class="Nm">auto_master</code> by entries with <code class="Li">/-</code>
+  as the mountpoint, and must contain only fully qualified paths as keys. For
+  indirect maps, the final mount point is determined by concatenating the
+  <code class="Nm">auto_master</code> mountpoint with the map entry key and
+  optional map entry mountpoint. For direct maps, the final mount point is
+  determined by concatenating the map entry key with the optional map entry
+  mountpoint.
+<p class="Pp">The example above could be rewritten using direct map, by placing
+    this in <code class="Nm">auto_master</code>:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+/- auto_example
+</pre>
+</div>
+<p class="Pp">and this in the <span class="Pa">/etc/auto_example</span> map
+    file:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+/example/x -intr,nfsv4 192.168.1.1:/share/example/x
+/example/share -fstype=smbfs,-N ://@server/share
+/example/cd -fstype=cd9660 :/dev/cd0
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIRECTORY_SERVICES"><a class="permalink" href="#DIRECTORY_SERVICES">DIRECTORY
+  SERVICES</a></h1>
+Both <code class="Nm">auto_master</code> and maps may contain entries consisting
+  of a plus sign and map name:
+<div class="Bd Pp Bd-indent">
+<pre>
++auto_master
+</pre>
+</div>
+<p class="Pp">Those entries cause
+    <a class="Xr" href="../html8/automountd.html">automountd(8)</a> daemon to
+    retrieve the named map from directory services (like LDAP) and include it
+    where the entry was.</p>
+<p class="Pp">If the file containing the map referenced in
+    <code class="Nm">auto_master</code> is not found, the map will be retrieved
+    from directory services instead.</p>
+<p class="Pp">To retrieve entries from directory services,
+    <a class="Xr" href="../html8/automountd.html">automountd(8)</a> daemon runs
+    <span class="Pa">/etc/autofs/include</span>, which is usually a shell
+    script, with map name as the only command line parameter. The script should
+    output entries formatted according to <code class="Nm">auto_master</code> or
+    automounter map syntax to standard output. An example script to use LDAP is
+    included in <span class="Pa">/etc/autofs/include_ldap</span>. It can be
+    symlinked to <span class="Pa">/etc/autofs/include</span>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/auto_master</span></dt>
+  <dd>The default location of the <code class="Nm">auto_master</code> file.</dd>
+  <dt><span class="Pa">/etc/autofs/</span></dt>
+  <dd>Directory containing shell scripts to implement special maps and directory
+      services.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html5/autofs.html">autofs(5)</a>,
+  <a class="Xr" href="../html8/automount.html">automount(8)</a>,
+  <a class="Xr" href="../html8/automountd.html">automountd(8)</a>,
+  <a class="Xr" href="../html8/autounmountd.html">autounmountd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The <code class="Nm">auto_master</code> configuration file functionality was
+  developed by <span class="An">Edward Tomasz Napierala</span>
+  &lt;<a class="Mt" href="mailto:trasz@FreeBSD.org">trasz@FreeBSD.org</a>&gt;
+  under sponsorship from the <span class="Ux">FreeBSD</span> Foundation.
+<p class="Pp">The <code class="Nm">auto_master</code> configuration file
+    functionality was ported to <span class="Ux">DragonFly</span> and
+    <span class="Ux">NetBSD</span> by <span class="An">Tomohiro Kusumi</span>
+    &lt;<a class="Mt" href="mailto:tkusumi@netbsd.org">tkusumi@netbsd.org</a>&gt;.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+The <code class="Li">-media</code> special map is currently unsupported on
+  <span class="Ux">NetBSD</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">November 16, 2019</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

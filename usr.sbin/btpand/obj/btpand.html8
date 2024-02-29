@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: btpand.8,v 1.8 2019/01/17 08:53:17 wiz Exp $
+  
+   Copyright (c) 2008 Iain Hibbert
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>BTPAND(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">BTPAND(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">BTPAND(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">btpand</code> &#x2014;
+<div class="Nd">Bluetooth PAN daemon</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">btpand</code></td>
+    <td>[<code class="Fl">-i</code> <var class="Ar">ifname</var>]
+      [<code class="Fl">-m</code> <var class="Ar">mode</var>]
+      <code class="Fl">-a</code> <var class="Ar">addr</var>
+      <code class="Fl">-d</code> <var class="Ar">device</var>
+      {<code class="Fl">-s</code> <var class="Ar">service</var> |
+      <code class="Fl">-S</code> <var class="Ar">service</var>
+      [<code class="Fl">-p</code> <var class="Ar">psm</var>]}</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">btpand</code></td>
+    <td>[<code class="Fl">-c</code> <var class="Ar">path</var>]
+      [<code class="Fl">-i</code> <var class="Ar">ifname</var>]
+      [<code class="Fl">-l</code> <var class="Ar">limit</var>]
+      [<code class="Fl">-m</code> <var class="Ar">mode</var>]
+      [<code class="Fl">-p</code> <var class="Ar">psm</var>]
+      <code class="Fl">-d</code> <var class="Ar">device</var>
+      {<code class="Fl">-s</code> <var class="Ar">service</var> |
+      <code class="Fl">-S</code> <var class="Ar">service</var>}</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">btpand</code> daemon handles Bluetooth Personal Area
+  Networking services in the system. It can operate in client mode as a Personal
+  Area Networking User (PANU) or in server mode as Network Access Point (NAP),
+  Group ad-hoc Network (GN) or PANU host. <code class="Nm">btpand</code>
+  connects to the system via a <a class="Xr" href="../html4/tap.html">tap(4)</a>
+  virtual Ethernet device and forwards Ethernet packets to remote Bluetooth
+  devices using the Bluetooth Network Encapsulation Protocol (BNEP).
+<p class="Pp">The PANU client is the device that uses either the NAP or GN
+    service, or can talk directly to a PANU host in a crossover cable
+  fashion.</p>
+<p class="Pp">A GN host forwards Ethernet packets to each of the connected PAN
+    users as needed but does not provide access to any additional networks.</p>
+<p class="Pp">The NAP service provides some of the features of an Ethernet
+    bridge, with the NAP host forwarding Ethernet packets between each of the
+    connected PAN users, and a different network media.</p>
+<p class="Pp">Note, the only differences between NAP and GN services as
+    implemented by <code class="Nm">btpand</code> are in the SDP service record.
+    The bridging of packets by the NAP must be configured separately with
+    <a class="Xr" href="../html8/brconfig.html">brconfig(8)</a>.</p>
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a>
+    <var class="Ar">address</var></dt>
+  <dd>In client mode, address of remote server. May be given as BDADDR or name,
+      in which case <code class="Nm">btpand</code> will attempt to resolve the
+      address via the
+      <a class="Xr" href="../html3/bt_gethostbyname.html">bt_gethostbyname(3)</a>
+      call.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>
+    <var class="Ar">path</var></dt>
+  <dd>In server mode, specify <var class="Ar">path</var> to the
+      <a class="Xr" href="../html8/sdpd.html">sdpd(8)</a> control socket. The
+      default path is <span class="Pa">/var/run/sdp</span>.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">device</var></dt>
+  <dd>Restrict connections to the local <var class="Ar">device</var>. May be
+      given as BDADDR or name, in which case <code class="Nm">btpand</code> will
+      attempt to resolve the address via the
+      <a class="Xr" href="../html3/bt_devaddr.html">bt_devaddr(3)</a> call.
+      <code class="Nm">btpand</code> will set the
+      <a class="Xr" href="../html4/tap.html">tap(4)</a> interface physical
+      address to the BDADDR of the Bluetooth radio.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>
+    <var class="Ar">ifname</var></dt>
+  <dd><code class="Nm">btpand</code> uses the
+      <a class="Xr" href="../html4/tap.html">tap(4)</a> driver to create a new
+      network interface for use. Use this option to select a specific
+      <a class="Xr" href="../html4/tap.html">tap(4)</a> device interface which
+      must already be created.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a>
+    <var class="Ar">limit</var></dt>
+  <dd>In server mode, limit the number of simultaneous connections. The default
+      limit is 7 for NAP and GN servers, and 1 for a PANU server.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a>
+    <var class="Ar">mode</var></dt>
+  <dd>Set L2CAP connection link mode. Supported modes are:
+    <p class="Pp"></p>
+    <dl class="Bl-tag Bl-compact">
+      <dt>auth</dt>
+      <dd>require devices to be paired.</dd>
+      <dt>encrypt</dt>
+      <dd>auth, plus enable encryption.</dd>
+      <dt>secure</dt>
+      <dd>encryption, plus change of link key.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a>
+    <var class="Ar">psm</var></dt>
+  <dd>Use an alternative L2CAP Protocol/Service Multiplexer (PSM) for server
+      mode or client mode (when not using Service Discovery). The default PSM
+      for BNEP is 15 (0x000f).</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a>
+    <var class="Ar">service</var></dt>
+  <dd>Name of <var class="Ar">service</var> to provide or connect to, the
+      following services are recognised:
+    <p class="Pp"></p>
+    <dl class="Bl-tag Bl-compact">
+      <dt>GN</dt>
+      <dd>Group ad-hoc Network.</dd>
+      <dt>NAP</dt>
+      <dd>Network Access Point.</dd>
+      <dt>PANU</dt>
+      <dd>Personal Area Networking User.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a>
+    <var class="Ar">service</var></dt>
+  <dd>As per <code class="Fl">-s</code> except that
+      <code class="Nm">btpand</code> will not use SDP services for connection
+      setup.</dd>
+</dl>
+<p class="Pp">When providing networking services, the Bluetooth PAN profile says
+    that the &#x2018;Class of Device&#x2019; property of the bluetooth
+    controller SHALL include Networking capability (set bit 0x020000). See
+    <a class="Xr" href="../html8/btconfig.html">btconfig(8)</a> for details.</p>
+<p class="Pp">After <code class="Nm">btpand</code> has set up the client or
+    server connection and opened the
+    <a class="Xr" href="../html4/tap.html">tap(4)</a> interface, it will create
+    a pid file and detach.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/dev/tap</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/etc/bluetooth/hosts</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/var/run/sdp</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/var/run/tap</span><i class="Em">N</i><span class="No">.pid</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXIT_STATUS"><a class="permalink" href="#EXIT_STATUS">EXIT
+  STATUS</a></h1>
+The <code class="Nm">btpand</code> utility exits&#x00A0;0 on success,
+  and&#x00A0;&gt;0 if an error occurs.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<div class="Bd Bd-indent"><code class="Li">ifconfig tap1 create</code></div>
+<div class="Bd Bd-indent"><code class="Li">btpand -a host -d ubt0 -s NAP -m
+  encrypt -i tap1</code></div>
+<div class="Bd Bd-indent"><code class="Li">dhcpcd -q -b tap1</code></div>
+<p class="Pp">Will create an encrypted connection to the NAP on
+    <var class="Ar">host</var>, and link that to the <var class="Ar">tap1</var>
+    interface.</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">btpand -d ubt0 -s GN -m
+  auth</code></div>
+<p class="Pp">Will create a Group Network requiring authentication to join and
+    register the GN service with the local SDP server.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/bluetooth.html">bluetooth(3)</a>,
+  <a class="Xr" href="../html4/bluetooth.html">bluetooth(4)</a>,
+  <a class="Xr" href="../html4/bridge.html">bridge(4)</a>,
+  <a class="Xr" href="../html4/tap.html">tap(4)</a>,
+  <a class="Xr" href="../html8/brconfig.html">brconfig(8)</a>,
+  <a class="Xr" href="../html8/btconfig.html">btconfig(8)</a>,
+  <a class="Xr" href="../html8/dhcpcd.html">dhcpcd(8)</a>,
+  <a class="Xr" href="../html8/dhcpd.html">dhcpd(8)</a>,
+  <a class="Xr" href="../html8/ifconfig.html">ifconfig(8)</a>,
+  <a class="Xr" href="../html8/sdpd.html">sdpd(8)</a>
+<p class="Pp">The &#x201C;Personal Area Networking Profile&#x201D; and
+    &#x201C;Bluetooth Network Encapsulation Protocol&#x201D; specifications are
+    available at
+    <a class="Lk" href="http://www.bluetooth.com/">http://www.bluetooth.com/</a></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">Iain Hibbert</span>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+There is no way to supply alternative values for the SDP record.
+<p class="Pp">There is no way to set net type or multicast address filters.</p>
+<p class="Pp"><code class="Nm">btpand</code> does not do any address routing
+    except to directly connected unicast addresses. All other packets are
+    multicast.</p>
+<p class="Pp">As <code class="Nm">btpand</code> uses the BDADDR of the Bluetooth
+    radio as the physical address of the tap, only one instance can be run per
+    radio.</p>
+<p class="Pp"><code class="Nm">btpand</code> can only provide a single
+  service.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 17, 2019</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+     $NetBSD: nfsd.8,v 1.24 2016/03/17 15:25:46 christos Exp $
+  
+   Copyright (c) 1989, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+  	@(#)nfsd.8	8.4 (Berkeley) 3/29/95
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>NFSD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">NFSD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">NFSD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">nfsd</code> &#x2014;
+<div class="Nd">remote NFS server</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">nfsd</code></td>
+    <td>[<code class="Fl">-46drut</code>] [<code class="Fl">-n</code>
+      <var class="Ar">num_threads</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">nfsd</code> runs on a server machine to service NFS requests
+  from client machines. At least one <code class="Nm">nfsd</code> must be
+  running for a machine to operate as a server.
+<p class="Pp">Unless otherwise specified, four servers for UDP transport are
+    started.</p>
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Turn on debugging, don't fork and log to stderr.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a></dt>
+  <dd>Register the NFS service with
+      <a class="Xr" href="../html8/rpcbind.html">rpcbind(8)</a> without creating
+      any servers. This option can be used along with the
+      <code class="Fl">-u</code> or <code class="Fl">-t</code> options to
+      re-register NFS if the portmap server is restarted.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Specifies how many server threads to create. The default is 4. A server
+      should run enough threads to handle the maximum level of concurrency from
+      its clients.</dd>
+  <dt><a class="permalink" href="#4"><code class="Fl" id="4">-4</code></a></dt>
+  <dd>Only listen to IPv4 requests. By default <code class="Nm">nfsd</code>
+      listens to both IPv6 and IPv4 and tries to register for both.</dd>
+  <dt><a class="permalink" href="#6"><code class="Fl" id="6">-6</code></a></dt>
+  <dd>Only listen to IPv6 requests.</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a></dt>
+  <dd>Serve only TCP NFS clients. By default <code class="Nm">nfsd</code> serves
+      both TCP NFS and UDP NFS clients</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a></dt>
+  <dd>Serve only UDP NFS clients.</dd>
+</dl>
+<p class="Pp"><code class="Nm">nfsd</code> listens for service requests at the
+    port indicated in the NFS server specification; see
+    <span class="RsT">Network File System Protocol Specification,</span> RFC
+    1094 and <span class="RsT">NFS: Network File System Version 3 Protocol
+    Specification.</span></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXIT_STATUS"><a class="permalink" href="#EXIT_STATUS">EXIT
+  STATUS</a></h1>
+The <code class="Nm">nfsd</code> utility exits&#x00A0;0 on success,
+  and&#x00A0;&gt;0 if an error occurs.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+&#x201C;<code class="Li">nfsd -n 6</code>&#x201D; serves UDP and TCP transports
+  using six threads.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/nfsstat.html">nfsstat(1)</a>,
+  <a class="Xr" href="../html2/nfssvc.html">nfssvc(2)</a>,
+  <a class="Xr" href="../html8/mountd.html">mountd(8)</a>,
+  <a class="Xr" href="../html8/rpcbind.html">rpcbind(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">nfsd</code> utility first appeared in
+  <span class="Ux">4.4BSD</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">March 17, 2016</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

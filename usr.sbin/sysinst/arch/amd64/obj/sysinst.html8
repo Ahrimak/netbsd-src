@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: sysinst.8,v 1.5 2022/01/28 19:36:00 wiz Exp $
+  
+   Copyright (c) 2007 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>SYSINST(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">SYSINST(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">SYSINST(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">sysinst</code> &#x2014;
+<div class="Nd">install or upgrade a NetBSD system</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">sysinst</code></td>
+    <td>[<code class="Fl">-Dp</code>] [<code class="Fl">-C</code>
+      <var class="Ar">bg:fg</var>] [<code class="Fl">-f</code>
+      <var class="Ar">definition_file</var>] [<code class="Fl">-m</code>
+      <var class="Ar">message_catalog_dir</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">sysinst</code> is a menu-based program that may be used to
+  install or upgrade a <span class="Ux">NetBSD</span> system. It is usually
+  invoked automatically when the system is booted from appropriate installation
+  media.
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#C"><code class="Fl" id="C">-C</code></a>
+    <var class="Ar">bg:fg</var></dt>
+  <dd>Use the ansi colors (see
+      <code class="In">&lt;<a class="In">curses.h</a>&gt;</code>) bg as
+      background (default: 4 for blue) and fg as foreground/text color (default:
+      7 for white).</dd>
+  <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a></dt>
+  <dd>Switch on debugging.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">definition_file</var></dt>
+  <dd>Use <var class="Ar">definition_file</var> as a file for definitions other
+      than the defaults. See the
+      <a class="Sx" href="#DEFINITION_FILE">DEFINITION FILE</a> section for its
+      format.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a>
+    <var class="Ar">message_catalog_dir</var></dt>
+  <dd>Search for available language files in
+      <var class="Ar">message_catalog_dir</var>. If this argument is missing and
+      there are <span class="Pa">sysinstmsgs.*</span> files in the current
+      directory, those are used. If no such files are found, a compiled in
+      default catalog directory is used.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a></dt>
+  <dd>Start the extended partition editor instead of the installer. This option
+      is not available on some versions compiled for space limited install
+      media.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DEFINITION_FILE"><a class="permalink" href="#DEFINITION_FILE">DEFINITION
+  FILE</a></h1>
+A definition file can be used with <code class="Nm">sysinst</code> to control
+  several aspects of the installation or upgrade process. Options can be stored
+  within the file as
+<div class="Bd Bd-indent"><code class="Li">option = value</code></div>
+pairs. Options include the following, shown with their defaults as well as a
+  description (&#x201C;REL&#x201D; and &#x201C;MACH&#x201D; are the release and
+  architecture respectively, as determined by the image
+  <code class="Nm">sysinst</code> is used on):
+<table class="Bl-column">
+  <tr>
+    <td><b class="Sy">option name</b></td>
+    <td><b class="Sy">default value</b></td>
+    <td><b class="Sy">description</b></td>
+  </tr>
+  <tr>
+    <td>machine</td>
+    <td>MACH</td>
+    <td>Machine architecture</td>
+  </tr>
+  <tr>
+    <td>xfer dir</td>
+    <td>/usr/INSTALL</td>
+    <td>Transfer dir</td>
+  </tr>
+  <tr>
+    <td>ext dir</td>
+    <td></td>
+    <td>Extract dir (will usually be set later on)</td>
+  </tr>
+  <tr>
+    <td>ftp host</td>
+    <td>ftp.NetBSD.org</td>
+    <td>FTP host for fetching files</td>
+  </tr>
+  <tr>
+    <td>ftp dir</td>
+    <td>pub/NetBSD/NetBSD-REL</td>
+    <td>FTP directory for fetching files</td>
+  </tr>
+  <tr>
+    <td>ftp prefix</td>
+    <td>/MACH/binary/sets</td>
+    <td>Directory to look for sets, used for all methods of fetching (i.e., not
+      just FTP)</td>
+  </tr>
+  <tr>
+    <td>ftp user</td>
+    <td>ftp</td>
+    <td>FTP user for connecting</td>
+  </tr>
+  <tr>
+    <td>ftp pass</td>
+    <td>-</td>
+    <td>FTP password</td>
+  </tr>
+  <tr>
+    <td>ftp proxy</td>
+    <td>-</td>
+    <td>FTP proxy</td>
+  </tr>
+  <tr>
+    <td>nfs host</td>
+    <td>-</td>
+    <td>NFS host for fetching via NFS</td>
+  </tr>
+  <tr>
+    <td>nfs dir</td>
+    <td>/bsd/release</td>
+    <td>NFS directory for fetching files</td>
+  </tr>
+  <tr>
+    <td>cd dev</td>
+    <td>cd0a</td>
+    <td>Name of CD device for fetching files</td>
+  </tr>
+  <tr>
+    <td>fd dev</td>
+    <td>/dev/fd0a</td>
+    <td>Name of floppy device for fetching files</td>
+  </tr>
+  <tr>
+    <td>local dev</td>
+    <td>-</td>
+    <td>Other device to be mounted for fetching files</td>
+  </tr>
+  <tr>
+    <td>local fs</td>
+    <td>ffs</td>
+    <td>File system type for local device</td>
+  </tr>
+  <tr>
+    <td>local dir</td>
+    <td>release</td>
+    <td>Directory to look for in the mounted local file system</td>
+  </tr>
+  <tr>
+    <td>targetroot mount</td>
+    <td>/targetroot</td>
+    <td>Directory to mount target root dir to</td>
+  </tr>
+  <tr>
+    <td>dist postfix</td>
+    <td>.tgz</td>
+    <td>Suffix of set files to be extracted</td>
+  </tr>
+  <tr>
+    <td>diskname</td>
+    <td>mydisk</td>
+    <td><a class="Xr" href="../html5/disktab.html">disktab(5)</a> diskname to
+      use for target disk</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html7/release.html">release(7)</a>,
+  <a class="Xr" href="../html8/afterboot.html">afterboot(8)</a>,
+  <a class="Xr" href="../html8/boot.html">boot(8)</a>,
+  <a class="Xr" href="../html8/diskless.html">diskless(8)</a>
+<p class="Pp"><i class="Em">&lt;machine&gt;</i><span class="Pa">/INSTALL.*</span>
+    files on CD-ROM installation media
+    <span class="Pa">.../NetBSD-</span><i class="Em">&lt;rel&gt;</i><span class="Pa">/</span><i class="Em">&lt;machine&gt;</i><span class="Pa">/INSTALL.*</span>
+    files in <span class="Ux">NetBSD</span> releases or snapshots.</p>
+<p class="Pp">The default message catalog files are installed in
+    <span class="Pa">/usr/share/sysinst/catalog</span>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+A <code class="Nm">sysinst</code> command appeared in <span class="Ux">NetBSD
+  1.3</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 28, 2022</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

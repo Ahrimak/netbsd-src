@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: bootptest.8,v 1.5 2017/07/03 21:35:30 wiz Exp $
+   bootptest.8
+ -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>BOOTPTEST(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">BOOTPTEST(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">BOOTPTEST(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+bootptest - send BOOTP queries and print responses
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<b>bootptest</b> [ <b>-f</b> <i>bootfile</i> ] [ <b>-h</b> ] [ <b>-m</b>
+  <i>magic_number</i> ] <i>server-name</i> [<i>template-file</i>]
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<b>bootptest</b> sends BOOTP requests to the host specified as
+  <i>server-name</i> at one-second intervals until either a response is
+  received, or until ten requests have gone unanswered. After a response is
+  received, <b>bootptest</b> will wait one more second listening for additional
+  responses.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h1>
+<dl class="Bl-tag">
+  <dt><b>-f</b><i>&#x00A0;bootfile</i></dt>
+  <dd>Fill in the boot file field of the request with <i>bootfile</i>.</dd>
+  <dt><b>-h</b></dt>
+  <dd>Use the hardware (Ethernet) address to identify the client. By default,
+      the IP address is copied into the request indicating that this client
+      already knows its IP address.</dd>
+  <dt><b>-m</b><i>&#x00A0;magic_number</i></dt>
+  <dd>Initialize the first word of the vendor options field with
+      <i>magic_number</i>.</dd>
+</dl>
+<p class="Pp">A <i>template-file</i> may be specified, in which case
+    <b>bootptest</b> uses the (binary) contents of this file to initialize the
+    <i>options</i> area of the request packet.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="CREDITS"><a class="permalink" href="#CREDITS">CREDITS</a></h1>
+The bootptest program is a combination of original and derived works. The main
+  program module (bootptest.c) is original work by Gordon W. Ross
+  &lt;gwr@mc.com&gt;. The packet printing module (print-bootp.c) is a slightly
+  modified version of a file from the BSD tcpdump program.
+<p class="Pp">This program includes software developed by the University of
+    California, Lawrence Berkeley Laboratory and its contributors. (See the
+    copyright notice in print-bootp.c)</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+bootpd(8)
+</section>
+<section class="Sh">
+<h1 class="Sh" id="REFERENCES"><a class="permalink" href="#REFERENCES">REFERENCES</a></h1>
+<dl class="Bl-tag">
+  <dt>RFC951</dt>
+  <dd>BOOTSTRAP PROTOCOL (BOOTP)</dd>
+  <dt>RFC1048</dt>
+  <dd>BOOTP Vendor Information Extensions</dd>
+</dl>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">10 June 1993</td>
+    <td class="foot-os">MAINTENANCE COMMANDS</td>
+  </tr>
+</table>
+</body>
+</html>

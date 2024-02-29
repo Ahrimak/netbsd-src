@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: paxctl.8,v 1.22 2023/08/21 00:41:49 dholland Exp $
+  
+   Copyright 2006 Elad Efrat <elad@NetBSD.org>
+   Copyright 2008 Christos Zoulas <christos@NetBSD.org>
+   All rights reserved.
+  
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. The name of the author may not be used to endorse or promote products
+      derived from this software without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>PAXCTL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">PAXCTL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">PAXCTL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">paxctl</code> &#x2014;
+<div class="Nd">list and modify PaX flags associated with an ELF program</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">paxctl</code></td>
+    <td>[<code class="Fl">-0</code> | <var class="Ar">flags</var>]
+      <var class="Ar">program ...</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">paxctl</code> utility is used to list and manipulate PaX
+  flags associated with an ELF program. The PaX flags signify to the loader the
+  privilege protections to be applied to mapped memory pages, and fuller
+  explanations of the specific protections can be found in the
+  <a class="Xr" href="../html7/security.html">security(7)</a> manpage.
+<p class="Pp">To view existing flags on a <var class="Ar">program</var>, execute
+    <code class="Nm">paxctl</code> without any flags.</p>
+<p class="Pp">If <code class="Fl">-0</code> option is specified, all PaX flags
+    (including reserved bits) are cleared. Otherwise, each flag can be prefixed
+    either with a &#x2018;<code class="Cm">+</code>&#x2019; or a
+    &#x2018;<code class="Fl">-</code>&#x2019; sign to add or remove the flag,
+    respectively.</p>
+<p class="Pp">The following flags are available:</p>
+<p class="Pp"></p>
+<dl class="Bl-tag Bl-compact">
+  <dt><a class="permalink" href="#a"><code class="Cm" id="a">a</code></a></dt>
+  <dd>Explicitly disable PaX ASLR (Address Space Layout Randomization).</dd>
+  <dt><a class="permalink" href="#A"><code class="Cm" id="A">A</code></a></dt>
+  <dd>Explicitly enable PaX ASLR.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#g"><code class="Cm" id="g">g</code></a></dt>
+  <dd>Explicitly disable PaX Segvguard.</dd>
+  <dt><a class="permalink" href="#G"><code class="Cm" id="G">G</code></a></dt>
+  <dd>Explicitly enable PaX Segvguard.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#m"><code class="Cm" id="m">m</code></a></dt>
+  <dd>Explicitly disable PaX MPROTECT
+      (<a class="Xr" href="../html2/mprotect.html">mprotect(2)</a>
+      restrictions).</dd>
+  <dt><a class="permalink" href="#M"><code class="Cm" id="M">M</code></a></dt>
+  <dd>Explicitly enable PaX MPROTECT.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html2/mprotect.html">mprotect(2)</a>,
+  <a class="Xr" href="../html3/sysctl.html">sysctl(3)</a>,
+  <a class="Xr" href="../html4/options.html">options(4)</a>,
+  <a class="Xr" href="../html5/elf.html">elf(5)</a>,
+  <a class="Xr" href="../html7/security.html">security(7)</a>,
+  <a class="Xr" href="../html8/sysctl.html">sysctl(8)</a>,
+  <a class="Xr" href="../html9/fileassoc.html">fileassoc(9)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">paxctl</code> utility first appeared in
+  <span class="Ux">NetBSD 4.0</span>.
+<p class="Pp">The <code class="Nm">paxctl</code> utility is modeled after a tool
+    of the same name available for Linux from the PaX project.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">Elad Efrat</span>
+  &lt;<a class="Mt" href="mailto:elad@NetBSD.org">elad@NetBSD.org</a>&gt;
+<br/>
+<span class="An">Christos Zoulas</span>
+  &lt;<a class="Mt" href="mailto:christos@NetBSD.org">christos@NetBSD.org</a>&gt;
+</section>
+<section class="Sh">
+<h1 class="Sh" id="RESTRICTIONS"><a class="permalink" href="#RESTRICTIONS">RESTRICTIONS</a></h1>
+The <code class="Nm">paxctl</code> utility uses
+  <a class="Xr" href="../html5/elf.html">elf(5)</a> note sections to mark
+  executables with PaX flags. This means that, as one might expect, the PaX
+  settings do not persist if the program file is replaced. It also means that
+  running <code class="Nm">paxctl</code> changes the target executable, which
+  can be undesirable in production. In general, <code class="Nm">paxctl</code>
+  settings should be applied to programs at build time.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">August 20, 2023</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

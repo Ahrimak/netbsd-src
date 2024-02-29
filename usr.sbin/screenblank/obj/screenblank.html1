@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: screenblank.1,v 1.18 2019/04/08 20:18:14 sevan Exp $
+  
+   Copyright (c) 1996-2002 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Jason R. Thorpe.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>SCREENBLANK(1)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">SCREENBLANK(1)</td>
+    <td class="head-vol">General Commands Manual</td>
+    <td class="head-rtitle">SCREENBLANK(1)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">screenblank</code> &#x2014;
+<div class="Nd">screen saver daemon for wscons and FBIO machines</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">screenblank</code></td>
+    <td>[<code class="Fl">-k</code> | <code class="Fl">-m</code>]
+      [<code class="Fl">-d</code> <var class="Ar">inactivity-timeout</var>]
+      [<code class="Fl">-e</code> <var class="Ar">wakeup-delay</var>]
+      [<code class="Fl">-f</code> <var class="Ar">framebuffer</var>]
+      [<code class="Fl">-i</code> <var class="Ar">input-device</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">screenblank</code></td>
+    <td>{<code class="Fl">-b</code> | <code class="Fl">-u</code>}</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">screenblank</code> disables the framebuffer if the keyboard and
+  mouse are idle for a period of time, and re-enables the framebuffer when
+  keyboard or mouse activity resumes.
+<p class="Pp">When killed with a SIGINT, SIGHUP, or SIGTERM,
+    <code class="Nm">screenblank</code> will re-enable the framebuffer. The pid
+    can be found in the file
+  <span class="Pa">/var/run/screenblank.pid</span>.</p>
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#b"><code class="Fl" id="b">-b</code></a></dt>
+  <dd>Overriding the other options, simply try (once) to blank the framebuffer,
+      then exit.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">inactivity-timeout</var></dt>
+  <dd>Wait the number of seconds specified by
+      <var class="Ar">inactivity-timeout</var>, expressed in the format
+      &#x201C;xxx.xxx&#x201D;, before disabling the framebuffer due to
+      inactivity. The default is 600 seconds (10 minutes).</dd>
+  <dt><a class="permalink" href="#e"><code class="Fl" id="e">-e</code></a>
+    <var class="Ar">wakeup-delay</var></dt>
+  <dd>Wait the number of seconds specified by
+      <var class="Ar">wakeup-delay</var>, expressed in the format
+      &#x201C;xxx.xxx&#x201D;, before re-enabling the framebuffer once activity
+      resumes. The default is .25 seconds.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">framebuffer</var></dt>
+  <dd>Use the framebuffer device <var class="Ar">framebuffer</var> instead of
+      the default <span class="Pa">/dev/fb</span>.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>
+    <var class="Ar">input-device</var></dt>
+  <dd>Add <var class="Ar">input-device</var> to the list of devices to monitor
+      for activity.</dd>
+  <dt><a class="permalink" href="#k"><code class="Fl" id="k">-k</code></a></dt>
+  <dd>Do not check the keyboard for activity.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a></dt>
+  <dd>Do not check the mouse for activity.</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a></dt>
+  <dd>Overriding the other options, simply try (once) to unblank the
+      framebuffer, then exit.</dd>
+</dl>
+<p class="Pp">Note that the <code class="Fl">-k</code> and
+    <code class="Fl">-m</code> flags are mutually exclusive.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag">
+  <dt>/dev/kbd</dt>
+  <dd>The keyboard device.</dd>
+  <dt>/dev/mouse</dt>
+  <dd>The mouse device.</dd>
+  <dt>/dev/console</dt>
+  <dd>The console device.</dd>
+  <dt>/dev/fb</dt>
+  <dd>The default framebuffer.</dd>
+  <dt>/dev/wskbd</dt>
+  <dd>The keyboard for wscons machines.</dd>
+  <dt>/dev/wsmouse</dt>
+  <dd>The mouse device for wscons machines.</dd>
+  <dt>/dev/ttyE0</dt>
+  <dd>The console device for wscons machines.</dd>
+  <dt>/var/run/screenblank.pid</dt>
+  <dd>File containing the pid of <code class="Nm">screenblank</code>.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="CAVEATS"><a class="permalink" href="#CAVEATS">CAVEATS</a></h1>
+<code class="Nm">screenblank</code> checks the access and modification times of
+  the devices it is monitoring to determine activity. If the devices are on a
+  file system mounted with the <code class="Cm">noatime</code> and/or
+  <code class="Cm">nodevmtime</code> options, it will not function as expected.
+  A possible workaround is to use a script as such:
+<div class="Bd Pp Bd-indent">
+<pre>
+#!/bin/sh
+/usr/sbin/screenblank -d 0 -e 0 &amp;&amp; read
+/usr/bin/pkill screenblank
+</pre>
+</div>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">April 8, 2019</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

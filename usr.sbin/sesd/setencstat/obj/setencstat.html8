@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: setencstat.8,v 1.4 2009/04/08 13:47:07 joerg Exp $
+  	$OpenBSD: $
+  	$FreeBSD: $
+  
+   Copyright (c) 2000 Matthew Jacob
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions, and the following disclaimer,
+      without modification, immediately at the beginning of the file.
+   2. The name of the author may not be used to endorse or promote products
+      derived from this software without specific prior written permission.
+  
+   Alternatively, this software may be distributed under the terms of the
+   the GNU Public License ("GPL").
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR
+   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+   Matthew Jacob
+   Feral Software
+   mjacob@feral.com
+ -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>SETENCSTAT(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">SETENCSTAT(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">SETENCSTAT(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">setencstat</code> &#x2014;
+<div class="Nd">set SCSI Environmental Services Device enclosure status</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">setencstat</code></td>
+    <td><var class="Ar">device enclosure_status</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">setencstat</code> sets summary status for a SCSI Environmental
+  Services (or SAF-TE) device. The enclosure status argument may take on the
+  values:
+<dl class="Bl-tag">
+  <dt>0</dt>
+  <dd>Set the status to an <b class="Sy">OK</b> state.</dd>
+  <dt>1</dt>
+  <dd>Set the status to an <b class="Sy">UNRECOVERABLE</b> state.</dd>
+  <dt>2</dt>
+  <dd>Set the status to an <b class="Sy">CRITICAL</b> state.</dd>
+  <dt>4</dt>
+  <dd>Set the status to an <b class="Sy">NON-CRITICAL</b> state.</dd>
+  <dt>8</dt>
+  <dd>Set the status to an <b class="Sy">INFORMATIONAL</b> state.</dd>
+</dl>
+<p class="Pp">All the non-zero options may be combined.</p>
+<p class="Pp">Note that devices may simply and silently ignore the setting of
+    these values.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/dev/ses</span><var class="Ar">N</var></dt>
+  <dd>SCSI Environmental Services Devices</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/ses.html">ses(4)</a>,
+  <a class="Xr" href="../html8/getencstat.html">getencstat(8)</a>,
+  <a class="Xr" href="../html8/sesd.html">sesd(8)</a>,
+  <a class="Xr" href="../html8/setobjstat.html">setobjstat(8)</a>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 21, 2000</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

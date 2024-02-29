@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: apm.8,v 1.21 2012/04/08 22:00:40 wiz Exp $
+  
+   Copyright (c) 1996, 2010 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by John Kohl.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>APM(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">APM(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">APM(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">apm</code>, <code class="Nm">zzz</code> &#x2014;
+<div class="Nd">Advanced Power Management control program</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">apm</code></td>
+    <td>[<code class="Fl">-abdlmSsvz</code>] [<code class="Fl">-f</code>
+      <var class="Ar">sockname</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">zzz</code></td>
+    <td>[<code class="Fl">-Sz</code>] [<code class="Fl">-f</code>
+      <var class="Ar">sockname</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">apm</code> program communicates with the Advanced Power
+  Management (APM) daemon, <a class="Xr" href="../html8/apmd.html">apmd(8)</a>,
+  making requests of the current power status or placing the system either into
+  suspend or stand-by state. The <code class="Nm">apm</code> tool is only
+  installed on supported platforms.
+<p class="Pp">With no flags, <code class="Nm">apm</code> displays the current
+    power management state in verbose form.</p>
+<p class="Pp">Available command-line flags are:</p>
+<dl class="Bl-tag Bl-compact">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+  <dd>Display the external charger (A/C status): 0 means disconnected, 1 means
+      connected, 2 means backup power source, and 255 means unknown.</dd>
+  <dt><a class="permalink" href="#b"><code class="Fl" id="b">-b</code></a></dt>
+  <dd>Display the battery status: 0 means high, 1 means low, 2 means critical, 3
+      means charging, 4 means absent, and 255 means unknown.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Do not communicate with the APM daemon; attempt instead to manipulate the
+      APM control device directly.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">sockname</var></dt>
+  <dd>Set the name of the socket via which to contact
+      <a class="Xr" href="../html8/apmd.html">apmd(8)</a> to
+      <span class="Pa">sockname</span>.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>Display the estimated battery lifetime in percent.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a></dt>
+  <dd>Display the estimated battery lifetime in minutes.</dd>
+  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a></dt>
+  <dd>Put the system into stand-by (light sleep) mode.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Display if power management is enabled.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Request more verbose description of the displayed states.</dd>
+  <dt><a class="permalink" href="#z"><code class="Fl" id="z">-z</code></a></dt>
+  <dd>Put the system into suspend (deep sleep) mode.</dd>
+</dl>
+<p class="Pp">The <code class="Nm">zzz</code> variant of this command is an
+    alternative for suspending the system. With no arguments,
+    <code class="Nm">zzz</code> places the system into suspend mode. The command
+    line flags serve the same purpose as for the <code class="Nm">apm</code>
+    variant of this command.</p>
+<p class="Pp">This command does not wait for positive confirmation that the
+    requested mode has been entered; to do so would mean the command does not
+    return until the system resumes from its sleep state.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<span class="Pa">/var/run/apmdev</span> is the default UNIX-domain socket used
+  for communication with <a class="Xr" href="../html8/apmd.html">apmd(8)</a>.
+  The <code class="Fl">-f</code> flag may be used to specify an alternate socket
+  name. The protection modes on this socket govern which users may access the
+  APM functions.
+<p class="Pp"><span class="Pa">/dev/apmctl</span> is the control device which is
+    used when the <code class="Fl">-d</code> flag is specified; it must be
+    writable for the <code class="Fl">-d</code> flag to work successfully.
+    <span class="Pa">/dev/apm</span> is the status device used when the socket
+    is not accessible; it must be readable to provide current APM status.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/acpi.html">acpi(4)</a>,
+  <a class="Xr" href="../html4/apm.html">apm(4)</a>,
+  <a class="Xr" href="../html8/apmd.html">apmd(8)</a>
+<p class="Pp"><cite class="Rs"><span class="RsA">Intel Corporation</span> and
+    <span class="RsA">Microsoft Corporation</span>, <span class="RsT">Advanced
+    Power Management (APM) BIOS Interface Specification</span>,
+    <span class="RsN">Revision 1.2</span>, <span class="RsD">February
+    1996</span>.</cite></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">apm</code> command appeared in <span class="Ux">NetBSD
+  1.3</span>.
+<p class="Pp">The APM specification first appeared in 1992. The last update to
+    the standard was made in 1996 - the same year when it was superceded by the
+    ACPI 1.0 standard. Thereafter power management on IBM-compatible personal
+    computers has relied on ACPI, implemented in <span class="Ux">NetBSD</span>
+    by the <a class="Xr" href="../html4/acpi.html">acpi(4)</a> subsystem. The
+    <a class="Xr" href="../html4/acpi.html">acpi(4)</a> provides an emulation
+    layer for the legacy <code class="Nm">apm</code>.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">March 20, 2010</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

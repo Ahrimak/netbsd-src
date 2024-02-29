@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: fssconfig.8,v 1.12 2016/07/29 05:20:33 pgoyette Exp $	*/
+  
+   Copyright (c) 2003 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Juergen Hannken-Illjes.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>FSSCONFIG(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">FSSCONFIG(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">FSSCONFIG(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">fssconfig</code> &#x2014;
+<div class="Nd">configure file system snapshot devices</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">fssconfig</code></td>
+    <td>[<code class="Fl">-cxv</code>] <var class="Ar">device</var>
+      <var class="Ar">path</var> <var class="Ar">backup</var>
+      [<var class="Ar">cluster</var> [<var class="Ar">size</var>]]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">fssconfig</code></td>
+    <td><code class="Fl">-u</code> [<code class="Fl">-v</code>]
+      <var class="Ar">device</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">fssconfig</code></td>
+    <td><code class="Fl">-l</code> [<code class="Fl">-v</code>]
+      [<var class="Ar">device</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">fssconfig</code> command configures file system snapshot
+  pseudo disk devices. It will associate the file system snapshot disk
+  <var class="Ar">device</var> with a snapshot of the file system mounted on
+  <var class="Ar">path</var>, allowing <var class="Ar">device</var> to be
+  accessed as though it were a disk.
+<p class="Pp">If <var class="Ar">backup</var> resides on the snapshotted file
+    system a persistent snapshot will be created. This snapshot is active until
+    <var class="Ar">backup</var> is unlinked. Persistent snapshots save the file
+    system as if it had been unmounted. Unlinked but open files get removed from
+    the snapshot. The time needed to create a persistent snapshot increases with
+    the size of the file system and decreases with the file system block size.
+    This snapshot mode is only supported for FFS file systems.</p>
+<p class="Pp">Otherwise data written through the <var class="Ar">path</var> will
+    be saved in <var class="Ar">backup</var>. If <var class="Ar">backup</var> is
+    a regular file, it will be created with length <var class="Ar">size</var>.
+    Default size is the size of <var class="Ar">path</var>. Data is saved to
+    <var class="Ar">backup</var> in units of <var class="Ar">cluster</var>
+    bytes. The snapshot is an image of the underlying block device at a moment
+    in time. Unlinked but open files are still present on the snapshot. The time
+    needed to create a snapshot is independent of the size of the file system or
+    the file system block size.</p>
+<p class="Pp">Options indicate an action to be performed:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>Configures the device. If successful, references to
+      <var class="Ar">device</var> will access the contents of
+      <var class="Ar">path</var> at the time the snapshot was taken. If
+      <var class="Ar">backup</var> is a directory, a temporary file will be
+      created in this directory. This file will be unlinked on exit.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>List the snapshot devices and indicate which ones are in use. If a
+      specific <var class="Ar">device</var> is given, then only that will be
+      described.</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a></dt>
+  <dd>Unconfigures the <var class="Ar">device</var>.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Be more verbose listing the snapshot devices.</dd>
+  <dt><a class="permalink" href="#x"><code class="Fl" id="x">-x</code></a></dt>
+  <dd>Unlink <var class="Ar">backup</var> after the <var class="Ar">device</var>
+      is configured.</dd>
+</dl>
+<p class="Pp">If no action option is given, <code class="Fl">-c</code> is
+    assumed.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/dev/rfss?</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/dev/fss?</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<div class="Bd Bd-indent"><code class="Li">fssconfig fss0 /usr
+  /tmp/back</code></div>
+<div class="Bd Bd-indent"><code class="Li">mount /dev/fss0 /mnt</code></div>
+<p class="Pp">Configures the snapshot device <span class="Pa">fss0</span> as a
+    snapshot of the <span class="Pa">/usr</span> file system, and makes the
+    contents of the snapshot available via <span class="Pa">/mnt</span>. Data
+    written through <span class="Pa">/usr</span> will be backed up in
+    <span class="Pa">/tmp/back</span>.</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">fssconfig fss1 / /dev/rsd0e
+  8192</code></div>
+<p class="Pp">Configures the snapshot device <span class="Pa">fss1</span> as a
+    snapshot of the <span class="Pa">/</span> file system. Data written through
+    <span class="Pa">/</span> will be backed up in
+    <span class="Pa">/dev/rsd0e</span>. The backup will take place in units of
+    8192 bytes.</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">fssconfig -u fss0</code></div>
+<p class="Pp">Unconfigures the <span class="Pa">fss0</span> device.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/opendisk.html">opendisk(3)</a>,
+  <a class="Xr" href="../html4/fss.html">fss(4)</a>,
+  <a class="Xr" href="../html8/dump.html">dump(8)</a>,
+  <a class="Xr" href="../html8/mount.html">mount(8)</a>,
+  <a class="Xr" href="../html8/umount.html">umount(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">fssconfig</code> command appeared in
+  <span class="Ux">NetBSD 2.0</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">July 29, 2016</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

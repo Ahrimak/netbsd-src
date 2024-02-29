@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: mmcformat.8,v 1.6 2014/03/18 18:20:47 riastradh Exp $
+  
+   Copyright (c) 2008 Reinoud Zandijk
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in
+      the documentation and/or other materials provided with the
+      distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR(S) ``AS IS'' AND ANY EXPRESS
+   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY
+   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+   GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+   IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>MMCFORMAT(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MMCFORMAT(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">MMCFORMAT(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">mmcformat</code> &#x2014;
+<div class="Nd">format optical media</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">mmcformat</code></td>
+    <td>[<code class="Fl">-BDFGHhIMOpRrSsw</code>] [<code class="Fl">-b</code>
+      <var class="Ar">blockingnr</var>] [<code class="Fl">-c</code>
+      <var class="Ar">cert-num</var>] <var class="Ar">special</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">mmcformat</code> utility formats optical media conforming
+  to the MMC standard. This includes CD, DVD, and Blu-Ray (BD) media.
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#B"><code class="Fl" id="B">-B</code></a></dt>
+  <dd>Blank media when possible before formatting it.</dd>
+  <dt><a class="permalink" href="#b"><code class="Fl" id="b">-b</code></a>
+    <var class="Ar">blockingnr</var></dt>
+  <dd>Explicitly select packet size in sectors (for CD-RW only). It is not
+      recommended to change this from its default of 32.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>
+    <var class="Ar">cert-num</var></dt>
+  <dd>Certify media for DVD-RAM / DV-RE. The argument cert-num specifies:
+    <div class="Bd-indent">
+    <dl class="Bl-tag">
+      <dt>0</dt>
+      <dd>no certification</dd>
+      <dt>1</dt>
+      <dd>full certification</dd>
+      <dt>2</dt>
+      <dd>quick certification</dd>
+    </dl>
+    </div>
+  </dd>
+  <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a></dt>
+  <dd>Debug mode. Print all SCSI/ATAPI command errors.</dd>
+  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a></dt>
+  <dd>Format media.</dd>
+  <dt><a class="permalink" href="#G"><code class="Fl" id="G">-G</code></a></dt>
+  <dd>Grow last CD-RW/DVD-RW session.</dd>
+  <dt><a class="permalink" href="#H"><code class="Fl" id="H">-H</code></a></dt>
+  <dd>Show help and print formatting choices for the inserted media.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a></dt>
+  <dd>Show help and print formatting choices for the inserted media.</dd>
+  <dt><a class="permalink" href="#I"><code class="Fl" id="I">-I</code></a></dt>
+  <dd>Show help and print formatting choices for the inserted media.</dd>
+  <dt><a class="permalink" href="#M"><code class="Fl" id="M">-M</code></a></dt>
+  <dd>Select MRW (Mount Rainier) error correcting background format.</dd>
+  <dt><a class="permalink" href="#O"><code class="Fl" id="O">-O</code></a></dt>
+  <dd>Old style CD-RW formatting; recommended for CD-RW.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a></dt>
+  <dd>Explicitly set packet format.</dd>
+  <dt><a class="permalink" href="#R"><code class="Fl" id="R">-R</code></a></dt>
+  <dd>Restart previously stopped MCD-MRW or DVD+RW background format.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a></dt>
+  <dd>Recompile defect list for DVD-RAM.</dd>
+  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a></dt>
+  <dd>Grow spare space DVD-RAM / BD-RE.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Format DVD+MRW / BD-RE with extra spare space.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a></dt>
+  <dd>Wait until completion of background format.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="NOTES"><a class="permalink" href="#NOTES">NOTES</a></h1>
+Due to the enormous varieties in optical media,
+  <code class="Nm">mmcformat</code> is made as generic as possible. This can
+  result in confusion.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<div class="Bd Bd-indent"><code class="Li"><code class="Ic">mmcformat -B -O
+  /dev/rcd0d</code></code></div>
+<p class="Pp">Blanks and then formats a CD-RW disc using the &#x201C;old
+    style&#x201D; format command. It is recommended to use this &#x201C;old
+    style&#x201D; command unless your drive reports that it's not supported; in
+    that case, resort to the default <code class="Fl">-F</code>. Note that a
+    CD-RW disc can be reformatted without being blanked. Blanking switches
+    between sequential and fixed packet writing by erasing the disc. This can
+    also help to revive old discs.</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li"><code class="Ic">mmcformat -F -M
+  /dev/rcd0d</code></code></div>
+<p class="Pp">Format a CD-RW or a DVD+RW to use MRW (Mount Rainier). This format
+    tries to hide media flaws as much as possible by relocation.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html8/scsictl.html">scsictl(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">mmcformat</code> command first appeared in
+  <span class="Ux">NetBSD 5.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">Reinoud Zandijk</span>
+  &lt;<a class="Mt" href="mailto:reinoud@NetBSD.org">reinoud@NetBSD.org</a>&gt;
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+<code class="Nm">mmcformat</code> could be merged with
+  <a class="Xr" href="../html8/scsictl.html">scsictl(8)</a> but that tool is
+  very hard disk oriented.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">May 9, 2008</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

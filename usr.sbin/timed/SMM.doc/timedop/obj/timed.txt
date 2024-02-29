@@ -1,0 +1,396 @@
+
+
+
+
+
+
+
+
+
+           TTiimmeedd IInnssttaallllaattiioonn aanndd OOppeerraattiioonn GGuuiiddee
+
+
+      _R_i_c_c_a_r_d_o _G_u_s_e_l_l_a_, _S_t_e_f_a_n_o _Z_a_t_t_i_, _J_a_m_e_s _M_. _B_l_o_o_m
+              Computer Systems Research Group
+                 Computer Science Division
+ Department of Electrical Engineering and Computer Science
+             University of California, Berkeley
+                     Berkeley, CA 94720
+
+                         _K_i_r_k _S_m_i_t_h
+                Engineering Computer Network
+            Department of Electrical Engineering
+                     Purdue University
+                  West Lafayette, IN 47906
+
+
+
+IInnttrroodduuccttiioonn
+
+     The clock synchronization service for the  UNIX  4.3BSD
+operating system is composed of a collection of time daemons
+(_t_i_m_e_d) running on the machines in  a  local  area  network.
+The algorithms implemented by the service is based on a mas-
+ter-slave scheme.  The time daemons  communicate  with  each
+other using the _T_i_m_e _S_y_n_c_h_r_o_n_i_z_a_t_i_o_n _P_r_o_t_o_c_o_l (TSP) which is
+built on the DARPA UDP protocol and described in  detail  in
+[4].
+
+     A  time  daemon has a twofold function.  First, it sup-
+ports the synchronization of the clocks of the various hosts
+in  a  local area network.  Second, it starts (or takes part
+in) the election that occurs among slave time daemons  when,
+for  any reason, the master disappears.  The synchronization
+mechanism and the election procedure employed by the program
+_t_i_m_e_d  are  described  in other documents [1,2,3].  The next
+paragraphs are a brief  overview  of  how  the  time  daemon
+works.   This document is mainly concerned with the adminis-
+trative and technical issues of running _t_i_m_e_d at a  particu-
+lar site.
+-----------
+This  work  was  sponsored by the Defense Advanced
+Research Projects Agency (DoD), monitored  by  the
+Naval  Electronics  Systems Command under contract
+No. N00039-84-C-0089, and by the CSELT Corporation
+of  Italy.  The views and conclusions contained in
+this document are those of the authors and  should
+not  be interpreted as representing official poli-
+cies, either expressed or implied, of the  Defense
+Research Projects Agency, of the US Government, or
+of CSELT.
+
+
+
+
+
+
+
+
+
+SMM:11-2                    Timed Installation and Operation
+
+
+     A  _m_a_s_t_e_r  _t_i_m_e  _d_a_e_m_o_n  measures  the time differences
+between the clock of the machine on which it is running  and
+those  of  all other machines.  The master computes the _n_e_t_-
+_w_o_r_k _t_i_m_e as the average of the times provided by  nonfaulty
+clocks.1 It then sends to each _s_l_a_v_e _t_i_m_e _d_a_e_m_o_n the correc-
+tion  that  should be performed on the clock of its machine.
+This process is repeated periodically.  Since the correction
+is  expressed  as  a time difference rather than an absolute
+time, transmission delays do not interfere with the accuracy
+of  the  synchronization.  When a machine comes up and joins
+the network, it starts a slave time daemon  which  will  ask
+the master for the correct time and will reset the machine's
+clock before any user activity can begin.  The time  daemons
+are  able  to maintain a single network time in spite of the
+drift of clocks away from each other.  The present implemen-
+tation  keeps  processor  clocks synchronized within 20 mil-
+liseconds.
+
+     To ensure that the service provided is  continuous  and
+reliable, it is necessary to implement an election algorithm
+to elect a new master should the machine running the current
+master  crash, the master terminate (for example, because of
+a run-time error), or the network be partitioned.  Under our
+algorithm,  slaves  are  able to realize when the master has
+stopped functioning and to elect a  new  master  from  among
+themselves.  It is important to note that, since the failure
+of the master results only in a gradual divergence of  clock
+values, the election need not occur immediately.
+
+     The  machines  that are gateways between distinct local
+area networks require particular care.   A  time  daemon  on
+such machines may act as a _s_u_b_m_a_s_t_e_r.  This artifact depends
+on the current inability of transmission protocols to broad-
+cast  a message on a network other than the one to which the
+broadcasting machine is connected.  The submaster appears as
+a  slave  on  one network, and as a master on one or more of
+the other networks to which it is connected.
+
+     A submaster classifies each network  as  one  of  three
+types.   A _s_l_a_v_e _n_e_t_w_o_r_k is a network on which the submaster
+acts as a slave.  There can only be one  slave  network.   A
+_m_a_s_t_e_r _n_e_t_w_o_r_k is a network on which the submaster acts as a
+master.  An _i_g_n_o_r_e_d  _n_e_t_w_o_r_k  is  any  other  network  which
+already  has  a  valid master.  The submaster tries periodi-
+cally to become master on an ignored network, but  gives  up
+immediately if a master already exists.
+
+
+
+-----------
+  1 A  clock  is  considered to be faulty when its
+value is more  than  a  small  specified  interval
+apart from the majority of the clocks of the other
+machines [1,2].
+
+
+
+
+
+
+
+
+
+Timed Installation and Operation                    SMM:11-3
+
+
+GGuuiiddeelliinneess
+
+     While  the  synchronization algorithm is quite general,
+the election one, requiring a broadcast mechanism, puts con-
+straints  on  the  kind of network on which time daemons can
+run.  The time daemon will only work on networks with broad-
+cast   capability   augmented   with  point-to-point  links.
+Machines that are only  connected  to  point-to-point,  non-
+broadcast networks may not use the time daemon.
+
+     If  we  exclude  submasters, there will normally be, at
+most, one master time daemon in a local  area  internetwork.
+During  an election, only one of the slave time daemons will
+become the new master.  However, because of the characteris-
+tics  of its machine, a slave can be prevented from becoming
+the master.  Therefore, a subset of machines must be  desig-
+nated  as potential master time daemons.  A master time dae-
+mon will require CPU resources proportional to the number of
+slaves, in general, more than a slave time daemon, so it may
+be advisable to limit master time daemons to  machines  with
+more  powerful  processors or lighter loads.  Also, machines
+with inaccurate clocks should not be used as masters.   This
+is  a  purely  administrative  decision: an organization may
+well allow all of its machines to run master time daemons.
+
+     At the administrative level, a time daemon on a machine
+with  multiple network interfaces, may be told to ignore all
+but one network or to ignore one network.  This is done with
+the _-_n _n_e_t_w_o_r_k and _-_i _n_e_t_w_o_r_k options respectively at start-
+up time.  Typically, the time daemon would be instructed  to
+ignore  all but the networks belonging to the local adminis-
+trative control.
+
+     There are some limitations to the  current  implementa-
+tion  of the time daemon.  It is expected that these limita-
+tions will be removed  in  future  releases.   The  constant
+NHOSTS  in  /usr/src/etc/timed/globals.h  limits the maximum
+number of machines that may be directly  controlled  by  one
+master time daemon.  The current maximum is 29 (NHOSTS - 1).
+The constant  must be changed and the program recompiled  if
+a site wishes to run _t_i_m_e_d on a larger (inter)network.
+
+     In  addition,  there  is a _p_a_t_h_o_l_o_g_i_c_a_l _s_i_t_u_a_t_i_o_n to be
+avoided at all costs, that might occur when time daemons run
+on multiply-connected local area networks.  In this case, as
+we have seen, time daemons running on gateway machines  will
+be submasters and they will act on some of those networks as
+master time daemons.  Consider machines A  and  B  that  are
+both  gateways  between  networks  X and Y.  If time daemons
+were started on both A and B without constraints,  it  would
+be  possible  for  submaster  time daemon A to be a slave on
+network X and the master on network Y, while submaster  time
+daemon  B  is a slave on network Y and the master on network
+X.  This _l_o_o_p of  master  time  daemons  will  not  function
+
+
+
+
+
+
+
+
+
+SMM:11-4                    Timed Installation and Operation
+
+
+properly  or  guarantee  a unique time on both networks, and
+will cause the submasters to use  large  amounts  of  system
+resources in the form of network bandwidth and CPU time.  In
+fact, this kind of _l_o_o_p can also be generated with more than
+two  master  time  daemons, when several local area networks
+are interconnected.
+
+IInnssttaallllaattiioonn
+
+     In order to start the time daemon on a  given  machine,
+the  following  lines  should  be added to the _l_o_c_a_l _d_a_e_m_o_n_s
+section in the file _/_e_t_c_/_r_c_._l_o_c_a_l:
+
+
+          if [ -f /etc/timed ]; then
+               /etc/timed _f_l_a_g_s & echo -n ' timed' >/dev/console
+          fi
+
+
+In any case, they must appear after the network  is  config-
+ured via ifconfig(8).
+
+     Also, the file _/_e_t_c_/_s_e_r_v_i_c_e_s should contain the follow-
+ing line:
+
+
+          timed          525/udp        timeserver
+
+
+The _f_l_a_g_s are:
+
+-n network   to consider the named network.
+
+-i network   to ignore the named network.
+
+-t           to     place     tracing     information     in
+             _/_u_s_r_/_a_d_m_/_t_i_m_e_d_._l_o_g.
+
+-M           to  allow  this time daemon to become a master.
+             A time daemon run without this option  will  be
+             forced  in  the  state of slave during an elec-
+             tion.
+
+DDaaiillyy OOppeerraattiioonn
+
+     _T_i_m_e_d_c_(_8_) is used to control the operation of the  time
+daemon.  It may be used to:
+
++o    measure the differences between machines' clocks,
+
++o    find the location where the master _t_i_m_e_d is running,
+
++o    cause  election timers on several machines to expire at
+     the same time,
+
+
+
+
+
+
+
+
+
+Timed Installation and Operation                    SMM:11-5
+
+
++o    enable or  disable  tracing  of  messages  received  by
+     _t_i_m_e_d.
+
+See  the  manual  page  on  _t_i_m_e_d(8)  and _t_i_m_e_d_c(8) for more
+detailed information.
+
+     The _d_a_t_e_(_1_) command can be  used  to  set  the  network
+date.   In order to set the time on a single machine, the _-_n
+flag can be given to date(1).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SMM:11-6                    Timed Installation and Operation
+
+
+RReeffeerreenncceess
+
+1.   R. Gusella and S. Zatti, _T_E_M_P_O_:  _A  _N_e_t_w_o_r_k  _T_i_m_e  _C_o_n_-
+     _t_r_o_l_l_e_r  _f_o_r  _D_i_s_t_r_i_b_u_t_e_d  _B_e_r_k_e_l_e_y _U_N_I_X _S_y_s_t_e_m, USENIX
+     Summer Conference Proceedings,  Salt  Lake  City,  June
+     1984.
+
+2.   R.  Gusella  and  S.  Zatti, _C_l_o_c_k _S_y_n_c_h_r_o_n_i_z_a_t_i_o_n _i_n _a
+     _L_o_c_a_l _A_r_e_a _N_e_t_w_o_r_k, University of California, Berkeley,
+     Technical Report, _t_o _a_p_p_e_a_r.
+
+3.   R.  Gusella  and  S. Zatti, _A_n _E_l_e_c_t_i_o_n _A_l_g_o_r_i_t_h_m _f_o_r _a
+     _D_i_s_t_r_i_b_u_t_e_d _C_l_o_c_k _S_y_n_c_h_r_o_n_i_z_a_t_i_o_n  _P_r_o_g_r_a_m,  University
+     of California, Berkeley, CS Technical Report #275, Dec.
+     1985.
+
+4.   R. Gusella and S. Zatti, _T_h_e _B_e_r_k_e_l_e_y _U_N_I_X _4_._3_B_S_D  _T_i_m_e
+     _S_y_n_c_h_r_o_n_i_z_a_t_i_o_n _P_r_o_t_o_c_o_l, UNIX Programmer's Manual, 4.3
+     Berkeley Software Distribution, Volume 2c.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

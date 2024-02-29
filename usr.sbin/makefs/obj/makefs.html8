@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: makefs.8,v 1.71 2022/11/17 06:40:41 chs Exp $
+  
+   Copyright (c) 2001-2003 Wasabi Systems, Inc.
+   All rights reserved.
+  
+   Written by Luke Mewburn for Wasabi Systems, Inc.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+        This product includes software developed for the NetBSD Project by
+        Wasabi Systems, Inc.
+   4. The name of Wasabi Systems, Inc. may not be used to endorse
+      or promote products derived from this software without specific prior
+      written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY WASABI SYSTEMS, INC. ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL WASABI SYSTEMS, INC
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>MAKEFS(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MAKEFS(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">MAKEFS(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">makefs</code> &#x2014;
+<div class="Nd">create a file system image from a directory tree</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">makefs</code></td>
+    <td>[<code class="Fl">-LrxZ</code>] [<code class="Fl">-B</code>
+      <var class="Ar">endian</var>] [<code class="Fl">-b</code>
+      <var class="Ar">free-blocks</var>] [<code class="Fl">-d</code>
+      <var class="Ar">debug-mask</var>] [<code class="Fl">-F</code>
+      <var class="Ar">mtree-specfile</var>] [<code class="Fl">-f</code>
+      <var class="Ar">free-files</var>] [<code class="Fl">-M</code>
+      <var class="Ar">minimum-size</var>] [<code class="Fl">-m</code>
+      <var class="Ar">maximum-size</var>] [<code class="Fl">-N</code>
+      <var class="Ar">userdb-dir</var>] [<code class="Fl">-O</code>
+      <var class="Ar">offset</var>] [<code class="Fl">-o</code>
+      <var class="Ar">fs-options</var>] [<code class="Fl">-S</code>
+      <var class="Ar">sector-size</var>] [<code class="Fl">-s</code>
+      <var class="Ar">image-size</var>] [<code class="Fl">-T</code>
+      <var class="Ar">timestamp</var>] [<code class="Fl">-t</code>
+      <var class="Ar">fs-type</var>] <var class="Ar">image-file</var>
+      <var class="Ar">directory</var> [<var class="Ar">extra-directory
+      ...</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The utility <code class="Nm">makefs</code> creates a file system image into
+  <var class="Ar">image-file</var> from the directory tree
+  <var class="Ar">directory</var>. If any optional directory trees are passed in
+  the <var class="Ar">extra-directory</var> arguments, then the directory tree
+  of each argument will be merged into the <var class="Ar">directory</var> first
+  before creating <var class="Ar">image-file</var>. No special devices or
+  privileges are required to perform this task.
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#B"><code class="Fl" id="B">-B</code></a>
+    <var class="Ar">endian</var></dt>
+  <dd>Set the byte order of the image to <var class="Ar">endian</var>. Valid
+      byte orders are &#x2018;<code class="Li">4321</code>&#x2019;,
+      &#x2018;<code class="Li">big</code>&#x2019;, or
+      &#x2018;<code class="Li">be</code>&#x2019; for big endian, and
+      &#x2018;<code class="Li">1234</code>&#x2019;,
+      &#x2018;<code class="Li">little</code>&#x2019;, or
+      &#x2018;<code class="Li">le</code>&#x2019; for little endian. Some file
+      systems may have a fixed byte order; in those cases this argument will be
+      ignored.</dd>
+  <dt><a class="permalink" href="#b"><code class="Fl" id="b">-b</code></a>
+    <var class="Ar">free-blocks</var></dt>
+  <dd>Ensure that a minimum of <var class="Ar">free-blocks</var> free blocks
+      exist in the image. An optional &#x2018;<code class="Li">%</code>&#x2019;
+      suffix may be provided to indicate that <var class="Ar">free-blocks</var>
+      indicates a percentage of the calculated image size.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">debug-mask</var></dt>
+  <dd>Enable various levels of debugging, depending upon which bits are set in
+      <var class="Ar">debug-mask</var>. XXX: document these</dd>
+  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a>
+    <var class="Ar">mtree-specfile</var></dt>
+  <dd>Use <var class="Ar">mtree-specfile</var> as an
+      <a class="Xr" href="../html8/mtree.html">mtree(8)</a>
+      &#x2018;specfile&#x2019; specification.
+    <p class="Pp">If a specfile entry exists in the underlying file system, its
+        permissions and modification time will be used unless specifically
+        overridden by the specfile. An error will be raised if the type of entry
+        in the specfile conflicts with that of an existing entry.</p>
+    <p class="Pp">In the opposite case (where a specfile entry does not have an
+        entry in the underlying file system) the following occurs: If the
+        specfile entry is marked <b class="Sy">optional</b>, the specfile entry
+        is ignored. Otherwise, the entry will be created in the image, and it is
+        necessary to specify at least the following parameters in the specfile:
+        <b class="Sy">type</b>, <b class="Sy">mode</b>, <b class="Sy">gname</b>,
+        or <b class="Sy">gid</b>, and <b class="Sy">uname</b> or
+        <b class="Sy">uid</b>, <b class="Sy">device</b> (in the case of block or
+        character devices), and <b class="Sy">link</b> (in the case of symbolic
+        links). If <b class="Sy">time</b> isn't provided, the current time will
+        be used. If <b class="Sy">flags</b> isn't provided, the current file
+        flags will be used. Missing regular file entries will be created as
+        zero-length files.</p>
+  </dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">free-files</var></dt>
+  <dd>Ensure that a minimum of <var class="Ar">free-files</var> free files
+      (inodes) exist in the image. An optional
+      &#x2018;<code class="Li">%</code>&#x2019; suffix may be provided to
+      indicate that <var class="Ar">free-files</var> indicates a percentage of
+      the calculated image size.</dd>
+  <dt><a class="permalink" href="#L"><code class="Fl" id="L">-L</code></a></dt>
+  <dd>All symbolic links are followed.</dd>
+  <dt><a class="permalink" href="#M"><code class="Fl" id="M">-M</code></a>
+    <var class="Ar">minimum-size</var></dt>
+  <dd>Set the minimum size of the file system image to
+      <var class="Ar">minimum-size</var>.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a>
+    <var class="Ar">maximum-size</var></dt>
+  <dd>Set the maximum size of the file system image to
+      <var class="Ar">maximum-size</var>. An error will be raised if the target
+      file system needs to be larger than this to accommodate the provided
+      directory tree.</dd>
+  <dt><a class="permalink" href="#N"><code class="Fl" id="N">-N</code></a>
+    <var class="Ar">userdb-dir</var></dt>
+  <dd>Use the user database text file <span class="Pa">master.passwd</span> and
+      group database text file <span class="Pa">group</span> from
+      <var class="Ar">userdb-dir</var>, rather than using the results from the
+      system's <a class="Xr" href="../html3/getpwnam.html">getpwnam(3)</a> and
+      <a class="Xr" href="../html3/getgrnam.html">getgrnam(3)</a> (and related)
+      library calls.</dd>
+  <dt><a class="permalink" href="#O"><code class="Fl" id="O">-O</code></a>
+    <var class="Ar">offset</var></dt>
+  <dd>Instead of creating the file system at the beginning of the file, start at
+      offset. Valid only for <b class="Sy">ffs</b> and
+    <b class="Sy">msdos</b>.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">fs-options</var></dt>
+  <dd>Set file system specific options. <var class="Ar">fs-options</var> is a
+      comma separated list of options. Valid file system specific options are
+      detailed below.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a></dt>
+  <dd>When merging multiple directories replace duplicate files with the last
+      found.</dd>
+  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a>
+    <var class="Ar">sector-size</var></dt>
+  <dd>Set the file system sector size to <var class="Ar">sector-size</var>.
+      Defaults to 512 for most file systems, but is 2048 for
+      <b class="Sy">cd9660</b> and <b class="Sy">udf</b> for CD/DVD/BD optical
+      media types.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a>
+    <var class="Ar">image-size</var></dt>
+  <dd>Set the size of the file system image to <var class="Ar">image-size</var>.
+      This is equivalent of setting both the minimum
+      (<code class="Fl">-M</code>) and the maximum (<code class="Fl">-m</code>)
+      sizes to <var class="Ar">image-size</var>. For <b class="Sy">ffs</b> and
+      <b class="Sy">msdos</b> the <var class="Ar">offset</var> is not included
+      on that size.</dd>
+  <dt><a class="permalink" href="#T"><code class="Fl" id="T">-T</code></a>
+    <var class="Ar">timestamp</var></dt>
+  <dd>Specify a timestamp to be set for all file system files and directories
+      created so that repeatable builds are possible. The
+      <var class="Ar">timestamp</var> can be a <span class="Pa">pathname</span>,
+      where the timestamps are derived from that file, a parseable date for
+      <a class="Xr" href="../html3/parsedate.html">parsedate(3)</a> (this option
+      is not yet available in the tools build), or an integer value interpreted
+      as the number of seconds from the Epoch. Note that timestamps specified in
+      an <a class="Xr" href="../html5/mtree.html">mtree(5)</a> spec file,
+      override the default timestamp. When this option is enabled, file systems
+      that regularly use
+      <a class="Xr" href="../html3/localtime.html">localtime(3)</a> to convert
+      times to the native format (such as udf and cd9660), use
+      <a class="Xr" href="../html3/gmtime.html">gmtime(3)</a> instead with the
+      specified timestamps so that they are immune to timezone changes and get
+      consistent timestamps.</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a>
+    <var class="Ar">fs-type</var></dt>
+  <dd>Create an <var class="Ar">fs-type</var> file system image. The following
+      file system types are supported:
+    <div class="Bd-indent">
+    <dl class="Bl-tag">
+      <dt><b class="Sy">cd9660</b></dt>
+      <dd>ISO 9660 file system.</dd>
+      <dt><b class="Sy">chfs</b></dt>
+      <dd>Chip flash file system.</dd>
+      <dt><b class="Sy">ffs</b></dt>
+      <dd>BSD fast file system (default).</dd>
+      <dt><b class="Sy">msdos</b></dt>
+      <dd>FAT12, FAT16, or FAT32 file system.</dd>
+      <dt><b class="Sy">udf</b></dt>
+      <dd>ISO/Ecma UDF file system.</dd>
+      <dt><b class="Sy">v7fs</b></dt>
+      <dd>7th Edition(V7) file system.</dd>
+    </dl>
+    </div>
+  </dd>
+  <dt><a class="permalink" href="#x"><code class="Fl" id="x">-x</code></a></dt>
+  <dd>Exclude file system nodes not explicitly listed in the specfile.</dd>
+  <dt><a class="permalink" href="#Z"><code class="Fl" id="Z">-Z</code></a></dt>
+  <dd>Create a sparse file for <b class="Sy">ffs</b>. This is useful for virtual
+      machine images.</dd>
+</dl>
+<p class="Pp">Where sizes are specified, a decimal number of bytes is expected.
+    Two or more numbers may be separated by an &#x2018;x&#x2019; to indicate a
+    product. Each number may have one of the following optional suffixes:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt>b</dt>
+  <dd>Block; multiply by 512</dd>
+  <dt>k</dt>
+  <dd>Kibi; multiply by 1024 (1 KiB)</dd>
+  <dt>m</dt>
+  <dd>Mebi; multiply by 1048576 (1 MiB)</dd>
+  <dt>g</dt>
+  <dd>Gibi; multiply by 1073741824 (1 GiB)</dd>
+  <dt>t</dt>
+  <dd>Tebi; multiply by 1099511627776 (1 TiB)</dd>
+  <dt>w</dt>
+  <dd>Word; multiply by the number of bytes in an integer</dd>
+</dl>
+</div>
+<section class="Ss">
+<h2 class="Ss" id="FFS_specific_options"><a class="permalink" href="#FFS_specific_options">FFS-specific
+  options</a></h2>
+<b class="Sy">ffs</b> images have ffs-specific optional parameters that may be
+  provided. Each of the options consists of a keyword, an equal sign
+  (&#x2018;<code class="Li">=</code>&#x2019;), and a value. The following
+  keywords are supported:
+<p class="Pp"></p>
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt><b class="Sy">avgfilesize</b></dt>
+  <dd>Expected average file size.</dd>
+  <dt><b class="Sy">avgfpdir</b></dt>
+  <dd>Expected number of files per directory.</dd>
+  <dt><b class="Sy">bsize</b></dt>
+  <dd>Block size.</dd>
+  <dt><b class="Sy">density</b></dt>
+  <dd>Bytes per inode.</dd>
+  <dt><b class="Sy">extattr</b></dt>
+  <dd>UFS2 with extended attributes.</dd>
+  <dt><b class="Sy">extent</b></dt>
+  <dd>Maximum extent size.</dd>
+  <dt><b class="Sy">fsize</b></dt>
+  <dd>Fragment size.</dd>
+  <dt><b class="Sy">label</b></dt>
+  <dd>Label name of the image.</dd>
+  <dt><b class="Sy">maxbpcg</b></dt>
+  <dd>Maximum total number of blocks in a cylinder group.</dd>
+  <dt><b class="Sy">maxbpg</b></dt>
+  <dd>Maximum blocks per file in a cylinder group.</dd>
+  <dt><b class="Sy">minfree</b></dt>
+  <dd>Minimum % free.</dd>
+  <dt><b class="Sy">optimization</b></dt>
+  <dd>Optimization preference; one of
+      &#x2018;<code class="Li">space</code>&#x2019; or
+      &#x2018;<code class="Li">time</code>&#x2019;.</dd>
+  <dt><b class="Sy">version</b></dt>
+  <dd>UFS version. 1 for FFS (default), 2 for UFS2.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="CD9660-specific_options"><a class="permalink" href="#CD9660-specific_options">CD9660-specific
+  options</a></h2>
+<b class="Sy">cd9660</b> images have ISO9660-specific optional parameters that
+  may be provided. The arguments consist of a keyword and, optionally, an equal
+  sign (&#x2018;<code class="Li">=</code>&#x2019;), and a value. The following
+  keywords are supported:
+<p class="Pp"></p>
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt><b class="Sy">allow-deep-trees</b></dt>
+  <dd>Allow the directory structure to exceed the maximum specified in the
+    spec.</dd>
+  <dt><b class="Sy">allow-max-name</b></dt>
+  <dd>Allow 37 instead of 33 characters for filenames by omitting the version
+      ID.</dd>
+  <dt><b class="Sy">allow-multidot</b></dt>
+  <dd>Allow multiple dots in a filename.</dd>
+  <dt><b class="Sy">applicationid</b></dt>
+  <dd>Application ID of the image.</dd>
+  <dt><b class="Sy">archimedes</b></dt>
+  <dd>Use the &#x2018;<code class="Li">ARCHIMEDES</code>&#x2019; extension to
+      encode RISC OS metadata.</dd>
+  <dt><b class="Sy">boot-load-segment</b></dt>
+  <dd>Set load segment for the boot image.</dd>
+  <dt><b class="Sy">bootimage</b></dt>
+  <dd>Filename of a boot image in the format &#x201C;sysid;filename&#x201D;,
+      where &#x201C;sysid&#x201D; is one of
+      &#x2018;<code class="Li">efi</code>&#x2019;,
+      &#x2018;<code class="Li">i386</code>&#x2019;,
+      &#x2018;<code class="Li">mac68k</code>&#x2019;,
+      &#x2018;<code class="Li">macppc</code>&#x2019;, or
+      &#x2018;<code class="Li">powerpc</code>&#x2019;.</dd>
+  <dt><b class="Sy">chrp-boot</b></dt>
+  <dd>Write an MBR partition table to the image to allow older CHRP hardware to
+      boot.</dd>
+  <dt><b class="Sy">generic-bootimage</b></dt>
+  <dd>Load a generic boot image into the first 32K of the cd9660 image.</dd>
+  <dt><b class="Sy">hard-disk-boot</b></dt>
+  <dd>Boot image is a hard disk image.</dd>
+  <dt><b class="Sy">keep-bad-images</b></dt>
+  <dd>Don't throw away images whose write was aborted due to an error. For
+      debugging purposes.</dd>
+  <dt><b class="Sy">label</b></dt>
+  <dd>Label name of the image.</dd>
+  <dt><b class="Sy">no-boot</b></dt>
+  <dd>Boot image is not bootable.</dd>
+  <dt><b class="Sy">no-emul-boot</b></dt>
+  <dd>Boot image is a &#x201C;no emulation&#x201D; ElTorito image.</dd>
+  <dt><b class="Sy">no-trailing-padding</b></dt>
+  <dd>Do not pad the image (apparently Linux needs the padding).</dd>
+  <dt><b class="Sy">platformid</b></dt>
+  <dd>Set platform ID of section header entry of the boot image.</dd>
+  <dt><b class="Sy">preparer</b></dt>
+  <dd>Preparer ID of the image.</dd>
+  <dt><b class="Sy">publisher</b></dt>
+  <dd>Publisher ID of the image.</dd>
+  <dt><b class="Sy">rockridge</b></dt>
+  <dd>Use RockRidge extensions (for longer filenames, etc.).</dd>
+  <dt><b class="Sy">volumeid</b></dt>
+  <dd>Volume set identifier of the image.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="CHFS_specific_options"><a class="permalink" href="#CHFS_specific_options">CHFS-specific
+  options</a></h2>
+<b class="Sy">chfs</b> images have chfs-specific optional parameters that may be
+  provided. Each of the options consists of a keyword, an equal sign
+  (&#x2018;<code class="Li">=</code>&#x2019;), and a value. The following
+  keywords are supported:
+<p class="Pp"></p>
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt><b class="Sy">pagesize</b></dt>
+  <dd>Pagesize.</dd>
+  <dt><b class="Sy">erasesize</b></dt>
+  <dd>Erase block size of the media.</dd>
+  <dt><b class="Sy">mediatype</b></dt>
+  <dd>Type of the media. NOR: 0 or NAND: 1.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="msdos_specific_options"><a class="permalink" href="#msdos_specific_options">msdos-specific
+  options</a></h2>
+<b class="Sy">msdos</b> images have MS-DOS-specific optional parameters that may
+  be provided. The arguments consist of a keyword, an equal sign
+  (&#x2018;<code class="Li">=</code>&#x2019;), and a value. The following
+  keywords are supported (see
+  <a class="Xr" href="../html8/newfs_msdos.html">newfs_msdos(8)</a> for more
+  details):
+<p class="Pp"></p>
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt><a class="permalink" href="#backup_sector"><code class="Cm" id="backup_sector">backup_sector</code></a></dt>
+  <dd>Location of the backup boot sector.</dd>
+  <dt><a class="permalink" href="#block_size"><code class="Cm" id="block_size">block_size</code></a></dt>
+  <dd>Block size.</dd>
+  <dt><a class="permalink" href="#bootstrap"><code class="Cm" id="bootstrap">bootstrap</code></a></dt>
+  <dd>Bootstrap file.</dd>
+  <dt><a class="permalink" href="#bytes_per_sector"><code class="Cm" id="bytes_per_sector">bytes_per_sector</code></a></dt>
+  <dd>Bytes per sector.</dd>
+  <dt><a class="permalink" href="#create_size"><code class="Cm" id="create_size">create_size</code></a></dt>
+  <dd>Create file size.</dd>
+  <dt><a class="permalink" href="#directory_entries"><code class="Cm" id="directory_entries">directory_entries</code></a></dt>
+  <dd>Directory entries.</dd>
+  <dt><a class="permalink" href="#drive_heads"><code class="Cm" id="drive_heads">drive_heads</code></a></dt>
+  <dd>Drive heads.</dd>
+  <dt><a class="permalink" href="#fat_type"><code class="Cm" id="fat_type">fat_type</code></a></dt>
+  <dd>FAT type (12, 16, or 32).</dd>
+  <dt><a class="permalink" href="#floppy"><code class="Cm" id="floppy">floppy</code></a></dt>
+  <dd>Preset drive parameters for standard format floppy disks (160, 180, 320,
+      360, 640, 720, 1200, 1232, 1440, or 2880).</dd>
+  <dt><a class="permalink" href="#hidden_sectors"><code class="Cm" id="hidden_sectors">hidden_sectors</code></a></dt>
+  <dd>Hidden sectors.</dd>
+  <dt><a class="permalink" href="#info_sector"><code class="Cm" id="info_sector">info_sector</code></a></dt>
+  <dd>Location of the info sector.</dd>
+  <dt><a class="permalink" href="#media_descriptor"><code class="Cm" id="media_descriptor">media_descriptor</code></a></dt>
+  <dd>Media descriptor.</dd>
+  <dt><a class="permalink" href="#num_FAT"><code class="Cm" id="num_FAT">num_FAT</code></a></dt>
+  <dd>Number of FATs.</dd>
+  <dt><a class="permalink" href="#OEM_string"><code class="Cm" id="OEM_string">OEM_string</code></a></dt>
+  <dd>OEM string.</dd>
+  <dt><a class="permalink" href="#offset"><code class="Cm" id="offset">offset</code></a></dt>
+  <dd>Offset in device.</dd>
+  <dt><a class="permalink" href="#reserved_sectors"><code class="Cm" id="reserved_sectors">reserved_sectors</code></a></dt>
+  <dd>Reserved sectors.</dd>
+  <dt><a class="permalink" href="#sectors_per_cluster"><code class="Cm" id="sectors_per_cluster">sectors_per_cluster</code></a></dt>
+  <dd>Sectors per cluster.</dd>
+  <dt><a class="permalink" href="#sectors_per_fat"><code class="Cm" id="sectors_per_fat">sectors_per_fat</code></a></dt>
+  <dd>Sectors per FAT.</dd>
+  <dt><a class="permalink" href="#sectors_per_track"><code class="Cm" id="sectors_per_track">sectors_per_track</code></a></dt>
+  <dd>Sectors per track.</dd>
+  <dt><a class="permalink" href="#size"><code class="Cm" id="size">size</code></a></dt>
+  <dd>File System size.</dd>
+  <dt><a class="permalink" href="#volume_id"><code class="Cm" id="volume_id">volume_id</code></a></dt>
+  <dd>Volume ID.</dd>
+  <dt><a class="permalink" href="#volume_label"><code class="Cm" id="volume_label">volume_label</code></a></dt>
+  <dd>Volume Label.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="V7FS_specific_options"><a class="permalink" href="#V7FS_specific_options">V7FS-specific
+  options</a></h2>
+The following keywords are supported:
+<p class="Pp"></p>
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt><b class="Sy">pdp</b></dt>
+  <dd>PDP endian.</dd>
+  <dt><b class="Sy">progress</b></dt>
+  <dd>Display a progress meter for the file system construction and file
+      population.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="UDF_specific_options"><a class="permalink" href="#UDF_specific_options">UDF-specific
+  options</a></h2>
+<code class="Nm">makefs</code> supports besides writing to image files also
+  direct formatting of disc partitions and optical media. Optical media will
+  auto configure settings. The following udf-specific optional parameters may be
+  provided. Each of the options consists of a keyword, an equal sign
+  (&#x2018;<code class="Li">=</code>&#x2019;), and a value. The following
+  keywords are supported:
+<p class="Pp"></p>
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt><b class="Sy">disctype</b></dt>
+  <dd>This can have the following values:
+    <dl class="Bl-tag Bl-compact">
+      <dt><b class="Sy">cdrom</b>, <b class="Sy">dvdrom</b>,
+        <b class="Sy">bdrom</b></dt>
+      <dd>create a read-only fs</dd>
+      <dt><b class="Sy">dvdram</b>, <b class="Sy">bdre</b>,
+        <b class="Sy">disk</b></dt>
+      <dd>create a rewritable fs without sparing for defective sectors</dd>
+      <dt><b class="Sy">cdr</b>, <b class="Sy">dvdr</b>,
+        <b class="Sy">bdr</b></dt>
+      <dd>create a rewritable fs on once recordable media using a VAT</dd>
+      <dt><b class="Sy">cdrw</b>, <b class="Sy">dvdrw</b></dt>
+      <dd>create a rewritable fs with sparing for defective sectors</dd>
+    </dl>
+    The sectorsize is set for the selected media and the default maximum disc
+      size is assumed unless overridden. For CD-ROM, DVD-ROM and BD-ROM images,
+      the disc size is the minimum size needed. Note that the size estimator can
+      under-estimate in some cases; specify extra free blocks if encountering
+      this.</dd>
+  <dt><b class="Sy">loglabel</b></dt>
+  <dd>Set the logical volume label of the disc to the specified argument.</dd>
+  <dt><b class="Sy">discid</b></dt>
+  <dd>Set the physical volume label of the disc to the specified argument.
+      Prepend the physical volume label with a volumeset label separated with a
+      ':' if wanted. For strict conformance and interchange, don't set the
+      volumeset label manually unless it has an unique hex number in the first 8
+      character positions.</dd>
+  <dt><b class="Sy">minver</b></dt>
+  <dd>Set the minimum UDF version to be used. Choose UDF version numbers from
+      0x102, 0x150, 0x200, 0x201, and 0x250. Version 0x260 is currently not
+      supported in <code class="Nm">makefs</code>.</dd>
+  <dt><b class="Sy">maxver</b></dt>
+  <dd>Set the maximum UDF version to be used. Choose UDF version numbers from
+      0x102, 0x150, 0x200, 0x201, and 0x250. Version 0x260 is currently not
+      supported in <code class="Nm">makefs</code>.</dd>
+  <dt><b class="Sy">metaperc</b></dt>
+  <dd>Set the minimum amount of free metadata space. This is only applicable on
+      UDF 0x250 on rewritable media.</dd>
+  <dt><b class="Sy">checksurface</b></dt>
+  <dd>Check the surface of non error-free rewritable media for remapping. Note
+      this is a destructive test and can take quite a while!</dd>
+  <dt><b class="Sy">forceformat</b></dt>
+  <dd>Force formatting on non-empty recordable media.</dd>
+</dl>
+</div>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/strsuftoll.html">strsuftoll(3)</a>,
+  <a class="Xr" href="../html8/installboot.html">installboot(8)</a>,
+  <a class="Xr" href="../html8/mtree.html">mtree(8)</a>,
+  <a class="Xr" href="../html8/newfs.html">newfs(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">makefs</code> utility appeared in <span class="Ux">NetBSD
+  1.6</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">Luke Mewburn</span> &#x27E8;lukem@NetBSD.org&#x27E9; (original
+  program),
+<br/>
+<span class="An">Daniel Watt</span>,
+<br/>
+<span class="An">Walter Deignan</span>,
+<br/>
+<span class="An">Ryan Gabrys</span>,
+<br/>
+<span class="An">Alan Perez-Rathke</span>,
+<br/>
+<span class="An">Ram Vedam</span> (cd9660 support),
+<br/>
+<span class="An">UCHIYAMA Yasushi</span> (v7fs support),
+<br/>
+<span class="An">Tamas Toth</span> (chfs support),
+<br/>
+<span class="An">Christos Zoulas</span> (msdos support),
+<br/>
+<span class="An">Reinoud Zandijk</span> (udf support).
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">April 4, 2021</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

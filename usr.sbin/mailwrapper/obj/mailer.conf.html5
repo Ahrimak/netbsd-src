@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: mailer.conf.5,v 1.16 2014/03/18 18:20:47 riastradh Exp $
+  
+   Copyright (c) 1998
+   	Perry E. Metzger.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. All advertising materials mentioning features or use of this software
+      must display the following acknowledgment:
+  	This product includes software developed for the NetBSD Project
+  	by Perry E. Metzger.
+   4. The name of the author may not be used to endorse or promote products
+      derived from this software without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>MAILER.CONF(5)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MAILER.CONF(5)</td>
+    <td class="head-vol">File Formats Manual</td>
+    <td class="head-rtitle">MAILER.CONF(5)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">mailer.conf</code> &#x2014;
+<div class="Nd">configuration file for
+  <a class="Xr" href="../html8/mailwrapper.html">mailwrapper(8)</a></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The file <span class="Pa">/etc/mailer.conf</span> contains a series of lines of
+  the form
+<p class="Pp"><span class="Pa">name</span> <span class="Pa">program</span>
+    [<var class="Ar">arguments ...</var>]</p>
+<p class="Pp">The first word of each line is the <span class="Pa">name</span> of
+    a program invoking
+    <a class="Xr" href="../html8/mailwrapper.html">mailwrapper(8)</a>. (For
+    example, on a typical system <span class="Pa">/usr/sbin/sendmail</span>
+    would be a symbolic link to
+    <a class="Xr" href="../html8/mailwrapper.html">mailwrapper(8)</a>, as would
+    <a class="Xr" href="../html1/newaliases.html">newaliases(1)</a> and
+    <a class="Xr" href="../html1/mailq.html">mailq(1)</a>. Thus,
+    <span class="Pa">name</span> might be &#x201C;sendmail&#x201D; or
+    &#x201C;newaliases&#x201D; etc.)</p>
+<p class="Pp">The second word of each line is the name of the
+    <span class="Pa">program</span> to actually execute when the first name is
+    invoked.</p>
+<p class="Pp">The further <var class="Ar">arguments</var>, if any, are passed to
+    the <span class="Pa">program</span>, followed by the arguments
+    <a class="Xr" href="../html8/mailwrapper.html">mailwrapper(8)</a> was called
+    with.</p>
+<p class="Pp">The file may also contain comment lines, denoted by a
+    &#x2018;#&#x2019; mark in the first column of any line.</p>
+<p class="Pp">The default mailer is
+    <a class="Xr" href="../html1/postfix.html">postfix(1)</a>, which will also
+    start by default (unless specifically disabled via an
+    <a class="Xr" href="../html5/rc.conf.html">rc.conf(5)</a> setting) so that
+    locally generated mail can be delivered, if the &#x201C;sendmail&#x201D;
+    setting in <span class="Pa">/etc/mailer.conf</span> is set to
+    &#x201C;/usr/libexec/postfix/sendmail&#x201D;.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+/etc/mailer.conf
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+This example shows how to set up <code class="Nm">mailer.conf</code> to invoke
+  the <a class="Xr" href="../html1/postfix.html">postfix(1)</a> program:
+<div class="Bd Pp Bd-indent">
+<pre>
+sendmail        /usr/libexec/postfix/sendmail
+mailq           /usr/libexec/postfix/sendmail
+newaliases      /usr/libexec/postfix/sendmail
+</pre>
+</div>
+<p class="Pp">This example shows the use of the mini-sendmail package from
+    <i class="Em">pkgsrc</i> in place of
+    <a class="Xr" href="../html1/postfix.html">postfix(1)</a>:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+# Send outgoing mail to a smart relay using mini-sendmail
+sendmail	/usr/pkg/sbin/mini-sendmail -srelayhost
+send-mail	/usr/pkg/sbin/mini-sendmail -srelayhost
+</pre>
+</div>
+<p class="Pp">Note the use of additional arguments.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/mail.html">mail(1)</a>,
+  <a class="Xr" href="../html1/mailq.html">mailq(1)</a>,
+  <a class="Xr" href="../html1/newaliases.html">newaliases(1)</a>,
+  <a class="Xr" href="../html1/postfix.html">postfix(1)</a>,
+  <a class="Xr" href="../html8/mailwrapper.html">mailwrapper(8)</a>
+<p class="Pp"><span class="Pa">pkgsrc/mail/sendmail</span>,
+    <span class="Pa">pkgsrc/mail/mini_sendmail</span></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+<code class="Nm">mailer.conf</code> appeared in <span class="Ux">NetBSD
+  1.4</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">Perry E. Metzger</span>
+  &lt;<a class="Mt" href="mailto:perry@piermont.com">perry@piermont.com</a>&gt;
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+The entire reason this program exists is a crock. Instead, a command for how to
+  submit mail should be standardized, and all the &#x201C;behave differently if
+  invoked with a different name&#x201D; behavior of things like
+  <a class="Xr" href="../html1/mailq.html">mailq(1)</a> should go away.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">April 10, 2010</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

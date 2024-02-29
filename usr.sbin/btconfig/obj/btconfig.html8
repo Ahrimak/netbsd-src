@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: btconfig.8,v 1.19 2021/12/02 21:55:22 andvar Exp $
+  
+   Copyright (c) 2006 Itronix Inc.
+   All rights reserved.
+  
+   Written by Iain Hibbert for Itronix Inc.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. The name of Itronix Inc. may not be used to endorse
+      or promote products derived from this software without specific
+      prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY ITRONIX INC. ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL ITRONIX INC. BE LIABLE FOR ANY
+   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+   ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>BTCONFIG(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">BTCONFIG(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">BTCONFIG(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">btconfig</code> &#x2014;
+<div class="Nd">configure bluetooth devices</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">btconfig</code></td>
+    <td>[<code class="Fl">-svz</code>] [<var class="Ar">device</var>
+      [<var class="Ar">parameters</var>]]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">btconfig</code></td>
+    <td>[<code class="Fl">-l</code>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">btconfig</code> is used to configure Bluetooth devices. If the
+  <var class="Ar">device</var> is given, but no parameters, then
+  <code class="Nm">btconfig</code> will print information about the device. If
+  no <var class="Ar">device</var> is given, a basic list of devices will be
+  printed.
+<p class="Pp">When the <code class="Fl">-l</code> flag is used, just the device
+    names will be printed.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="COMMANDS"><a class="permalink" href="#COMMANDS">COMMANDS</a></h1>
+The following parameters may be specified with <code class="Nm">btconfig</code>:
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#up"><code class="Cm" id="up">up</code></a></dt>
+  <dd>Enable Bluetooth Device.</dd>
+  <dt><a class="permalink" href="#down"><code class="Cm" id="down">down</code></a></dt>
+  <dd>Disable Bluetooth Device.</dd>
+  <dt><a class="permalink" href="#pscan"><code class="Cm" id="pscan">pscan</code></a></dt>
+  <dd>Enable Page Scan. This enables incoming connections to the device.</dd>
+  <dt><a class="permalink" href="#-pscan"><code class="Cm" id="-pscan">-pscan</code></a></dt>
+  <dd>Disable Page Scan.</dd>
+  <dt><a class="permalink" href="#iscan"><code class="Cm" id="iscan">iscan</code></a></dt>
+  <dd>Enable Inquiry Scan. This puts the device in Discoverable mode.</dd>
+  <dt><a class="permalink" href="#-iscan"><code class="Cm" id="-iscan">-iscan</code></a></dt>
+  <dd>Disable Inquiry Scan.</dd>
+  <dt><a class="permalink" href="#encrypt"><code class="Cm" id="encrypt">encrypt</code></a></dt>
+  <dd>Enable encryption. This will cause the device to request encryption on all
+      baseband connections, and will only work if authentication is also
+      enabled.</dd>
+  <dt><a class="permalink" href="#-encrypt"><code class="Cm" id="-encrypt">-encrypt</code></a></dt>
+  <dd>Disable encryption.</dd>
+  <dt><a class="permalink" href="#auth"><code class="Cm" id="auth">auth</code></a></dt>
+  <dd>Enable authentication. This will cause the device to request
+      authentication for all baseband connections.</dd>
+  <dt><a class="permalink" href="#-auth"><code class="Cm" id="-auth">-auth</code></a></dt>
+  <dd>Disable authentication.</dd>
+  <dt><a class="permalink" href="#switch"><code class="Cm" id="switch">switch</code></a></dt>
+  <dd>Enable Role Switching. In a Bluetooth piconet there is one Master and up
+      to seven Slaves, and normally the device that initiates a connection will
+      take the Master role. Enabling this option allows remote devices to switch
+      connection roles.</dd>
+  <dt><a class="permalink" href="#-switch"><code class="Cm" id="-switch">-switch</code></a></dt>
+  <dd>Disable Role Switching.</dd>
+  <dt><a class="permalink" href="#master"><code class="Cm" id="master">master</code></a></dt>
+  <dd>Request the Master role when accepting connections.</dd>
+  <dt><a class="permalink" href="#-master"><code class="Cm" id="-master">-master</code></a></dt>
+  <dd>Do not request Master role.</dd>
+  <dt><a class="permalink" href="#hold"><code class="Cm" id="hold">hold</code></a></dt>
+  <dd>Enable Hold Mode.</dd>
+  <dt><a class="permalink" href="#-hold"><code class="Cm" id="-hold">-hold</code></a></dt>
+  <dd>Disable Hold Mode.</dd>
+  <dt><a class="permalink" href="#sniff"><code class="Cm" id="sniff">sniff</code></a></dt>
+  <dd>Enable Sniff Mode.</dd>
+  <dt><a class="permalink" href="#-sniff"><code class="Cm" id="-sniff">-sniff</code></a></dt>
+  <dd>Disable Sniff Mode.</dd>
+  <dt><a class="permalink" href="#park"><code class="Cm" id="park">park</code></a></dt>
+  <dd>Enable Park Mode.</dd>
+  <dt><a class="permalink" href="#-park"><code class="Cm" id="-park">-park</code></a></dt>
+  <dd>Disable Park Mode.</dd>
+  <dt><a class="permalink" href="#name"><code class="Cm" id="name">name</code></a>
+    <var class="Ar">name</var></dt>
+  <dd>Set human readable name of device.</dd>
+  <dt><a class="permalink" href="#ptype"><code class="Cm" id="ptype">ptype</code></a>
+    <var class="Ar">type</var></dt>
+  <dd>Set packet types. <var class="Ar">type</var> is a 16 bit hex value
+      specifying packet types that will be requested by outgoing ACL
+      connections. By default, all packet types that the device supports are
+      enabled, see bluetooth specifications for more information if you want to
+      change this.</dd>
+  <dt><a class="permalink" href="#class"><code class="Cm" id="class">class</code></a>
+    <var class="Ar">class</var></dt>
+  <dd>Set class of device. <var class="Ar">class</var> is a 6 digit hex value
+      the value of which declares the device capabilities. See the
+      &#x201C;Assigned Numbers - Baseband&#x201D; document at
+      <a class="Lk" href="http://www.bluetooth.com/">http://www.bluetooth.com/</a>
+      for details of constructing a Class of Device value. As a starter,
+      0x020104 means Desktop Computer, with Networking available.</dd>
+  <dt><a class="permalink" href="#fixed"><code class="Cm" id="fixed">fixed</code></a></dt>
+  <dd>Set fixed pin type.</dd>
+  <dt><a class="permalink" href="#variable"><code class="Cm" id="variable">variable</code></a></dt>
+  <dd>Set variable pin type.</dd>
+  <dt><a class="permalink" href="#inquiry"><code class="Cm" id="inquiry">inquiry</code></a></dt>
+  <dd>Perform device Discovery from the specified device and print details.</dd>
+  <dt><a class="permalink" href="#imode"><code class="Cm" id="imode">imode</code></a>
+    <var class="Ar">type</var></dt>
+  <dd>Set inquiry mode type to control which event formats are generated during
+      a device inquiry. The <var class="Ar">type</var> can be:
+    <dl class="Bl-tag">
+      <dt>std</dt>
+      <dd>Standard Inquiry Result Event format.</dd>
+      <dt>rssi</dt>
+      <dd>Enable Remote Signal Strength Indicator (RSSI) in inquiry results.
+          This will only work if the device features indicate &#x27E8;RSSI with
+          inquiry result&#x27E9;.</dd>
+      <dt>ext</dt>
+      <dd>Inquiry Result with RSSI format or Extended Inquiry Result format.
+          This will only work where the device features indicate
+          &#x27E8;extended inquiry&#x27E9;, and the Extended Inquiry Result will
+          only occur when the remote device provides the extended
+        information.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#reset"><code class="Cm" id="reset">reset</code></a></dt>
+  <dd>Perform a hard reset on the device and re-initialise system state.</dd>
+  <dt><a class="permalink" href="#voice"><code class="Cm" id="voice">voice</code></a></dt>
+  <dd>Set Voice Setting. [This should be 0x0060 for now]</dd>
+  <dt><a class="permalink" href="#pto"><code class="Cm" id="pto">pto</code></a></dt>
+  <dd>Set Page Timeout value. This is a decimal value in milliseconds,
+      indicating how long the device will attempt to page another device when
+      opening baseband connections.</dd>
+  <dt><a class="permalink" href="#scomtu"><code class="Cm" id="scomtu">scomtu</code></a></dt>
+  <dd>Change SCO mtu value. This is a decimal value, see
+      <a class="Xr" href="../html4/ubt.html">ubt(4)</a> for reasons why you may
+      need to do this.</dd>
+</dl>
+<p class="Pp">All parameters are parsed before any device operations take place.
+    Each time the <code class="Fl">-v</code> flag is given, verbosity levels
+    will be increased.</p>
+<p class="Pp">Super-user privileges are required to change device
+    configurations.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
+Messages indicating the specified device does not exist, the requested address
+  is unknown, or the user is not privileged and tried to alter a device's
+  configuration.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/bcsp.html">bcsp(4)</a>,
+  <a class="Xr" href="../html4/bluetooth.html">bluetooth(4)</a>,
+  <a class="Xr" href="../html4/bt3c.html">bt3c(4)</a>,
+  <a class="Xr" href="../html4/btbc.html">btbc(4)</a>,
+  <a class="Xr" href="../html4/btuart.html">btuart(4)</a>,
+  <a class="Xr" href="../html4/sbt.html">sbt(4)</a>,
+  <a class="Xr" href="../html4/ubt.html">ubt(4)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">btconfig</code> command was written for
+  <span class="Ux">NetBSD 4.0</span> by <span class="An">Iain Hibbert</span>
+  under the sponsorship of Itronix, Inc.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+The output is very messy.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">October 11, 2010</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: intrctl.8,v 1.8 2021/02/22 11:38:13 jmcneill Exp $
+  
+   Copyright (c) 2015 Internet Initiative Japan Inc.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>INTRCTL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">INTRCTL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">INTRCTL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">intrctl</code> &#x2014;
+<div class="Nd">program to control interrupts</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">intrctl</code></td>
+    <td><var class="Ar">command</var> [<var class="Ar">options</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">intrctl</code> command can be used to control and inspect
+  the state of interrupts in the system.
+<p class="Pp">The first argument, <var class="Ar">command</var>, specifies the
+    action to take. Valid commands are:</p>
+<dl class="Bl-tag">
+  <dt>affinity <code class="Fl">-c</code> <var class="Ar">cpu_index</var>
+    <code class="Fl">-i</code> <var class="Ar">intrid</var></dt>
+  <dd>set an <var class="Ar">intrid</var> interrupt's affinity to
+      <var class="Ar">cpu_index</var>.</dd>
+  <dt>intr <code class="Fl">-c</code> <var class="Ar">cpu_index</var></dt>
+  <dd>enable to set an interrupt's affinity to <var class="Ar">cpu_index</var>.
+      If <var class="Ar">cpu_index</var> is already enabled, this command has no
+      effect.</dd>
+  <dt>list [<code class="Fl">-cz</code>] [<code class="Fl">-w</code>
+    <var class="Ar">wait</var>]</dt>
+  <dd>for each intrid in the system, display interrupt counts per CPU. The
+      intrid is an interrupt name such as &quot;ioapic0 pin 22&quot; for x86.
+    <p class="Pp">If <code class="Fl">-c</code> is specified, display compact
+        list with total counts per interrupt, and CPU affinity as list of CPU
+        indexes.</p>
+    <p class="Pp">If <code class="Fl">-w</code> is specified then
+        <code class="Nm">intrctl</code> display the data continuously with a
+        <var class="Ar">wait</var> seconds delay between each iteration.</p>
+    <p class="Pp">If <code class="Fl">-z</code> is specified then rows with all
+        CPUs having zero interrupts will be skipped.</p>
+  </dd>
+  <dt>nointr <code class="Fl">-c</code> <var class="Ar">cpu_index</var></dt>
+  <dd>disable to set an interrupt's affinity to <var class="Ar">cpu_index</var>.
+      If <var class="Ar">cpu_index</var> is already disabled, this command has
+      no effect.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html8/cpuctl.html">cpuctl(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+<code class="Nm">intrctl</code> first appeared in <span class="Ux">NetBSD
+  8.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">Kengo NAKAHARA</span>
+  &lt;<a class="Mt" href="mailto:knakahara@NetBSD.org">knakahara@NetBSD.org</a>&gt;
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 22, 2021</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

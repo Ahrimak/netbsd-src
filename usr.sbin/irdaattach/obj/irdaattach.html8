@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: irdaattach.8,v 1.8 2017/10/23 01:07:27 wiz Exp $
+  
+   Copyright (c) 2001 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Lennart Augustsson.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>IRDAATTACH(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">IRDAATTACH(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">IRDAATTACH(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">irdaattach</code>, <code class="Nm">irda</code> &#x2014;
+<div class="Nd">attach serial lines to IrDA frame driver</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">irdaattach</code></td>
+    <td>[<code class="Fl">-d</code> <var class="Ar">dongle</var>]
+      [<code class="Fl">-fHhlmnp</code>] <var class="Ar">ttyname</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">irdaattach</code> is used to assign a tty line to an IrDA frame
+  level driver. The following operands are supported by
+  <code class="Nm">irdaattach</code>:
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">dongle</var></dt>
+  <dd>Sets the dongle type. The following dongles are supported:
+    <dl class="Bl-tag">
+      <dt>none</dt>
+      <dd>No dongle</dd>
+      <dt>tekram</dt>
+      <dd>Tekram IR-210B</dd>
+      <dt>jeteye</dt>
+      <dd>Extended Systems JetEye</dd>
+      <dt>actisys</dt>
+      <dd>ACTiSYS IR-220L</dd>
+      <dt>actisys+</dt>
+      <dd>ACTiSYS IR-220L+</dd>
+      <dt>litelink</dt>
+      <dd>Parallax LiteLink</dd>
+      <dt>girbil</dt>
+      <dd>Greenwich GIrBIL</dd>
+    </dl>
+    <p class="Pp">The default is <code class="Dv">none</code>.</p>
+  </dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Print the name of the IrDA frame device that should be used to access the
+      frames.</dd>
+  <dt><a class="permalink" href="#H"><code class="Fl" id="H">-H</code></a></dt>
+  <dd>Turn on DTR/CTS flow control. By default, no flow control is done.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a></dt>
+  <dd>Turn on RTS/CTS flow control. By default, no flow control is done.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>Turn on the CLOCAL flag, making it possible to run SLIP on a cable without
+      modem control signals (e.g., DTR, DSR, DCD).</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a></dt>
+  <dd>Maintain modem control signals after closing the line. Specifically, this
+      disables HUPCL.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Do not detach from invoking tty.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a></dt>
+  <dd>Print process id to file.</dd>
+  <dt><var class="Ar">ttyname</var></dt>
+  <dd>Specifies the name of the tty device. <var class="Ar">Ttyname</var> should
+      be a string of the form &#x2018;<code class="Li">ttyXX</code>&#x2019;, or
+      &#x2018;<code class="Li">/dev/ttyXX</code>&#x2019;.</dd>
+</dl>
+<p class="Pp">Only the super-user may attach a network interface.</p>
+<p class="Pp">The frame driver is detached by killing the
+    <code class="Nm">irdaattach</code> process.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<div class="Bd Bd-indent">
+<pre>
+irdaattach tty00
+ircomm -Y -d `irdaattach -p -f /dev/tty02`
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
+Messages indicating that the specified interface does not exist, the requested
+  address is unknown, or that the user is not privileged but tried to alter an
+  interface's configuration.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/daemon.html">daemon(3)</a>,
+  <a class="Xr" href="../html4/irframe.html">irframe(4)</a>,
+  <a class="Xr" href="../html4/irframetty.html">irframetty(4)</a>,
+  <a class="Xr" href="../html8/slattach.html">slattach(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">irdaattach</code> command appeared in
+  <span class="Ux">NetBSD 1.6</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">December 4, 2001</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

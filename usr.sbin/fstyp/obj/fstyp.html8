@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: fstyp.8,v 1.6 2020/01/01 20:11:44 wiz Exp $
+  
+   Copyright (c) 2017 The NetBSD Foundation, Inc.
+   Copyright (c) 2016 The DragonFly Project
+   Copyright (c) 2014 The FreeBSD Foundation
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Tomohiro Kusumi.
+  
+   This software was developed by Edward Tomasz Napierala under sponsorship
+   from the FreeBSD Foundation.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+   $FreeBSD$
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>FSTYP(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">FSTYP(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">FSTYP(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">fstyp</code> &#x2014;
+<div class="Nd">determine file system type</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">fstyp</code></td>
+    <td>[<code class="Fl">-lsu</code>] <var class="Ar">special</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">fstyp</code> utility is used to determine the file system
+  type on a given device. It can recognize ISO-9660, exFAT, Ext2, FAT, NTFS,
+  UFS, HAMMER, and HAMMER2 file systems. When the <code class="Fl">-u</code>
+  flag is specified, <code class="Nm">fstyp</code> also recognizes certain
+  additional metadata formats that cannot be handled using
+  <a class="Xr" href="../html8/mount.html">mount(8)</a>, such as ZFS pools.
+<p class="Pp">The file system name is printed to the standard output as,
+    respectively:</p>
+<ul class="Bl-item Bd-indent Bl-compact">
+  <li>cd9660</li>
+  <li>exfat</li>
+  <li>ext2fs</li>
+  <li>msdosfs</li>
+  <li>ntfs</li>
+  <li>ufs</li>
+  <li>hammer</li>
+  <li>hammer2</li>
+  <li>zfs</li>
+</ul>
+<p class="Pp">Note that a HAMMER file system consisting of more than one volume
+    requires a path in blkdevs format.</p>
+<p class="Pp">Because <code class="Nm">fstyp</code> is built specifically to
+    detect file system types, it differs from
+    <a class="Xr" href="../html1/file.html">file(1)</a> in several ways. The
+    output is machine-parsable, file system labels are supported, and it does
+    not try to recognize any file format other than file systems.</p>
+<p class="Pp">These options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>In addition to file system type, print file system label if
+    available.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Ignore file type. By default, <code class="Nm">fstyp</code> only works on
+      regular files and disk-like device nodes. Trying to read other file types
+      might have unexpected consequences or hang indefinitely.</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a></dt>
+  <dd>Include file systems and devices that cannot be mounted directly by
+      <a class="Xr" href="../html8/mount.html">mount(8)</a>.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXIT_STATUS"><a class="permalink" href="#EXIT_STATUS">EXIT
+  STATUS</a></h1>
+The <code class="Nm">fstyp</code> utility exits 0 on success, and &gt;0 if an
+  error occurs or the file system type is not recognized.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/file.html">file(1)</a>,
+  <a class="Xr" href="../html5/autofs.html">autofs(5)</a>,
+  <a class="Xr" href="../html8/mount.html">mount(8)</a>,
+  <a class="Xr" href="../html8/zpool.html">zpool(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">fstyp</code> command appeared in <span class="Ux">FreeBSD
+  10.2</span>. The <code class="Nm">fstyp</code> command appeared in
+  <span class="Ux">DragonFly 4.5</span>. The <code class="Nm">fstyp</code>
+  command appeared in <span class="Ux">NetBSD 9.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The <code class="Nm">fstyp</code> utility was developed by
+  <span class="An">Edward Tomasz Napierala</span>
+  &lt;<a class="Mt" href="mailto:trasz@FreeBSD.org">trasz@FreeBSD.org</a>&gt;
+  under sponsorship from the <span class="Ux">FreeBSD</span> Foundation. ZFS and
+  GELI support was added by <span class="An">Allan Jude</span>
+  &lt;<a class="Mt" href="mailto:allanjude@FreeBSD.org">allanjude@FreeBSD.org</a>&gt;.
+<p class="Pp">The <code class="Nm">fstyp</code> utility was ported to
+    <span class="Ux">DragonFly</span> and <span class="Ux">NetBSD</span> by
+    <span class="An">Tomohiro Kusumi</span>
+    &lt;<a class="Mt" href="mailto:tkusumi@netbsd.org">tkusumi@netbsd.org</a>&gt;.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+geli and hammer are currently unsupported on <span class="Ux">NetBSD</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 1, 2020</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

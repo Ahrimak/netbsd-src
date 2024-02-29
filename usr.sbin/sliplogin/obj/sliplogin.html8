@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: sliplogin.8,v 1.11 2018/11/14 18:28:18 wiz Exp $
+  
+   Copyright (c) 1990, 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       from: @(#)sliplogin.8	8.2 (Berkeley) 1/5/94
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>SLIPLOGIN(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">SLIPLOGIN(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">SLIPLOGIN(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">sliplogin</code> &#x2014;
+<div class="Nd">attach a serial line network interface</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">sliplogin</code></td>
+    <td>[<var class="Ar">loginname</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">sliplogin</code> is used to turn the terminal line on standard
+  input into a Serial Line IP (SLIP) link to a remote host. To do this, the
+  program searches the file <span class="Pa">/etc/sliphome/slip.hosts</span> for
+  an entry matching <var class="Ar">loginname</var> (which defaults to the
+  current login name if omitted). If a matching entry is found, the line is
+  configured appropriately for slip (8-bit transparent i/o) and converted to
+  SLIP line discipline. Then a shell script is invoked to initialize the slip
+  interface with the appropriate local and remote IP address, netmask, etc.
+<p class="Pp">The usual initialization script is
+    <span class="Pa">/etc/sliphome/slip.login</span> but, if particular hosts
+    need special initialization, the file
+    <span class="Pa">/etc/sliphome/slip.login.</span><var class="Ar">loginname</var>
+    will be executed instead if it exists. The script is invoked with the
+    parameters</p>
+<dl class="Bl-tag">
+  <dt><i class="Em">slipunit</i></dt>
+  <dd>The unit number of the slip interface assigned to this line. E.g.,
+      <b class="Sy">0</b> for <b class="Sy">sl0</b>.</dd>
+  <dt><i class="Em">speed</i></dt>
+  <dd>The speed of the line.</dd>
+  <dt><i class="Em">args</i></dt>
+  <dd>The arguments from the <span class="Pa">/etc/sliphome/slip.hosts</span>
+      entry, in order starting with <var class="Ar">loginname</var>.</dd>
+</dl>
+<p class="Pp">Only the super-user may attach a network interface. The interface
+    is automatically detached when the other end hangs up or the
+    <code class="Nm">sliplogin</code> process dies. If the kernel slip module
+    has been configured for it, all routes through that interface will also
+    disappear at the same time. If there is other processing a site would like
+    done on hangup, the file <span class="Pa">/etc/sliphome/slip.logout</span>
+    or
+    <span class="Pa">/etc/sliphome/slip.logout.</span><var class="Ar">loginname</var>
+    is executed if it exists. It is given the same arguments as the login
+    script.</p>
+<section class="Ss">
+<h2 class="Ss" id="Format_of_/etc/sliphome/slip.hosts"><a class="permalink" href="#Format_of_/etc/sliphome/slip.hosts">Format
+  of /etc/sliphome/slip.hosts</a></h2>
+Comments (lines starting with a `#') and blank lines are ignored. Other lines
+  must start with a <var class="Ar">loginname</var> but the remaining arguments
+  can be whatever is appropriate for the <span class="Pa">slip.login</span> file
+  that will be executed for that name. Arguments are separated by white space
+  and follow normal <a class="Xr" href="../html1/sh.html">sh(1)</a> quoting
+  conventions (however, <var class="Ar">loginname</var> cannot be quoted).
+  Usually, lines have the form
+<div class="Bd Pp Bd-indent">
+<pre>
+loginname local-address remote-address netmask opt-args
+</pre>
+</div>
+<p class="Pp">where <i class="Em">local-address</i> and
+    <i class="Em">remote-address</i> are the IP host names or addresses of the
+    local and remote ends of the slip line and <i class="Em">netmask</i> is the
+    appropriate IP netmask. These arguments are passed directly to
+    <a class="Xr" href="../html8/ifconfig.html">ifconfig(8)</a>.
+    <i class="Em">opt-args</i> are optional arguments used to configure the
+    line.</p>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/usr/share/examples/slip/slip.login</span></dt>
+  <dd>Sample slip.login script</dd>
+  <dt><span class="Pa">/etc/sliphome/slip.login.loginname</span></dt>
+  <dd>Login script for <i class="Em">loginname</i></dd>
+  <dt><span class="Pa">/etc/sliphome/slip.hosts</span></dt>
+  <dd>Per host settings</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+The normal use of <code class="Nm">sliplogin</code> is to create a
+  <span class="Pa">/etc/passwd</span> entry for each legal, remote slip site
+  with <code class="Nm">sliplogin</code> as the shell for that entry. For
+  example:
+<div class="Bd Pp">
+<pre>
+Sfoo:ikhuy6:2010:1:slip line to foo:/tmp:/usr/sbin/sliplogin
+</pre>
+</div>
+<p class="Pp">(Our convention is to name the account used by remote host
+    <var class="Ar">hostname</var> as <i class="Em">Shostname</i>.) Then an
+    entry is added to <span class="Pa">slip.hosts</span> that looks like:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent">
+<pre>
+Sfoo	`hostname`	foo	netmask
+</pre>
+</div>
+<p class="Pp">where <i class="Em">`hostname`</i> will be evaluated by
+    <a class="Xr" href="../html1/sh.html">sh(1)</a> to the local host name and
+    <i class="Em">netmask</i> is the local host IP netmask.</p>
+<p class="Pp">Note that <code class="Nm">sliplogin</code> must be setuid to root
+    and, while not a security hole, moral defectives can use it to place
+    terminal lines in an unusable state and/or deny access to legitimate users
+    of a remote slip line. To prevent this, a site can create a group, say
+    <i class="Em">slip</i>, that only the slip login accounts are put in then
+    make sure that <span class="Pa">/usr/sbin/sliplogin</span> is in group
+    <i class="Em">slip</i> and mode 4550 (setuid root, only group
+    <i class="Em">slip</i> can execute binary).</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
+<code class="Nm">sliplogin</code> logs various information to the system log
+  daemon, <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a>, with a
+  facility code of <i class="Em">daemon</i>. The messages are listed here,
+  grouped by severity level.
+<p class="Pp"><b class="Sy">Error Severity</b></p>
+<dl class="Bl-tag Bl-compact">
+  <dt><b class="Sy">ioctl (TCGETS):</b> <i class="Em">reason</i></dt>
+  <dd>A <code class="Dv">TCGETS</code> <code class="Fn">ioctl</code>() to get
+      the line parameters failed.
+    <p class="Pp"></p>
+  </dd>
+  <dt><b class="Sy">ioctl (TCSETS):</b> <i class="Em">reason</i></dt>
+  <dd>A <code class="Dv">TCSETS</code> <code class="Fn">ioctl</code>() to set
+      the line parameters failed.
+    <p class="Pp"></p>
+  </dd>
+  <dt><b class="Sy">/etc/sliphome/slip.hosts:</b> <i class="Em">reason</i></dt>
+  <dd>The <span class="Pa">/etc/sliphome/slip.hosts</span> file could not be
+      opened.
+    <p class="Pp"></p>
+  </dd>
+  <dt><b class="Sy">access denied for</b> <i class="Em">user</i></dt>
+  <dd>No entry for <i class="Em">user</i> was found in
+      <span class="Pa">/etc/sliphome/slip.hosts</span>.</dd>
+</dl>
+<p class="Pp"><b class="Sy">Notice Severity</b></p>
+<dl class="Bl-tag Bl-compact">
+  <dt><b class="Sy">attaching slip unit</b> <i class="Em">unit</i>
+    <b class="Sy">for</b> <var class="Ar">loginname</var></dt>
+  <dd>SLIP unit <i class="Em">unit</i> was successfully attached.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/sl.html">sl(4)</a>,
+  <a class="Xr" href="../html8/slattach.html">slattach(8)</a>,
+  <a class="Xr" href="../html8/syslogd.html">syslogd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">sliplogin</code> command is currently in beta test.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">November 11, 2018</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

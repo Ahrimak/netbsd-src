@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: lpq.1,v 1.16 2016/12/21 17:29:22 abhinav Exp $
+  
+   Copyright (c) 1983, 1990, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+       @(#)lpq.1	8.2 (Berkeley) 4/28/95
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>LPQ(1)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">LPQ(1)</td>
+    <td class="head-vol">General Commands Manual</td>
+    <td class="head-rtitle">LPQ(1)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">lpq</code> &#x2014;
+<div class="Nd">spool queue examination program</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">lpq</code></td>
+    <td>[<code class="Fl">-al</code>] [<code class="Fl">-P</code>
+      <var class="Ar">printer</var>] [<code class="Fl">-w</code>
+      <var class="Ar">maxwait</var>] [<var class="Ar">job# ...</var>]
+      [<var class="Ar">user ...</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">lpq</code> examines the spooling area used by
+  <a class="Xr" href="../html8/lpd.html">lpd(8)</a> for printing files on the
+  line printer, and reports the status of the specified jobs or all jobs
+  associated with a user. <code class="Nm">lpq</code> invoked without any
+  arguments reports on any jobs currently in the queue.
+<p class="Pp">Options:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#P"><code class="Fl" id="P">-P</code></a></dt>
+  <dd>Specify a particular printer, otherwise the default line printer is used
+      (or the value of the <code class="Ev">PRINTER</code> variable in the
+      environment). All other arguments supplied are interpreted as user names
+      or job numbers to filter out only those jobs of interest.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>Information about each of the files comprising the job entry is printed.
+      Normally, only as much information as will fit on one line is
+    displayed.</dd>
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+  <dd>Report on the local queues for all printers, rather than just the
+      specified printer.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a>
+    <var class="Ar">maxwait</var></dt>
+  <dd>Specify the maximum time to wait in seconds for remote responses. The
+      default is 300 seconds or 5 minutes.</dd>
+</dl>
+<p class="Pp">For each job submitted (i.e. invocation of
+    <a class="Xr" href="../html1/lpr.html">lpr(1)</a>)
+    <code class="Nm">lpq</code> reports the user's name, current rank in the
+    queue, the names of files comprising the job, the job identifier (a number
+    which may be supplied to <a class="Xr" href="../html1/lprm.html">lprm(1)</a>
+    for removing a specific job), and the total size in bytes. Job ordering is
+    dependent on the algorithm used to scan the spooling directory and is
+    supposed to be FIFO (First in First Out). File names comprising a job may be
+    unavailable (when <a class="Xr" href="../html1/lpr.html">lpr(1)</a> is used
+    as a sink in a pipeline) in which case the file is indicated as ``(standard
+    input)''.</p>
+<p class="Pp">If <code class="Nm">lpq</code> warns that there is no daemon
+    present (i.e. due to some malfunction), the
+    <a class="Xr" href="../html8/lpc.html">lpc(8)</a> command can be used to
+    restart the printer daemon.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+If the following environment variable exists, it is used by
+  <code class="Nm">lpq</code>:
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#PRINTER"><code class="Ev" id="PRINTER">PRINTER</code></a></dt>
+  <dd>Specifies an alternative default printer.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/printcap</span></dt>
+  <dd>To determine printer characteristics.</dd>
+  <dt><span class="Pa">/var/spool/output/*</span></dt>
+  <dd>The spooling directory, as determined from printcap.</dd>
+  <dt><span class="Pa">/var/spool/output/*/cf*</span></dt>
+  <dd>Control files specifying jobs.</dd>
+  <dt><span class="Pa">/var/spool/output/*/lock</span></dt>
+  <dd>The lock file to obtain the currently active job.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
+Unable to open various files. The lock file being malformed. Garbage files when
+  there is no daemon active, but files in the spooling directory.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/lpr.html">lpr(1)</a>,
+  <a class="Xr" href="../html1/lprm.html">lprm(1)</a>,
+  <a class="Xr" href="../html8/lpc.html">lpc(8)</a>,
+  <a class="Xr" href="../html8/lpd.html">lpd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+<code class="Nm">lpq</code> appeared in <span class="Ux">3BSD</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Due to the dynamic nature of the information in the spooling directory
+  <code class="Nm">lpq</code> may report unreliably. Output formatting is
+  sensitive to the line length of the terminal; this can result in widely spaced
+  columns.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">April 28, 1995</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

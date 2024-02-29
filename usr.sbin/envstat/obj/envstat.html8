@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: envstat.8,v 1.67 2022/11/21 21:24:02 brad Exp $
+  
+   Copyright (c) 2000, 2007, 2008, 2009, 2014 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Juan Romero Pardines and Bill Squier.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>ENVSTAT(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">ENVSTAT(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">ENVSTAT(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">envstat</code> &#x2014;
+<div class="Nd">utility to handle environmental sensors</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">envstat</code></td>
+    <td>[<code class="Fl">-DfIklnSTW</code>] [<code class="Fl">-c</code>
+      <var class="Ar">file</var>] [<code class="Fl">-d</code>
+      <var class="Ar">device</var>] [<code class="Fl">-i</code>
+      <var class="Ar">interval</var>] [<code class="Fl">-s</code>
+      <var class="Ar">device:sensor,...</var>] [<code class="Fl">-w</code>
+      <var class="Ar">width</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">envstat</code></td>
+    <td><code class="Fl">-x</code> [<code class="Fl">-d</code>
+      <var class="Ar">device</var>] [<code class="Fl">-s</code>
+      <var class="Ar">device:sensor,...</var>]
+      [<var class="Ar">property...</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">envstat</code> is a utility that handles various aspects of the
+  sensors registered with the
+  <a class="Xr" href="../html4/envsys.html">envsys(4)</a> framework. It is
+  capable of displaying sensor values as well as changing parameters and setting
+  critical limits for the sensors.
+<p class="Pp">In display mode, column widths as well as displayed sensors are
+    fully customizable. Critical limits or other properties can be set via the
+    configuration file. If critical limits were set previously, the display mode
+    will show the critical limits in addition to the current values.</p>
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>Accepts a file as argument to set properties for sensors in devices
+      registered with the framework. See the
+      <a class="Xr" href="../html5/envsys.conf.html">envsys.conf(5)</a> manual
+      page for more information.</dd>
+  <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a></dt>
+  <dd>Display the names of the devices that are currently registered with the
+      <a class="Xr" href="../html4/envsys.html">envsys(4)</a> framework, one per
+      line, along with some properties for the device (for example, its refresh
+      timeout value).</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">device</var></dt>
+  <dd>Display only the sensors for the given <var class="Ar">device</var>. This
+      is useful when there are multiple devices registered and you want to only
+      see results from a specific device.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Display temperature values in degrees Fahrenheit. The default is to
+      display temperature values in degrees Celsius.</dd>
+  <dt><a class="permalink" href="#I"><code class="Fl" id="I">-I</code></a></dt>
+  <dd>This flag skips the sensors with invalid state; these are normally shown
+      using the &#x201C;N/A&#x201D; string by default.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>
+    <var class="Ar">interval</var></dt>
+  <dd>Repeat the display every <var class="Ar">interval</var> seconds. Note that
+      some devices do not provide fresh values on demand. See the individual
+      device's manual page for meaningful values for
+      <var class="Ar">interval</var>. If not specified, or specified as 0,
+      <code class="Nm">envstat</code> produces one round of values and
+    exits.</dd>
+  <dt><a class="permalink" href="#k"><code class="Fl" id="k">-k</code></a></dt>
+  <dd>Display temperature values in Kelvin. The default is to display
+      temperature values in degrees Celsius.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>List the names of all supported sensors, one per line. Use of this flag
+      causes <code class="Nm">envstat</code> to ignore all other option
+    flags.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Print only the current value of a sensor and no headers. If statistics are
+      selected with <code class="Fl">-T</code> then also display max, min and
+      average.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a></dt>
+  <dd>This flag is provided for compatibility reasons and there's no need to use
+      it. In the previous implementation, it was used to enable the row mode;
+      this mode is now the default.</dd>
+  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a></dt>
+  <dd>This flag is used to restore defaults to all devices registered with the
+      framework. This will remove all properties that were set in the
+      configuration file to the setting that the devices use by default.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a>
+    <var class="Ar">device:sensor,...</var></dt>
+  <dd>Restrict the display to the named devices and sensors. The pair device and
+      sensor description must be supplied as a comma separated list. Device as
+      well as sensor descriptions are case sensitive. Note that the order of the
+      arguments given does not influence the order of output.</dd>
+  <dt><a class="permalink" href="#T"><code class="Fl" id="T">-T</code></a></dt>
+  <dd>Create and display max, min and average statistics for a sensor. Must be
+      used with an <var class="Ar">interval</var>, otherwise statistics cannot
+      be collected up. Please note that to get realistic values a lower interval
+      value should be used, but that will also increase overhead.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a>
+    <var class="Ar">width</var></dt>
+  <dd>Use <var class="Ar">width</var> as the column width for the output. Each
+      column is additionally separated by a single space. The default is the
+      length of the longest sensor name.</dd>
+  <dt><a class="permalink" href="#W"><code class="Fl" id="W">-W</code></a></dt>
+  <dd>This option has no effect. It is retained for historical reasons.</dd>
+  <dt><a class="permalink" href="#x"><code class="Fl" id="x">-x</code></a></dt>
+  <dd>Shows the raw XML property list used by the
+      <a class="Xr" href="../html9/sysmon_envsys.html">sysmon_envsys(9)</a>
+      framework that contains details about all registered devices and sensors.
+      If <var class="Ar">property</var> is specified, the value of that property
+      is printed. The property list can be filtered with the
+      <code class="Fl">-d</code> or <code class="Fl">-s</code> options. If
+      <code class="Fl">-s</code> is used with only a single sensor, only the
+      properties of this sensor are returned, not a list of sensors.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="UNITS"><a class="permalink" href="#UNITS">UNITS</a></h1>
+The display mode may show some values with abbreviated units; for example:
+<div class="Bd-indent">
+<dl class="Bl-tag Bl-compact">
+  <dt>A</dt>
+  <dd>Amperes</dd>
+  <dt>Ah</dt>
+  <dd>Ampere-hours</dd>
+  <dt>degC</dt>
+  <dd>degrees Celsius</dd>
+  <dt>degF</dt>
+  <dd>degrees Fahrenheit</dd>
+  <dt>K</dt>
+  <dd>Kelvin</dd>
+  <dt>Ohms</dt>
+  <dd>Ohms</dd>
+  <dt>RPM</dt>
+  <dd>Revolutions per minute</dd>
+  <dt>V</dt>
+  <dd>Volts DC</dd>
+  <dt>VAC</dt>
+  <dd>Volts AC</dd>
+  <dt>W</dt>
+  <dd>Watts</dd>
+  <dt>Wh</dt>
+  <dd>Watt-hours</dd>
+  <dt>%rH</dt>
+  <dd>relative Humidity</dd>
+  <dt>hPa</dt>
+  <dd>Hectopascals</dd>
+</dl>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+To display the &#x201C;charge&#x201D; sensor of the device
+  <var class="Ar">acpibat0</var> in one line every ten seconds:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">$ envstat -s
+  &quot;acpibat0:charge&quot; -i 10</code></div>
+<p class="Pp">To list the devices that are currently registered with
+    <a class="Xr" href="../html4/envsys.html">envsys(4)</a>:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">$ envstat -D</code></div>
+<p class="Pp">To display the sensors of the device
+  <var class="Ar">aibs0</var>:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">$ envstat -d aibs0</code></div>
+<p class="Pp">To set all properties specified in the configuration file:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">$ envstat -c
+  /etc/envsys.conf</code></div>
+<p class="Pp">To remove all properties that were set previously in the
+    configuration file:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">$ envstat -S</code></div>
+<p class="Pp">To display statistics for all sensors and ignoring sensors with
+    invalid states every second:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">$ envstat -ITi1</code></div>
+<p class="Pp">To return a single temperature value:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">$ envstat -s vcmbox0:temperature -x
+  /cur-value</code></div>
+<p class="Pp">To return values of multiple temperature sensors from a single
+    device</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">$ envstat -s 'thinkpad0:temperature
+  0,thinkpad0:temperature 1' -x /thinkpad0/0/cur-value
+  /thinkpad0/1/cur-value</code></div>
+<p class="Pp">To return values of temperature sensors from multiple devices:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">$ envstat -s 'coretemp0:cpu0
+  temperature,coretemp1:cpu 2 temperature' -x /coretemp0/0/cur-value
+  /coretemp1/0/cur-value</code></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/units.html">units(1)</a>,
+  <a class="Xr" href="../html3/proplib.html">proplib(3)</a>,
+  <a class="Xr" href="../html4/acpiacad.html">acpiacad(4)</a>,
+  <a class="Xr" href="../html4/acpibat.html">acpibat(4)</a>,
+  <a class="Xr" href="../html4/acpitz.html">acpitz(4)</a>,
+  <a class="Xr" href="../html4/admtemp.html">admtemp(4)</a>,
+  <a class="Xr" href="../html4/aibs.html">aibs(4)</a>,
+  <a class="Xr" href="../html4/amdtemp.html">amdtemp(4)</a>,
+  <a class="Xr" href="../html4/aps.html">aps(4)</a>,
+  <a class="Xr" href="../html4/arcmsr.html">arcmsr(4)</a>,
+  <a class="Xr" href="../html4/battery_pmu.html">battery_pmu(4)</a>,
+  <a class="Xr" href="../html4/cac.html">cac(4)</a>,
+  <a class="Xr" href="../html4/dbcool.html">dbcool(4)</a>,
+  <a class="Xr" href="../html4/envsys.html">envsys(4)</a>,
+  <a class="Xr" href="../html4/finsio.html">finsio(4)</a>,
+  <a class="Xr" href="../html4/hythygtemp.html">hythygtemp(4)</a>,
+  <a class="Xr" href="../html4/ipmi.html">ipmi(4)</a>,
+  <a class="Xr" href="../html4/itesio.html">itesio(4)</a>,
+  <a class="Xr" href="../html4/lm.html">lm(4)</a>,
+  <a class="Xr" href="../html4/lmtemp.html">lmtemp(4)</a>,
+  <a class="Xr" href="../html4/mfi.html">mfi(4)</a>,
+  <a class="Xr" href="../html4/nsclpcsio.html">nsclpcsio(4)</a>,
+  <a class="Xr" href="../html4/owtemp.html">owtemp(4)</a>,
+  <a class="Xr" href="../html4/smsc.html">smsc(4)</a>,
+  <a class="Xr" href="../html4/sparc/tctrl.html">sparc/tctrl(4)</a>,
+  <a class="Xr" href="../html4/sparc64/envctrl.html">sparc64/envctrl(4)</a>,
+  <a class="Xr" href="../html4/thinkpad.html">thinkpad(4)</a>,
+  <a class="Xr" href="../html4/tm121temp.html">tm121temp(4)</a>,
+  <a class="Xr" href="../html4/ug.html">ug(4)</a>,
+  <a class="Xr" href="../html4/viaenv.html">viaenv(4)</a>,
+  <a class="Xr" href="../html4/x86/coretemp.html">x86/coretemp(4)</a>,
+  <a class="Xr" href="../html5/envsys.conf.html">envsys.conf(5)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+<code class="Nm">envstat</code> appeared in <span class="Ux">NetBSD 1.5</span>.
+  It was completely rewritten from scratch for <span class="Ux">NetBSD
+  5.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The <code class="Nm">envstat</code> utility that appeared in
+  <span class="Ux">NetBSD 5.0</span> was written by <span class="An">Juan Romero
+  Pardines</span>. The previous version was written by <span class="An">Bill
+  Squier</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+When displaying statistics using the <code class="Fl">-T</code> option, the
+  average value is an average of the minimum, maximum, and current sensor
+  values. It is not an average of all current values displayed during the
+  session.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">November 14, 2020</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

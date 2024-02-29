@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: perfused.8,v 1.13 2019/07/06 00:45:02 gutteridge Exp $
+  
+   Copyright (c) 2010 Emmanuel Dreyfus. All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>PERFUSED(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">PERFUSED(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">PERFUSED(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">perfused</code> &#x2014;
+<div class="Nd">PUFFS Enabled Relay to FUSE Daemon</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">perfused</code></td>
+    <td>[<code class="Fl">-fs</code>] [<code class="Fl">-d</code>
+      <var class="Ar">types</var>] [<code class="Fl">-i</code>
+      <code class="Fl">-fd</code>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">perfused</code> is a userland daemon implementing the FUSE
+  kernel level API. It creates a <span class="Pa">/dev/fuse</span> socket for
+  FUSE file system daemons to connect to. <code class="Nm">perfused</code> takes
+  care of mounting the file system using
+  <a class="Xr" href="../html3/puffs.html">puffs(3)</a>.
+<p class="Pp">When the kernel sends a
+    <a class="Xr" href="../html3/puffs.html">puffs(3)</a> operation for the
+    mounted file system, <code class="Nm">perfused</code> will translate it into
+    a FUSE request, and will send it to the file system daemon through
+    <span class="Pa">/dev/fuse</span>. The FUSE reply will be converted back
+    into a <a class="Xr" href="../html3/puffs.html">puffs(3)</a> reply and will
+    be relayed to the kernel.</p>
+<p class="Pp">FUSE file system daemons must be modified so that they request
+    <code class="Nm">perfused</code> to perform the
+    <a class="Xr" href="../html2/mount.html">mount(2)</a> system call instead of
+    doing it on their own. This is done by replacing
+    <a class="Xr" href="../html2/mount.html">mount(2)</a> and the
+    <a class="Xr" href="../html2/open.html">open(2)</a> calls for
+    <span class="Pa">/dev/fuse</span> with
+    <code class="Fn">perfuse_mount</code>() and
+    <code class="Fn">perfuse_open</code>(), respectively, in their sources.
+    <a class="Xr" href="../html3/libperfuse.html">libperfuse(3)</a> must be used
+    at link time. Most FUSE file system daemons use
+    <code class="Nm">libfuse</code> and will work unmodified, provided the
+    modification is done in <code class="Nm">libfuse</code> itself.</p>
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">types</var></dt>
+  <dd>Print additional debug information. <var class="Ar">types</var> is a
+      comma-separated list of information types to print:
+    <dl class="Bl-tag">
+      <dt><var class="Ar">puffs</var></dt>
+      <dd>Display PUFFS requests and replies.</dd>
+      <dt><var class="Ar">fuse</var></dt>
+      <dd>Display FUSE requests and replies.</dd>
+      <dt><var class="Ar">dump</var></dt>
+      <dd>Dump content of FUSE frames.</dd>
+      <dt><var class="Ar">fh</var></dt>
+      <dd>Display file handle activity.</dd>
+      <dt><var class="Ar">reclaim</var></dt>
+      <dd>Display reclaim activity.</dd>
+      <dt><var class="Ar">readdir</var></dt>
+      <dd>Display readdir activity.</dd>
+      <dt><var class="Ar">requeue</var></dt>
+      <dd>Display requeue activity.</dd>
+      <dt><var class="Ar">sync</var></dt>
+      <dd>Display dirty flags and sync operations.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Do not fork, but stay in the foreground.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>
+    <var class="Ar">fd</var></dt>
+  <dd>Do not open <span class="Pa">/dev/fuse</span> but use the socket available
+      from the file descriptor <var class="Ar">fd</var>. This is used when
+      <code class="Nm">perfused</code> is started from
+      <a class="Xr" href="../html3/libperfuse.html">libperfuse(3)</a>.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Enable debug output only when receiving
+    <code class="Li">SIGINFO</code>.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+See <a class="Xr" href="../html3/libperfuse.html">libperfuse(3)</a> for
+  environment variables affecting <code class="Nm">perfused</code> behavior.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SIGNALS"><a class="permalink" href="#SIGNALS">SIGNALS</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#SIGINFO"><code class="Dv" id="SIGINFO">SIGINFO</code></a></dt>
+  <dd>If the <code class="Fl">-s</code> flag was used, toggle debug output. Do
+      nothing otherwise.</dd>
+  <dt><a class="permalink" href="#SIGUSR1"><code class="Dv" id="SIGUSR1">SIGUSR1</code></a></dt>
+  <dd>Toggle FUSE operation dump on and off. When toggling off, the trace is is
+      stored in <span class="Pa">/var/run/perfuse-xxx.trace</span> (xxx is the
+      filesystem mount point).</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ERRORS"><a class="permalink" href="#ERRORS">ERRORS</a></h1>
+The program logs to the syslog daemon as facility &#x201C;daemon&#x201D;. For
+  detailed debugging use the <code class="Fl">-d</code> (debug) option.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html2/mount.html">mount(2)</a>,
+  <a class="Xr" href="../html3/perfuse_mount.html">perfuse_mount(3)</a>,
+  <a class="Xr" href="../html4/puffs.html">puffs(4)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The program was written by <span class="An">Emmanuel Dreyfus</span>
+  &#x27E8;manu@NetBSD.org&#x27E9;.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+When <code class="Nm">perfused</code> runs in the foreground (using the
+  <code class="Fl">-f</code> flag), some processes using the FUSE file system
+  will sometimes hang on &#x2018;uvn_fp2&#x2019;.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 29, 2012</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

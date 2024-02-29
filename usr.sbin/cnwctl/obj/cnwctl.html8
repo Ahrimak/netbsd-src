@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: cnwctl.8,v 1.2 1999/11/29 12:55:07 itojun Exp $
+  
+   Copyright (c) 1997 Berkeley Software Design, Inc. All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that this notice is retained,
+   the conditions in the following notices are met, and terms applying
+   to contributors in the following notices also apply to Berkeley
+   Software Design, Inc.
+  
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+        This product includes software developed by
+  	Berkeley Software Design, Inc.
+   4. Neither the name of the Berkeley Software Design, Inc. nor the names
+      of its contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY BERKELEY SOFTWARE DESIGN, INC. ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL BERKELEY SOFTWARE DESIGN, INC. BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+  	PAO2 Id: cnwctl.8,v 1.1.1.1 1997/12/11 14:46:06 itojun Exp
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>CNWCTL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">CNWCTL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">CNWCTL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">cnwctl</code> &#x2014;
+<div class="Nd">display statistics and control Netwave AirSurfer PC Cards</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">cnwctl</code></td>
+    <td>[<code class="Fl">-d</code> <var class="Ar">domain</var>]
+      [<code class="Fl">-i</code> <var class="Ar">interface</var>]
+      [<code class="Fl">-k</code> <var class="Ar">scramble-key</var>]
+      [<code class="Fl">-sS</code> [<var class="Ar">rate</var>]]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">cnwctl</code> utility is used to control Netwave AirSurfer
+  PC Cards as well as display statistics. The following options are available:
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Set the domain of the card to <var class="Ar">domain</var>. The domain
+      must be between 0x000 and 0x1ff. The domains 0x000 through 0x0ff are for
+      access to an add-hoc network. The domains 0x100 through 0x1ff are for
+      access to a Netwave Access Point. The default domain is 0x000. A card may
+      only talk to the access point in its domain, or other cards in its add-hoc
+      domain.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a></dt>
+  <dd>Use <var class="Ar">interface</var> as the interface rather than
+      <code class="Li">cnw0</code>.</dd>
+  <dt><a class="permalink" href="#k"><code class="Fl" id="k">-k</code></a></dt>
+  <dd>Set the scramble key to <var class="Ar">scramble-key</var>. The scramble
+      key must be between 0x0000 and 0xffff. Both the source and the destination
+      must use the same scramble key in order to communicate.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Display statistics. When the optional argument <var class="Ar">rate</var>
+      (which must be the last argument to the end of the command line) is
+      specified as a non-zero value, statistics will be displayed every
+      <var class="Ar">rate</var> seconds. At the top of each
+      &#x201C;page&#x201D; of statistics, column labels will be displayed. The
+      first row of statistics will be totals since boot, subsequent lines are
+      deltas from the previous row. If <var class="Ar">rate</var> is not
+      specified, or is 0 (zero), a single page of statistics will be displayed.
+      These statistics are more detailed and include:
+    <dl class="Bl-tag">
+      <dt>domain</dt>
+      <dd>The domain this card is part of.</dd>
+      <dt>rx</dt>
+      <dd>Number of packets received.</dd>
+      <dt>rxoverflow</dt>
+      <dd>Number of overflows detected.</dd>
+      <dt>rxoverrun</dt>
+      <dd>Number of overruns detected.</dd>
+      <dt>rxcrcerror</dt>
+      <dd>Number of CRC errors detected. Random noise can cause these
+        errors.</dd>
+      <dt>rxframe</dt>
+      <dd>Number of framing errors detected.</dd>
+      <dt>rxerrors</dt>
+      <dd>Number of generic errors detected.</dd>
+      <dt>rxavail</dt>
+      <dd>Number of times a packet was available.</dd>
+      <dt>tx</dt>
+      <dd>Number of packets requested to be sent.</dd>
+      <dt>txokay</dt>
+      <dd>Number of packets sent.</dd>
+      <dt>txabort</dt>
+      <dd>Number of packets aborted (not sent within 9 tries).</dd>
+      <dt>txlostcd</dt>
+      <dd>Number of times carrier detect was lost.</dd>
+      <dt>txerrors</dt>
+      <dd>Number of generic transmit errors detected.</dd>
+      <dt>txretries</dt>
+      <dd>Total number of retries.</dd>
+      <dt><var class="Ar">N</var><span class="No">x retries</span></dt>
+      <dd>Number of packets which were retried <var class="Ar">N</var>
+        times.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a></dt>
+  <dd>Display status read from the hardware. This option is only available to
+      the super user. The <var class="Ar">rate</var> argument is used as with
+      the <code class="Fl">-s</code> option. The following fields are displayed
+    <dl class="Bl-tag">
+      <dt>link integrity field (lif)</dt>
+      <dd>A 0 value implies no links.</dd>
+      <dt>connection quality (cq)</dt>
+      <dd>Probably indicates the quality of the connection to the access
+        point.</dd>
+      <dt>spu</dt>
+      <dd>Unknown meaning.</dd>
+      <dt>link quality (lq)</dt>
+      <dd>Probably indicated the quality of the link to the access point.</dd>
+      <dt>hhc</dt>
+      <dd>Unknown meaning.</dd>
+      <dt>mhs</dt>
+      <dd>Unknown meaning.</dd>
+      <dt>revision</dt>
+      <dd>The revision numbers of the card.</dd>
+      <dt>id</dt>
+      <dd>The ID of the card.</dd>
+    </dl>
+  </dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/cnw.html">cnw(4)</a>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 5, 1997</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

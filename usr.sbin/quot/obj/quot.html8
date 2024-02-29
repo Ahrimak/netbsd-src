@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   Copyright (C) 1994 Wolfgang Solfrank.
+   Copyright (C) 1994 TooLs GmbH.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+  	This product includes software developed by TooLs GmbH.
+   4. The name of TooLs GmbH may not be used to endorse or promote products
+      derived from this software without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY TOOLS GMBH ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL TOOLS GMBH BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+   OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+   WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  
+  	$NetBSD: quot.8,v 1.13 2009/04/08 13:16:57 joerg Exp $
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>QUOT(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">QUOT(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">QUOT(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">quot</code> &#x2014;
+<div class="Nd">display disk space occupied by each user</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">quot</code></td>
+    <td>[<code class="Fl">-acfhknv</code>] [<var class="Ar">filesystem
+      ...</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">quot</code> is used to gather statistics about the disk usage
+  for each local user.
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+  <dd>Include statistics for all mounted filesystems.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>Display three columns containing number of blocks per file, number of
+      files in this category, and aggregate total of blocks in files with this
+      or lower size.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>For each user, display count of files and space occupied.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a></dt>
+  <dd>Estimate the number of blocks in each file based on its size. Despite that
+      this doesn't give the correct results (it doesn't account for the holes in
+      files), this option isn't any faster and thus is discouraged.</dd>
+  <dt><a class="permalink" href="#k"><code class="Fl" id="k">-k</code></a></dt>
+  <dd>By default, all sizes are reported in 512-byte block counts. The
+      <code class="Fl">-k</code> options causes the numbers to be reported in
+      kilobyte counts.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Given a list of inodes (plus some optional data on each line) in the
+      standard input, for each file print out the owner (plus the remainder of
+      the input line). This is traditionally used in the pipe:
+    <div class="Bd Pp Bd-indent">
+    <pre>
+ncheck filesystem | sort +0n | quot -n filesystem
+    </pre>
+    </div>
+    <p class="Pp">to get a report of files and their owners.</p>
+  </dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>In addition to the default output, display the number of files not
+      accessed within 30, 60 and 90 days.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#BLOCKSIZE"><code class="Ev" id="BLOCKSIZE">BLOCKSIZE</code></a></dt>
+  <dd>If the environment variable <code class="Ev">BLOCKSIZE</code> is set, and
+      the <code class="Fl">-k</code> option is not specified, the block counts
+      will be displayed in units of that size block.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/df.html">df(1)</a>,
+  <a class="Xr" href="../html1/quota.html">quota(1)</a>,
+  <a class="Xr" href="../html3/getbsize.html">getbsize(3)</a>,
+  <a class="Xr" href="../html3/getmntinfo.html">getmntinfo(3)</a>,
+  <a class="Xr" href="../html5/fstab.html">fstab(5)</a>,
+  <a class="Xr" href="../html8/mount.html">mount(8)</a>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 8, 1994</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

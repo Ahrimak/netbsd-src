@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: rpc.bootparamd.8,v 1.17 2008/11/08 02:08:39 reed Exp $
+   @(#)bootparamd.8
+ -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>RPC.BOOTPARAMD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">RPC.BOOTPARAMD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">RPC.BOOTPARAMD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">bootparamd</code>, <code class="Nm">rpc.bootparamd</code>
+  &#x2014;
+<div class="Nd">boot parameter server</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">bootparamd</code></td>
+    <td>[<code class="Fl">-ds</code>] [<code class="Fl">-i</code>
+      <var class="Ar">interface</var>] [<code class="Fl">-r</code>
+      <var class="Ar">router</var>] [<code class="Fl">-f</code>
+      <var class="Ar">file</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">bootparamd</code> is a server process that provides information
+  to diskless clients necessary for booting. It consults the file
+  &#x201C;<span class="Pa">/etc/bootparams</span>&#x201D;. It should normally be
+  started from &#x201C;<span class="Pa">/etc/rc</span>&#x201D;.
+<p class="Pp">This version will allow the use of aliases on the hostname in the
+    &#x201C;<span class="Pa">/etc/bootparams</span>&#x201D; file. The hostname
+    returned in response to the booting client's whoami request will be the name
+    that appears in the config file, not the canonical name. In this way you can
+    keep the answer short enough so that machines that cannot handle long
+    hostnames won't fail during boot.</p>
+<p class="Pp">While parsing, if a line containing just ``+'' is found, and the
+    YP subsystem is active, the YP map <span class="Pa">bootparams</span> will
+    be searched immediately.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Display the debugging information. The daemon does not fork in this
+    case.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>
+    <var class="Ar">interface</var></dt>
+  <dd>Specify the interface to become the default router.
+      <code class="Nm">bootparamd</code> picks the first IPv4 address it finds
+      on the system by default. With <code class="Fl">-i</code>, you can control
+      which interface to be used to obtain the default router address.
+      <code class="Fl">-r</code> overrides <code class="Fl">-i</code>.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Log the debugging information with
+      <a class="Xr" href="../html3/syslog.html">syslog(3)</a>.</dd>
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a></dt>
+  <dd>Set the default router (a hostname or IP-address). This defaults to the
+      machine running the server.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Specify the file to use as boot parameter file instead of
+      &#x201C;<span class="Pa">/etc/bootparams</span>&#x201D;.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/bootparams</span></dt>
+  <dd>default configuration file</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html5/bootparams.html">bootparams(5)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+Originally written by <span class="An">Klas Heggemann</span>
+  &#x27E8;klas@nada.kth.se&#x27E9;.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+You may find the syslog messages too verbose.
+<p class="Pp">It's not clear if the non-canonical hack mentioned above is a good
+    idea.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 8, 1994</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

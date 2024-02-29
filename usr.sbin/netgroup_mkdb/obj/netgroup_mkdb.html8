@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: netgroup_mkdb.8,v 1.9 2009/10/21 01:07:47 snj Exp $
+  
+   Copyright (c) 1994 Christos Zoulas
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>NETGROUP_MKDB(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">NETGROUP_MKDB(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">NETGROUP_MKDB(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">netgroup_mkdb</code> &#x2014;
+<div class="Nd">generate the netgroup database</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">netgroup_mkdb</code></td>
+    <td>[<code class="Fl">-o</code> <var class="Ar">database</var>] [file]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">netgroup_mkdb</code> creates a
+  <a class="Xr" href="../html3/db.html">db(3)</a> database for the specified
+  file. If no file is specified, then <span class="Pa">/etc/netgroup</span> is
+  used. This database is installed into
+  <span class="Pa">/var/db/netgroup.db</span>. The file must be in the correct
+  format (see <a class="Xr" href="../html5/netgroup.html">netgroup(5)</a>).
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">database</var></dt>
+  <dd>Put the output databases in the named file.</dd>
+</dl>
+<p class="Pp">The databases are used by the C library netgroup routines (see
+    <a class="Xr" href="../html3/getnetgrent.html">getnetgrent(3)</a>).</p>
+<p class="Pp"><code class="Nm">netgroup_mkdb</code> exits zero on success,
+    non-zero on failure.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/var/db/netgroup.db</span></dt>
+  <dd>The current netgroup database</dd>
+  <dt><span class="Pa">/var/db/netgroup.db.tmp</span></dt>
+  <dd>A temporary file</dd>
+  <dt><span class="Pa">/etc/netgroup</span></dt>
+  <dd>The current netgroup file</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/db.html">db(3)</a>,
+  <a class="Xr" href="../html3/getnetgrent.html">getnetgrent(3)</a>,
+  <a class="Xr" href="../html5/netgroup.html">netgroup(5)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Because <code class="Nm">netgroup_mkdb</code> guarantees not to install a
+  partial destination file it must build a temporary file in the same file
+  system and if successful use
+  <a class="Xr" href="../html2/rename.html">rename(2)</a> to install over the
+  destination file.
+<p class="Pp">If <code class="Nm">netgroup_mkdb</code> fails it will leave the
+    previous version of the destination file intact.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">May 20, 2007</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

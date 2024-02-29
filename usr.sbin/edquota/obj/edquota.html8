@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   Copyright (c) 1983, 1990, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   This code is derived from software contributed to Berkeley by
+   Robert Elz at The University of Melbourne.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+  	from: @(#)edquota.8	8.2 (Berkeley) 4/27/95
+  	$NetBSD: edquota.8,v 1.17 2022/04/08 10:17:55 andvar Exp $
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>EDQUOTA(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">EDQUOTA(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">EDQUOTA(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">edquota</code> &#x2014;
+<div class="Nd">edit user quotas</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">edquota</code></td>
+    <td>[<code class="Fl">-Hu</code>] [<code class="Fl">-f</code>
+      <var class="Ar">file-system</var>] [<code class="Fl">-p</code>
+      <var class="Ar">proto-username</var>] <var class="Ar">-d</var> |
+      <var class="Ar">username ...</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">edquota</code></td>
+    <td>[<code class="Fl">-H</code>] <code class="Fl">-g</code>
+      [<code class="Fl">-f</code> <var class="Ar">file-system</var>]
+      [<code class="Fl">-p</code> <var class="Ar">proto-groupname</var>]
+      <var class="Ar">-d</var> | <var class="Ar">groupname ...</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">edquota</code></td>
+    <td>[<code class="Fl">-Hu</code>] [<code class="Fl">-f</code>
+      <var class="Ar">file-system</var>] [<code class="Fl">-h</code>
+      <var class="Ar">block#/inode#</var>] [<code class="Fl">-s</code>
+      <var class="Ar">block#/inode#</var>] [<code class="Fl">-t</code>
+      <var class="Ar">block grace time/inode grace time</var>]
+      <var class="Ar">-d</var> | <var class="Ar">username ...</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">edquota</code></td>
+    <td>[<code class="Fl">-H</code>] <code class="Fl">-g</code>
+      [<code class="Fl">-f</code> <var class="Ar">file-system</var>]
+      [<code class="Fl">-h</code> <var class="Ar">block#/inode#</var>]
+      [<code class="Fl">-s</code> <var class="Ar">block#/inode#</var>]
+      [<code class="Fl">-t</code> <var class="Ar">block grace time/inode grace
+      time</var>] <var class="Ar">-d</var> | <var class="Ar">groupname
+      ...</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">edquota</code></td>
+    <td>[<code class="Fl">-Hu</code>] <code class="Fl">-c</code>
+      [<code class="Fl">-f</code> <var class="Ar">file-system</var>]
+      <var class="Ar">username ...</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">edquota</code></td>
+    <td>[<code class="Fl">-H</code>] <code class="Fl">-g</code>
+      <code class="Fl">-c</code> [<code class="Fl">-f</code>
+      <var class="Ar">file-system</var>] <var class="Ar">groupname
+      ...</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">edquota</code> is a quota editor. By default, or if the
+  <code class="Fl">-u</code> flag is specified, one or more users may be
+  specified on the command line. Unless <code class="Fl">-h</code>,
+  <code class="Fl">-s</code>, or <code class="Fl">-t</code> are used, a
+  temporary file is created for each user with an ASCII representation of the
+  current disk quotas and grace time for that user. By default, quota for all
+  quota-enabled file systems are edited; the <code class="Fl">-f</code> option
+  can be used to restrict it to a single file system. An editor is invoked on
+  the ASCII file. The editor invoked is
+  <a class="Xr" href="../html1/vi.html">vi(1)</a> unless the environment
+  variable <code class="Ev">EDITOR</code> specifies otherwise.
+<p class="Pp">The quotas may then be modified, new quotas added, etc. Setting a
+    quota to - or unlimited indicates that no quota should be imposed. Setting a
+    quota to zero indicates that no allocation is permitted. Setting a soft
+    limit to zero with a unlimited hard limit indicates that allocations should
+    be permitted on only a temporary basis. The current usage information in the
+    file is for informational purposes; only the hard and soft limits, and grace
+    time can be changed.</p>
+<p class="Pp">Users are permitted to exceed their soft limits for a grace period
+    that may be specified per user (or per-file system for quota version 1).
+    Once the grace period has expired, the soft limit is enforced as a hard
+    limit. The default grace period is one week.</p>
+<p class="Pp">By default, disk quotas are in KB, grace time in seconds. Disk and
+    inodes quota can be entered with a
+    <a class="Xr" href="../html9/humanize_number.html">humanize_number(9)</a>
+    suffix (K for kilo, M for mega, G for giga, T for tera). Time can be entered
+    with Y (year), W (week), D (day), H (hour) and M (minute) suffixes. Suffixes
+    can be mixed (see <a class="Sx" href="#EXAMPLES">EXAMPLES</a> below). If the
+    <code class="Fl">-H</code> option if used, current quota, disk usage and
+    time are displayed in a human-readable format.</p>
+<p class="Pp">On leaving the editor, <code class="Nm">edquota</code> reads the
+    temporary file and modifies the on-disk quotas to reflect the changes
+  made.</p>
+<p class="Pp">If the <code class="Fl">-p</code> flag is specified,
+    <code class="Nm">edquota</code> will duplicate the quotas of the
+    prototypical user specified for each user specified.</p>
+<p class="Pp">The <code class="Fl">-h</code>, <code class="Fl">-s</code>, and
+    <code class="Fl">-t</code> flags can be used to change quota limits (hard,
+    soft and grace time, respectively) without user interaction, for usage in
+    e.g. batch scripts. The arguments are the new block and inode number limit
+    or grace time, separated by a slash. Units suffix may be used, as in the
+    editor above.</p>
+<p class="Pp">If the <code class="Fl">-g</code> flag is specified,
+    <code class="Nm">edquota</code> is invoked to edit the quotas of one or more
+    groups specified on the command line.</p>
+<p class="Pp">With quota version 2, there is a per-file system user or group
+    default quota to be copied to a user or group quota on the first allocation.
+    The <code class="Fl">-d</code> flag adds the default quota to the list of
+    users or groups to edit.</p>
+<p class="Pp">For quota version 1, there is no default block/inode quota, and no
+    per-user/group grace time. To edit the file system-wide grace time, use
+    <code class="Fl">-d</code>.</p>
+<p class="Pp">On quota2-enabled file systems, the <code class="Fl">-c</code>
+    flag cause edquota to clear quota entries for the specified users or groups.
+    If disk or inode usages is not 0, limits are reverted to the default quota.
+    If disk and inode usages are 0, the existing quota entries are freed.</p>
+<p class="Pp">Only the super-user may edit quotas.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+Edit quotas for group games on all quota-enabled file systems:
+<div class="Bd Bd-indent"><code class="Li">edquota -g</code></div>
+Set 4MB hard block limit, 2MB soft block limit, 2048 inode hard limit, 1024
+  inode soft limit, 2 weeks and 3 days (or 17 days) block and inode grace time
+  for the default quotas on file system <span class="Pa">/home</span>:
+<div class="Bd Bd-indent"><code class="Li">edquota -h 4M/2k -s 2M/1k -t
+  2W3D/2W3D -f /home -u -d</code></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/quota.html">quota(1)</a>,
+  <a class="Xr" href="../html3/humanize_number.html">humanize_number(3)</a>,
+  <a class="Xr" href="../html3/libquota.html">libquota(3)</a>,
+  <a class="Xr" href="../html5/fstab.html">fstab(5)</a>,
+  <a class="Xr" href="../html8/quotacheck.html">quotacheck(8)</a>,
+  <a class="Xr" href="../html8/quotaon.html">quotaon(8)</a>,
+  <a class="Xr" href="../html8/quotarestore.html">quotarestore(8)</a>,
+  <a class="Xr" href="../html8/repquota.html">repquota(8)</a>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 29, 2012</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

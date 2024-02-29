@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: tadpolectl.8,v 1.8 2008/09/25 13:10:53 reed Exp $
+   Copyright (c) 1999 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Tim Rightnour
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../../style.css" type="text/css" media="all"/>
+  <title>TADPOLECTL(8) (sparc)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">TADPOLECTL(8)</td>
+    <td class="head-vol">System Manager's Manual (sparc)</td>
+    <td class="head-rtitle">TADPOLECTL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">tadpolectl</code> &#x2014;
+<div class="Nd">get or set tadpole microcontroller state</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">tadpolectl</code></td>
+    <td>[<code class="Fl">-n</code>] <var class="Ar">name ...</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">tadpolectl</code></td>
+    <td>[<code class="Fl">-n</code>] <code class="Fl">-w</code>
+      <var class="Ar">name=value ...</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">tadpolectl</code></td>
+    <td>[<code class="Fl">-n</code>] <code class="Fl">-a</code></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">tadpolectl</code> utility retrieves values from the ts102
+  microcontroller and allows processes with appropriate privilege to set some
+  values. The state to be retrieved or set is described using a ``Management
+  Information Base'' (``MIB'') style name, described as a dotted set of
+  components. The <code class="Fl">-a</code> flag can be used to list all the
+  currently available string or integer values.
+<p class="Pp">The <code class="Fl">-n</code> flag specifies that the printing of
+    the field name should be suppressed and that only its value should be
+    output. This flag is useful for setting shell variables. For example, to
+    save the mains power status in variable mains, use:</p>
+<div class="Bd Bd-indent">
+<pre>
+set mains=`tadpolectl -n hw.power.mains`
+</pre>
+</div>
+<p class="Pp">If just a MIB style name is given, the corresponding value is
+    retrieved. If a value is to be set, the <code class="Fl">-w</code> flag must
+    be specified and the MIB name followed by an equal sign and the new value to
+    be used.</p>
+<p class="Pp">The information available from <code class="Nm">tadpolectl</code>
+    consists of only integers. Some registers can be modified, but have no way
+    of reading what the current value is. Those registers will always display
+    &#x201C;0&#x201D;.</p>
+<p class="Pp">The changeable column indicates whether a process with appropriate
+    privilege can change the value, and if a displayed value is valid.</p>
+<table class="Bl-column">
+  <tr>
+    <td><b class="Sy">Name</b></td>
+    <td>Changeable</td>
+    <td>Valid</td>
+  </tr>
+  <tr>
+    <td>hw.microcontroller.version</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.version</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.poweroncycles</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.poweronseconds</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.power.mains</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.power.battery.int</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.power.battery.ext</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.power.battery.chargedisabled</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.power.battery.int.chargerate</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.power.battery.ext.chargerate</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.power.battery.int.chargelevel</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.power.battery.ext.chargelevel</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.video.external</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.video.lid</td>
+    <td>no</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.video.syncinva</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.video.syncinvb</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.video.compsync</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.video.tft.brightness</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.speaker.freq</td>
+    <td>yes</td>
+    <td>no</td>
+  </tr>
+  <tr>
+    <td>hw.speaker.volume</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.kbd.repeat.delay</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.kbd.repeat.speed</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.kbd.click</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.mouse.recalibrate</td>
+    <td>yes</td>
+    <td>no</td>
+  </tr>
+  <tr>
+    <td>hw.mouse.disable</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.mouse.intclick</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.mouse.extclick</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.mouse.sensitivity</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+  <tr>
+    <td>hw.serial.power</td>
+    <td>yes</td>
+    <td>yes</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+For example, to retrieve the current internal battery charge level, one would
+  use the following request:
+<div class="Bd Bd-indent">
+<pre>
+tadpolectl hw.power.battery.int.chargelevel
+</pre>
+</div>
+<p class="Pp">To set the speaker beep frequency of the system to 1000, one would
+    use the following request:</p>
+<div class="Bd Bd-indent">
+<pre>
+tadpolectl -w hw.speaker.freq=1000
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../../html8/sysctl.html">sysctl(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+<code class="Nm">tadpolectl</code> first appeared in <span class="Ux">NetBSD
+  1.5</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">December 16, 1999</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

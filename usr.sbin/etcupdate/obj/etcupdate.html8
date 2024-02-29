@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: etcupdate.8,v 1.27 2022/01/14 22:55:10 lukem Exp $
+  
+   Copyright (c) 2001-2022 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Martti Kuparinen.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>ETCUPDATE(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">ETCUPDATE(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">ETCUPDATE(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">etcupdate</code> &#x2014;
+<div class="Nd">update the configuration and startup files in
+  <span class="Pa">/etc</span></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">etcupdate</code></td>
+    <td>[<code class="Fl">-alv</code>] [<code class="Fl">-d</code>
+      <var class="Ar">destdir</var>] [<code class="Fl">-p</code>
+      <var class="Ar">pager</var>] [<code class="Fl">-s</code>
+      (<var class="Ar">srcdir</var> | <var class="Ar">tgzdir</var> |
+      <var class="Ar">tgzfile</var>)] [<code class="Fl">-t</code>
+      <var class="Ar">temproot</var>] [<code class="Fl">-w</code>
+      <var class="Ar">width</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">etcupdate</code></td>
+    <td>(<code class="Fl">-h</code> | <code class="Fl">-?</code>)</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">etcupdate</code> is a tool that lets the administrator update
+  the configuration and startup files in <span class="Pa">/etc</span> (and some
+  other directories like <span class="Pa">/dev</span>,
+  <span class="Pa">/root</span> and <span class="Pa">/var</span>) without having
+  to manually check and modify every file. The administrator should run this
+  script after performing an operating system update (e.g. after running
+  <span class="Pa">make build</span> in <span class="Pa">/usr/src</span> or
+  after extracting new binary distribution files) to update to the latest
+  configuration and startup files.
+<p class="Pp"><code class="Nm">etcupdate</code> compares the new configuration
+    files against the currently installed files. The user is given the option of
+    installing, merging or deleting each modified or missing file. The user can
+    also view the differences between the files. By default, it shows the
+    differences in the unified diff format. The default format can be toggled to
+    show the differences in unified, context, or side by side formats or an
+    user-defined command may be used to view differences. (And if
+    <code class="Nm">wdiff</code> is installed, it can also show differences on
+    a word by word basis.)</p>
+<p class="Pp"><code class="Nm">etcupdate</code> also detects if the user
+    installs certain special files and performs corresponding tasks like
+    remaking device nodes or rebuilding a database from the
+    <a class="Xr" href="../html5/aliases.html">aliases(5)</a> file. Finally,
+    <code class="Nm">etcupdate</code> runs
+    <a class="Xr" href="../html8/postinstall.html">postinstall(8)</a> to check
+    the results.</p>
+<p class="Pp"><code class="Nm">etcupdate</code> needs a clean set of new
+    configuration files to compare the existing files against. These files,
+    called the &#x201C;reference files&#x201D; in this manual, may be derived
+    from either a source or binary distribution of
+    <span class="Ux">NetBSD</span>.</p>
+<p class="Pp">If the user is updating from sources (which is the default mode),
+    <code class="Nm">etcupdate</code> will first create a copy of the reference
+    files by running <span class="Pa">make distribution</span> in
+    <span class="Pa">/usr/src/etc</span>, installing the files to a so-called
+    <span class="Pa">temproot</span>. (See usage of the
+    <code class="Fl">-s</code> <var class="Ar">srcdir</var> and
+    <code class="Fl">-t</code> <var class="Ar">temproot</var> options later in
+    this manual page.) Although this is the default mode, it is not recommended
+    (see the &#x201C;BUGS&#x201D; section).</p>
+<p class="Pp">Instead of using sources, it is recommended that the user should
+    extract one or more binary distribution sets in a special location and use
+    those as the reference files (see usage of the <code class="Fl">-s</code>
+    <var class="Ar">tgzdir</var> option later in this manual page), or specify
+    one or more binary distribution sets directly (see usage of the
+    <code class="Fl">-s</code> <var class="Ar">tgzfile</var> option later in
+    this manual page).</p>
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+  <dd><code class="Nm">etcupdate</code> can automatically update files which
+      have not been modified locally. The <code class="Fl">-a</code> flag
+      instructs <code class="Nm">etcupdate</code> to store MD5 checksums in
+      <span class="Pa">/var/etcupdate</span> and use these checksums to
+      determine if there have been any local modifications.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">destdir</var></dt>
+  <dd>Use <var class="Ar">destdir</var> instead of <span class="Pa">/</span> as
+      the top of the file system hierarchy to be updated. For example,
+      <var class="Ar">destdir</var><span class="Pa">/etc</span> will be used
+      instead of <span class="Pa">/etc</span>.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a></dt>
+  <dd>Display help to stdout, and exit.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>Automatically skip files with unchanged RCS IDs. This has the effect of
+      leaving alone files that have been altered locally but which have not been
+      changed in the reference files. Since this works using RCS IDs, files
+      without RCS IDs will not be skipped even if only modified locally. This
+      flag may be used together with the <code class="Fl">-a</code> flag
+      described above.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a>
+    <var class="Ar">pager</var></dt>
+  <dd>The pager to use when displaying files. By default this is
+      <a class="Xr" href="../html1/more.html">more(1)</a> but it can be changed
+      either with this option or by defining the <code class="Ev">PAGER</code>
+      variable.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a>
+    (<var class="Ar">srcdir</var> | <var class="Ar">tgzdir</var> |
+    <var class="Ar">tgzfile</var>)</dt>
+  <dd>The location of the reference files, or the <span class="Ux">NetBSD</span>
+      source files used to create the reference files. This may be specified in
+      one of three ways:
+    <dl class="Bl-tag">
+      <dt><a class="permalink" href="#s_2"><code class="Fl" id="s_2">-s</code></a>
+        <var class="Ar">srcdir</var></dt>
+      <dd>The top level directory of the <span class="Ux">NetBSD</span> source
+          tree. By default this is <span class="Pa">/usr/src</span> but it can
+          be changed either with this option or the
+          <code class="Ev">SRCDIR</code> variable. The reference files will be
+          created by running &#x201C;make distribution&#x201D; in the
+          <var class="Ar">srcdir</var><span class="Pa">/etc</span> directory.
+          Note that <var class="Ar">srcdir</var> should refer to the top of the
+          source directory tree; earlier versions of
+          <code class="Nm">etcupdate</code> expected
+          <var class="Ar">srcdir</var> to refer to the
+          <span class="Pa">etc</span> subdirectory within the source tree.</dd>
+      <dt><a class="permalink" href="#s_3"><code class="Fl" id="s_3">-s</code></a>
+        <var class="Ar">tgzdir</var></dt>
+      <dd>A directory in which reference files have been extracted from a binary
+          distribution of <span class="Ux">NetBSD</span>. The files that are
+          distributed in the &#x201C;<span class="Pa">etc.tgz</span>&#x201D; or
+          &#x201C;<span class="Pa">etc.tar.xz</span>&#x201D; set file must be
+          present. The files that are distributed in the
+          &#x201C;<span class="Pa">xetc.tgz</span>&#x201D; or
+          &#x201C;<span class="Pa">xetc.tar.xz</span>&#x201D; set file are
+          optional. The reference files from the specified directory will be
+          copied to the <span class="Pa">temproot</span> directory.</dd>
+      <dt><a class="permalink" href="#s_4"><code class="Fl" id="s_4">-s</code></a>
+        <var class="Ar">tgzfile</var></dt>
+      <dd>The location of a set file (or &#x201C;tgz file&#x201D;) such as
+          &#x201C;<span class="Pa">etc.tgz</span>&#x201D;,
+          &#x201C;<span class="Pa">etc.tar.xz</span>&#x201D; or
+          &#x201C;<span class="Pa">xetc.tgz</span>&#x201D; from a binary
+          distribution of <span class="Ux">NetBSD</span>. Each set file is a
+          compressed archive containing reference files, which will be extracted
+          to the <span class="Pa">temproot</span> directory. Multiple
+          <code class="Fl">-s</code> options may be used to specify multiple set
+          files. The &#x201C;<span class="Pa">etc.tgz</span>&#x201D; or
+          &#x201C;<span class="Pa">etc.tar.xz</span>&#x201D; set file must be
+          specified. The &#x201C;<span class="Pa">xetc.tgz</span>&#x201D; or
+          &#x201C;<span class="Pa">xetc.tar.xz</span>&#x201D; set file is
+          optional.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a>
+    <var class="Ar">temproot</var></dt>
+  <dd>Specifies the location of the <span class="Pa">temproot</span> directory.
+      This directory will be used for a temporary copy of the reference files
+      created by running &#x201C;make distribution&#x201D; in the source
+      directory specified by <code class="Fl">-s</code>
+      <var class="Ar">srcdir</var>, or a temporary copy of the reference files
+      extracted from the binary sets specified by <code class="Fl">-s</code>
+      <var class="Ar">tgzfile</var>, or a temporary copy of the reference files
+      from the directory specified by <code class="Fl">-s</code>
+      <var class="Ar">tempdir</var>. By default this is
+      <span class="Pa">/tmp/temproot</span> but can be changed either with this
+      option or the <code class="Ev">TEMPROOT</code> environment variable.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Makes <code class="Nm">etcupdate</code> verbose about its actions.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a>
+    <var class="Ar">width</var></dt>
+  <dd>Sets screen width used during interactive merge. By default this is the
+      number of columns <a class="Xr" href="../html1/stty.html">stty(1)</a>
+      reports but it can be changed either with this option or by defining the
+      <code class="Ev">WIDTH</code> variable. This is useful for
+      <a class="Xr" href="../html1/xterm.html">xterm(1)</a> users with wider
+      shell windows.</dd>
+  <dt><a class="permalink" href="#?"><code class="Fl" id="?">-?</code></a></dt>
+  <dd>Display help to stdout, and exit.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#TEMPROOT"><code class="Ev" id="TEMPROOT">TEMPROOT</code></a></dt>
+  <dd>Sets a default value for <span class="Pa">temproot</span>. See
+      <code class="Fl">-t</code> above.</dd>
+  <dt><a class="permalink" href="#SRCDIR"><code class="Ev" id="SRCDIR">SRCDIR</code></a></dt>
+  <dd>The location of the <span class="Ux">NetBSD</span> sources files. See
+      <code class="Fl">-s</code> above.</dd>
+  <dt><a class="permalink" href="#PAGER"><code class="Ev" id="PAGER">PAGER</code></a></dt>
+  <dd>The pager to use when displaying files. See <code class="Fl">-p</code>
+      above.</dd>
+  <dt><a class="permalink" href="#WIDTH"><code class="Ev" id="WIDTH">WIDTH</code></a></dt>
+  <dd>The screen width used during interactive merge. See
+      <code class="Fl">-w</code> above.</dd>
+  <dt><a class="permalink" href="#IGNOREFILES"><code class="Ev" id="IGNOREFILES">IGNOREFILES</code></a></dt>
+  <dd>A list of files that <code class="Nm">etcupdate</code> should ignore.
+      Files listed in this variable will never be considered for updating by
+      <code class="Nm">etcupdate</code>.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+The environment variables can also be defined in the following configuration
+  files. The user's personal configuration file settings override the global
+  settings.
+<p class="Pp">/etc/etcupdate.conf</p>
+<p class="Pp">~/.etcupdaterc</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+You have just upgraded your <span class="Ux">NetBSD</span> host from 3.0 to 4.0
+  and now it's time to update the configuration files as well. To update the
+  configuration files from the sources (if you have the
+  <span class="Pa">/usr/src/etc</span> directory):
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">etcupdate</code></div>
+<p class="Pp">The default location of the source files is
+    <span class="Pa">/usr/src</span> but this may be overridden with the
+    <code class="Fl">-s</code> <var class="Ar">srcdir</var> command line
+    argument:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">etcupdate -s
+  /some/where/src</code></div>
+<p class="Pp">To update the configuration files from binary distribution sets do
+    something like this:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">etcupdate -s /some/where/etc.tgz -s
+  /some/where/xetc.tgz</code></div>
+<p class="Pp">or like this:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">mkdir /tmp/temproot</code></div>
+<div class="Bd Bd-indent"><code class="Li">cd /tmp/temproot</code></div>
+<div class="Bd Bd-indent"><code class="Li">tar -xpzf
+  /some/where/etc.tgz</code></div>
+<div class="Bd Bd-indent"><code class="Li">tar -xpzf
+  /some/where/xetc.tgz</code></div>
+<div class="Bd Bd-indent"><code class="Li">etcupdate -s
+  /tmp/temproot</code></div>
+<p class="Pp">You have modified only few files in the
+    <span class="Pa">/etc</span> directory so you would like install most of the
+    updates without being asked. To automatically update the unmodified
+    configuration files:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">etcupdate -a</code></div>
+<p class="Pp">To get a better idea what's going on, use the
+    <code class="Fl">-v</code> flag:</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">etcupdate -v</code></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/cmp.html">cmp(1)</a>,
+  <a class="Xr" href="../html1/more.html">more(1)</a>,
+  <a class="Xr" href="../html1/rcs.html">rcs(1)</a>,
+  <a class="Xr" href="../html1/sdiff.html">sdiff(1)</a>,
+  <a class="Xr" href="../html1/stty.html">stty(1)</a>,
+  <a class="Xr" href="../html5/aliases.html">aliases(5)</a>,
+  <a class="Xr" href="../html8/postinstall.html">postinstall(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">etcupdate</code> command appeared in
+  <span class="Ux">NetBSD 1.6</span>.
+<p class="Pp">In <span class="Ux">NetBSD 4.0</span>, the
+    <code class="Fl">-s</code> <var class="Ar">tgzfile</var> option was added,
+    the <code class="Fl">-b</code> <var class="Ar">tempdir</var> option was
+    converted to <code class="Fl">-s</code> <var class="Ar">tgzdir</var>, and
+    the <code class="Fl">-s</code> <var class="Ar">srcdir</var> option was
+    changed to refer to the top of the source directory tree rather than to the
+    <span class="Pa">etc</span> subdirectory.</p>
+<p class="Pp">In <span class="Ux">NetBSD 5.0</span>, the ability to specify
+    multiple colon-separated files with a single <code class="Fl">-s</code>
+    option was deprecated, and options deprecated in <span class="Ux">NetBSD
+    4.0</span> were removed.</p>
+<p class="Pp">In <span class="Ux">NetBSD 7.0</span>, the ability to specify
+    multiple colon-separated files with a single <code class="Fl">-s</code>
+    option was removed (multiple <code class="Fl">-s</code> options must be used
+    instead), and the <code class="Fl">-d</code> <var class="Ar">destdir</var>
+    option was added.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The script was written by <span class="An">Martti Kuparinen</span>
+  &#x27E8;martti@NetBSD.org&#x27E9; and improved by several other
+  <span class="Ux">NetBSD</span> users.
+<p class="Pp">The idea for this script (including code fragments, variable names
+    etc.) came from the <span class="Ux">FreeBSD</span> mergemaster (by Douglas
+    Barton). Unlike the <span class="Ux">FreeBSD</span> mergemaster, this does
+    not use CVS version tags by default to compare if the files need to be
+    updated. Files are compared with
+    <a class="Xr" href="../html1/cmp.html">cmp(1)</a> as this is more reliable
+    and the only way if the version numbers are the same even though the files
+    are different.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+If a source directory is specified via the &#x201C;<code class="Fl">-s</code>
+  <var class="Ar">srcdir</var>&#x201D; option (or if the
+  <span class="Pa">/usr/src</span> directory is used by default), then
+  <code class="Nm">etcupdate</code> will run &#x201C;make distribution&#x201D;
+  in the <span class="Pa">etc</span> subdirectory of the source directory, but
+  it will not use the same options or environment variables that would be used
+  during a full build of the operating system. For this reason, use of the
+  &#x201C;<code class="Fl">-s</code> <var class="Ar">srcdir</var>&#x201D; option
+  is not recommended, and use of the &#x201C;<code class="Fl">-s</code>
+  <var class="Ar">tgzdir</var>&#x201D; or &#x201C;<code class="Fl">-s</code>
+  <var class="Ar">tgzfile</var>&#x201D; options is recommended.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">January 15, 2022</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

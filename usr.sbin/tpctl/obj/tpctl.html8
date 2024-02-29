@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: tpctl.8,v 1.5 2012/04/08 22:00:41 wiz Exp $
+  
+   Copyright (c) 2002 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>TPCTL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">TPCTL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">TPCTL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">tpctl</code> &#x2014;
+<div class="Nd">touch panel calibration utility</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">tpctl</code></td>
+    <td>[<code class="Fl">-hnuv</code>] [<code class="Fl">-D</code>
+      <var class="Ar">dispdevname</var>] [<code class="Fl">-d</code>
+      <var class="Ar">devname</var>] [<code class="Fl">-f</code>
+      <var class="Ar">filename</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">tpctl</code> is a touch panel calibration utility.
+  <code class="Nm">tpctl</code> calibrates a touch panel and saves and restores
+  the calibration parameters into/from a parameter database file.
+<p class="Pp">Available command-line flags are:</p>
+<dl class="Bl-tag Bl-compact">
+  <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a>
+    <var class="Ar">dispdevname</var></dt>
+  <dd>Specify display device name.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">devname</var></dt>
+  <dd>Specify touch panel device name.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>
+    <var class="Ar">filename</var></dt>
+  <dd>Specify alternate parameter database file name.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a></dt>
+  <dd>Print brief description.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Do not change the parameter database file.</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a></dt>
+  <dd>Force calibration. Without this flag, <code class="Nm">tpctl</code> won't
+      do calibration if the database file already contains parameters for the
+      touch panel.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Verbose mode.</dd>
+</dl>
+<p class="Pp">You calibrate the touch panel the first time you run
+    <code class="Nm">tpctl</code>. If you see a cross cursor on the screen, you
+    should tap the center of the cursor to calibrate the touch panel, or you can
+    abort the calibration with the &#x2018;ESC&#x2019; key. Five cursors will
+    appear on the screen in turn. Once calibration is done,
+    <code class="Nm">tpctl</code> saves the calibration parameters into the
+    database file and uses the saved parameters to calibrate the touch
+  panel.</p>
+<p class="Pp">You can run <code class="Nm">tpctl</code> automatically with
+    <span class="Pa">/etc/rc.d/tpctl</span>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/tpctl.dat</span></dt>
+  <dd>The default calibration parameter database file. The
+      <code class="Fl">-f</code> flag may be used to specify an alternate
+      database file name. <code class="Nm">tpctl</code> will create an empty
+      database file if it doesn't exist.</dd>
+  <dt><span class="Pa">/dev/ttyE0</span></dt>
+  <dd>The default display device, which is used to display the cursor during
+      calibration. The <code class="Fl">-D</code> flag may be used to specify an
+      alternate display device name. The display device must provide the
+      &#x2018;hpcfb&#x2019; interface as defined in
+      <span class="Pa">/usr/include/dev/hpc/hpcfbio.h</span>.</dd>
+  <dt><span class="Pa">/dev/wsmux0</span></dt>
+  <dd>The default touch panel device. The <code class="Fl">-d</code> flag may be
+      used to specify an alternate touch panel device name.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html5/rc.conf.html">rc.conf(5)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+<code class="Nm">tpctl</code> isn't available on all ports because it requires a
+  display device which provides the &#x2018;hpcfb&#x2019; interface.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">August 25, 2002</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: pwd_mkdb.8,v 1.28 2010/08/18 10:00:49 wiz Exp $
+  
+   Copyright (c) 1991, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+  	from: @(#)pwd_mkdb.8	8.2 (Berkeley) 4/27/95
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>PWD_MKDB(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">PWD_MKDB(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">PWD_MKDB(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">pwd_mkdb</code> &#x2014;
+<div class="Nd">generate the password databases</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">pwd_mkdb</code></td>
+    <td>[<code class="Fl">-BLlpsvw</code>] [<code class="Fl">-c</code>
+      <var class="Ar">cachesize</var>] [<code class="Fl">-d</code>
+      <var class="Ar">directory</var>] [<code class="Fl">-u</code>
+      <var class="Ar">username</var>] [<code class="Fl">-V</code>
+      <var class="Ar">version</var>] <var class="Ar">file</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">pwd_mkdb</code> creates
+  <a class="Xr" href="../html3/db.html">db(3)</a> style secure and insecure
+  databases for the specified file. These databases are then installed into
+  &#x201C;<span class="Pa">/etc/spwd.db</span>&#x201D; and
+  &#x201C;<span class="Pa">/etc/pwd.db</span>&#x201D; respectively. The file is
+  installed into &#x201C;<span class="Pa">/etc/master.passwd</span>&#x201D;. The
+  file must be in the correct format (see
+  <a class="Xr" href="../html5/passwd.html">passwd(5)</a>). It is important to
+  note that the format used in this system is different from the historic
+  Version 7 style format.
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#B"><code class="Fl" id="B">-B</code></a></dt>
+  <dd>Store data in big-endian format (see also
+    <code class="Fl">-L</code>).</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>
+    <var class="Ar">cachesize</var></dt>
+  <dd>Specify the size of the memory cache in megabytes used by the hashing
+      library. On systems with a large user base, a small cache size can lead to
+      prohibitively long database file rebuild times. As a rough guide, the
+      memory usage of <code class="Nm">pwd_mkdb</code> in megabytes will be a
+      little bit more than twice the figure specified here. If unspecified, this
+      value will be calculated based on the size of the input file up to a
+      maximum of 8 megabytes.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">directory</var></dt>
+  <dd>Change the root directory of the generated files from
+      &#x201C;<span class="Pa">/</span>&#x201D; to
+      <var class="Ar">directory</var>.</dd>
+  <dt><a class="permalink" href="#L"><code class="Fl" id="L">-L</code></a></dt>
+  <dd>Store data in little-endian format (see also
+    <code class="Fl">-B</code>).</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>Use <a class="Xr" href="../html3/syslog.html">syslog(3)</a> to report
+      errors.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a></dt>
+  <dd>Create a Version 7 style password file and install it into
+      &#x201C;<span class="Pa">/etc/passwd</span>&#x201D;.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Update the secure database only. This is useful when only encrypted
+      passwords have changed. This option negates the effect of any
+      <code class="Fl">-p</code> option.</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a>
+    <var class="Ar">name</var></dt>
+  <dd>Don't re-build the database files, but instead modify or add entries for
+      the specified user only. This option may only be used when the line number
+      and user name in the password file have not changed, or when adding a new
+      user from the last line in the password file.</dd>
+  <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>
+    <var class="Ar">version</var></dt>
+  <dd>Upgrade or downgrade databases to the numbered version. Version
+      <code class="Dv">0</code> is the old format (up to and including
+      <span class="Ux">NetBSD 5.0</span>) with the 4 byte time fields and
+      version <code class="Dv">1</code> is the new format with the 8 byte time
+      fields (greater than <span class="Ux">NetBSD 5.0</span>).
+      <span class="Ux">NetBSD 5.0</span> cannot read version
+      <code class="Dv">1</code> databases. All versions above
+      <span class="Ux">NetBSD 5.0</span> can read and write both version
+      <code class="Dv">0</code> and version <code class="Dv">1</code> databases.
+      By default the databases stay in the version they were before the command
+      was run.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Mention when a version change occurs.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a></dt>
+  <dd>Print a warning if the system is using old style databases.</dd>
+</dl>
+<p class="Pp">The two databases differ in that the secure version contains the
+    user's encrypted password and the insecure version has an asterisk
+    (&#x201C;*&#x201D;).</p>
+<p class="Pp">The databases are used by the C library password routines (see
+    <a class="Xr" href="../html3/getpwent.html">getpwent(3)</a>).</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/etc/master.passwd</span></dt>
+  <dd>The current password file.</dd>
+  <dt><span class="Pa">/etc/passwd</span></dt>
+  <dd>A Version 7 format password file.</dd>
+  <dt><span class="Pa">/etc/pwd.db</span></dt>
+  <dd>The insecure password database file.</dd>
+  <dt><span class="Pa">/etc/pwd.db.tmp</span></dt>
+  <dd>A temporary file.</dd>
+  <dt><span class="Pa">/etc/spwd.db</span></dt>
+  <dd>The secure password database file.</dd>
+  <dt><span class="Pa">/etc/spwd.db.tmp</span></dt>
+  <dd>A temporary file.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXIT_STATUS"><a class="permalink" href="#EXIT_STATUS">EXIT
+  STATUS</a></h1>
+<code class="Nm">pwd_mkdb</code> exits zero on success, non-zero on failure.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="COMPATIBILITY"><a class="permalink" href="#COMPATIBILITY">COMPATIBILITY</a></h1>
+Previous versions of the system had a program similar to
+  <code class="Nm">pwd_mkdb</code> which built <i class="Em">dbm</i> style
+  databases for the password file but depended on the calling programs to
+  install them. The program was renamed in order that previous users of the
+  program not be surprised by the changes in functionality.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/chpass.html">chpass(1)</a>,
+  <a class="Xr" href="../html1/passwd.html">passwd(1)</a>,
+  <a class="Xr" href="../html1/pwhash.html">pwhash(1)</a>,
+  <a class="Xr" href="../html3/db.html">db(3)</a>,
+  <a class="Xr" href="../html3/getpwent.html">getpwent(3)</a>,
+  <a class="Xr" href="../html3/pw_mkdb.html">pw_mkdb(3)</a>,
+  <a class="Xr" href="../html3/syslog.html">syslog(3)</a>,
+  <a class="Xr" href="../html5/passwd.html">passwd(5)</a>,
+  <a class="Xr" href="../html8/useradd.html">useradd(8)</a>,
+  <a class="Xr" href="../html8/userdel.html">userdel(8)</a>,
+  <a class="Xr" href="../html8/usermod.html">usermod(8)</a>,
+  <a class="Xr" href="../html8/vipw.html">vipw(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Because of the necessity for atomic update of the password files,
+  <code class="Nm">pwd_mkdb</code> uses
+  <a class="Xr" href="../html2/rename.html">rename(2)</a> to install them. This,
+  however, requires that the file specified on the command line live on the same
+  file system as the &#x201C;<span class="Pa">/etc</span>&#x201D; directory.
+<p class="Pp">There are the obvious races with multiple people running
+    <code class="Nm">pwd_mkdb</code> on different password files at the same
+    time. The front-ends to
+    <a class="Xr" href="../html1/chpass.html">chpass(1)</a>,
+    <a class="Xr" href="../html1/passwd.html">passwd(1)</a>,
+    <a class="Xr" href="../html8/useradd.html">useradd(8)</a>,
+    <a class="Xr" href="../html8/userdel.html">userdel(8)</a>,
+    <a class="Xr" href="../html8/usermod.html">usermod(8)</a>, and
+    <a class="Xr" href="../html8/vipw.html">vipw(8)</a> handle the locking
+    necessary to avoid this problem.</p>
+<p class="Pp">The database files are copied when the <code class="Fl">-u</code>
+    option is used. Real locking would make this unnecessary.</p>
+<p class="Pp">Although the DB format is endian-transparent, the data stored in
+    the DB is not. Also, the format doesn't lend itself to insertion or removal
+    of records from arbitrary locations in the password file. This is difficult
+    to fix without breaking compatibility.</p>
+<p class="Pp">Using the <code class="Fl">-u</code> option on a system where
+    multiple users share the same UID can have unexpected results.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">August 18, 2010</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

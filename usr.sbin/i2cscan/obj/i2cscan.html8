@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: i2cscan.8,v 1.7 2019/11/30 02:47:14 riastradh Exp $
+  
+   Copyright (c) 2011, 2013 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Thomas Klausner.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>I2CSCAN(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">I2CSCAN(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">I2CSCAN(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">i2cscan</code> &#x2014;
+<div class="Nd">scan an IIC bus for devices</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">i2cscan</code></td>
+    <td>[<code class="Fl">-r</code>] <var class="Ar">i2cdev</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">i2cscan</code> utility scans the Inter-Integrated Circuit
+  bus (<a class="Xr" href="../html4/iic.html">iic(4)</a>) specified by
+  <var class="Ar">i2cdev</var> to determine which addresses respond.
+<p class="Pp"><var class="Ar">i2cdev</var> can be specified with or without the
+    <span class="Pa">/dev</span> prefix. For example,
+    <span class="Pa">/dev/iic0</span> or <span class="Pa">iic0</span>.</p>
+<p class="Pp">Available options:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#r"><code class="Fl" id="r">-r</code></a></dt>
+  <dd>scan using 1 byte reads instead of quick writes.</dd>
+</dl>
+<p class="Pp"><b class="Sy">WARNING</b>: Using this utility can access some
+    devices in such a manner as to leave them in an unstable or unusable state.
+    It can also lock up the entire
+    <a class="Xr" href="../html4/iic.html">iic(4)</a> bus. Don't use this
+    utility unless you know what you're doing and can accept all sorts of
+    unforeseen consequences.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXIT_STATUS"><a class="permalink" href="#EXIT_STATUS">EXIT
+  STATUS</a></h1>
+The <code class="Nm">i2cscan</code> utility exits&#x00A0;0 on success,
+  and&#x00A0;&gt;0 if an error occurs.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+Scan the first IIC bus found on the system for devices:
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li">i2cscan /dev/iic0</code></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/iic.html">iic(4)</a>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">November 26, 2015</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

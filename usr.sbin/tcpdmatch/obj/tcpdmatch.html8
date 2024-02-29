@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: tcpdmatch.8,v 1.6 2001/04/03 12:05:12 wiz Exp $
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>TCPDMATCH(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">TCPDMATCH(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">TCPDMATCH(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+tcpdmatch - tcp wrapper oracle
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+tcpdmatch [-d] [-i inet_conf] daemon client
+<p class="Pp">tcpdmatch [-d] [-i inet_conf] daemon[@server] [user@]client</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<i>tcpdmatch</i> predicts how the tcp wrapper would handle a specific request
+  for service. Examples are given below.
+<p class="Pp">The program examines the <i>tcpd</i> access control tables
+    (default <i>/etc/hosts.allow</i> and <i>/etc/hosts.deny</i>) and prints its
+    conclusion. For maximal accuracy, it extracts additional information from
+    your <i>inetd</i> or <i>tlid</i> network configuration file.</p>
+<p class="Pp">When <i>tcpdmatch</i> finds a match in the access control tables,
+    it identifies the matched rule. In addition, it displays the optional shell
+    commands or options in a pretty-printed format; this makes it easier for you
+    to spot any discrepancies between what you want and what the program
+    understands.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ARGUMENTS"><a class="permalink" href="#ARGUMENTS">ARGUMENTS</a></h1>
+The following two arguments are always required:
+<dl class="Bl-tag">
+  <dt>daemon</dt>
+  <dd>A daemon process name. Typically, the last component of a daemon
+      executable pathname.</dd>
+  <dt>client</dt>
+  <dd>A host name or network address, or one of the `unknown' or `paranoid'
+      wildcard patterns.
+    <p class="Pp">When a client host name is specified, <i>tcpdmatch</i> gives a
+        prediction for each address listed for that client.</p>
+    <p class="Pp">When a client address is specified, <i>tcpdmatch</i> predicts
+        what <i>tcpd</i> would do when client name lookup fails.</p>
+  </dd>
+</dl>
+<p class="Pp">Optional information specified with the <i>daemon@server</i>
+  form:</p>
+<dl class="Bl-tag">
+  <dt>server</dt>
+  <dd>A host name or network address, or one of the `unknown' or `paranoid'
+      wildcard patterns. The default server name is `unknown'.</dd>
+</dl>
+<p class="Pp">Optional information specified with the <i>user@client</i>
+  form:</p>
+<dl class="Bl-tag">
+  <dt>user</dt>
+  <dd>A client user identifier. Typically, a login name or a numeric userid. The
+      default user name is `unknown'.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h1>
+<dl class="Bl-tag">
+  <dt>-d</dt>
+  <dd>Examine <i>hosts.allow</i> and <i>hosts.deny</i> files in the current
+      directory instead of the default ones.</dd>
+  <dt>-i inet_conf</dt>
+  <dd>Specify this option when <i>tcpdmatch</i> is unable to find your
+      <i>inetd.conf</i> or <i>tlid.conf</i> network configuration file, or when
+      you suspect that the program uses the wrong one.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+To predict how <i>tcpd</i> would handle a telnet request from the local system:
+<p class="Pp">tcpdmatch in.telnetd localhost</p>
+<p class="Pp">The same request, pretending that hostname lookup failed:</p>
+<p class="Pp">tcpdmatch in.telnetd 127.0.0.1</p>
+<p class="Pp">To predict what tcpd would do when the client name does not match
+    the client address:</p>
+<p class="Pp">tcpdmatch in.telnetd paranoid</p>
+<p class="Pp">On some systems, daemon names have no `in.' prefix, or
+    <i>tcpdmatch</i> may need some help to locate the inetd configuration
+  file.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+The default locations of the <i>tcpd</i> access control tables are:
+<p class="Pp">/etc/hosts.allow
+  <br/>
+  /etc/hosts.deny</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<pre>
+tcpdchk(8), tcpd configuration checker
+hosts_access(5), format of the tcpd access control tables.
+hosts_options(5), format of the language extensions.
+inetd.conf(5), format of the inetd control file.
+</pre>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<pre>
+Wietse Venema (wietse@wzv.win.tue.nl),
+Department of Mathematics and Computing Science,
+Eindhoven University of Technology
+Den Dolech 2, P.O. Box 513,
+5600 MB Eindhoven, The Netherlands
+</pre>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+If you specify FQDN hostname as client, they will be recognized only as IPv4 or
+  IPv6 address, which should be recognized as both.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date"></td>
+    <td class="foot-os"></td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: altq.conf.5,v 1.19 2021/07/14 08:32:13 ozaki-r Exp $
+  	$KAME: altq.conf.5,v 1.15 2002/11/17 02:51:49 kjc Exp $
+  
+   Copyright (C) 2000
+   Sony Computer Science Laboratories Inc.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY SONY CSL AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL SONY CSL OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>ALTQ.CONF(5)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">ALTQ.CONF(5)</td>
+    <td class="head-vol">File Formats Manual</td>
+    <td class="head-rtitle">ALTQ.CONF(5)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">altq.conf</code> &#x2014;
+<div class="Nd">ALTQ configuration file</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">altq.conf</code> file contains a number of lines specifying
+  the behavior of queueing disciplines. Comments start with a # and extend to
+  the end of the line.
+<p class="Pp">The <a class="Xr" href="../html8/altqd.html">altqd(8)</a> program
+    reads <span class="Pa">/etc/altq.conf</span> at startup and sets up queueing
+    disciplines. BLUE, CBQ (Class-Based Queueing), FIFOQ (First-In First-Out
+    Queue), HFSC (Hierarchical Fair Service Curve), PRIQ (Priority Queueing),
+    RED (Random Early Detection), RIO (RED with IN/OUT), WFQ (Weighted Fair
+    Queueing), JoBS (Joint Buffer Management and Scheduling) and CDNR (Diffserv
+    Traffic Conditioner) can be configured in this file.</p>
+<section class="Ss">
+<h2 class="Ss" id="Interface_Commands"><a class="permalink" href="#Interface_Commands">Interface
+  Commands</a></h2>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface"><code class="Cm" id="interface">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">tbrsize</code>
+      <var class="Ar">bytes</var>] [<var class="Ar">sched_type</var>]
+      [<var class="Ar">discipline-specific-options</var>]</dd>
+</dl>
+</div>
+<p class="Pp">The <code class="Cm">interface</code> command specifies a network
+    interface to be under control of ALTQ. One interface specification is
+    provided for each network interface under control of ALTQ. A system
+    configured as a router may have multiple interface specifications.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>specifies the name of a network interface (e.g., fxp0).</dd>
+  <dt><a class="permalink" href="#bandwidth"><code class="Cm" id="bandwidth">bandwidth</code></a></dt>
+  <dd>specifies the interface bandwidth in bits per second. This is the maximum
+      rate that the queueing discipline will allow on this interface.</dd>
+  <dt><a class="permalink" href="#tbrsize"><code class="Cm" id="tbrsize">tbrsize</code></a></dt>
+  <dd>specifies the bucket size of a token bucket regulator in bytes. When
+      <code class="Cm">tbrsize</code> is omitted, the system automatically sets
+      the bucket size using heuristics. The token rate is set to the interface
+      bandwidth specified by the <code class="Cm">interface</code> command.</dd>
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>Type of a queueing discipline. It must be either
+      <code class="Cm">blue</code>, <code class="Cm">cbq</code>,
+      <code class="Cm">fifoq</code>, <code class="Cm">hfsc</code>,
+      <code class="Cm">jobs</code>, <code class="Cm">priq</code>,
+      <code class="Cm">red</code>, <code class="Cm">rio</code>, or
+      <code class="Cm">wfq</code>. If the interface has only traffic
+      conditioners and no queueing discipline, <var class="Ar">sched_type</var>
+      can be omitted.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="Class_Command"><a class="permalink" href="#Class_Command">Class
+  Command</a></h2>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#class"><code class="Cm" id="class">class</code></a></dt>
+  <dd><var class="Ar">sched_type</var> <var class="Ar">if_name</var>
+      <var class="Ar">class_name</var> <var class="Ar">parent_name</var>
+      [<code class="Cm">red|rio</code>] [<code class="Cm">ecn</code>]
+      [<code class="Cm">cleardscp</code>]
+      [<var class="Ar">discipline-specific-options</var>]</dd>
+</dl>
+</div>
+<p class="Pp">The <code class="Cm">class</code> command specifies a packet
+    scheduling class for CBQ, HFSC, JoBS or PRIQ. A class specifier must be
+    provided for each packet scheduling class.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>Type of queueing discipline. Must correspond to the discipline name in
+      interface specification.</dd>
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>Interface name. Must correspond to name in interface specification.</dd>
+  <dt><var class="Ar">class_name</var></dt>
+  <dd>Arbitrary name for this class. Must be unique for this interface.</dd>
+  <dt><var class="Ar">parent_name</var></dt>
+  <dd>The name of the parent class for this class (for CBQ or HFSC). Parent
+      class must have been previously defined. PRIQ and JoBS do not have class
+      hierarchy and parent_name must be <code class="Dv">NULL</code> for PRIQ
+      and JoBS classes.</dd>
+  <dt><a class="permalink" href="#red"><code class="Cm" id="red">red</code></a></dt>
+  <dd>Use RED (Random Early Detection) on this class queue. RED drops packets
+      with the probability proportional to the average queue length.</dd>
+  <dt><a class="permalink" href="#rio"><code class="Cm" id="rio">rio</code></a></dt>
+  <dd>Use RIO (RED with In/Out bit) on this class queue. RIO runs triple RED
+      algorithms at the same time.</dd>
+  <dt><a class="permalink" href="#ecn"><code class="Cm" id="ecn">ecn</code></a></dt>
+  <dd>Use RED/ECN (Explicit Congestion Notification) on this class queue
+      (experimental implementation). ECN implies RED.</dd>
+  <dt><a class="permalink" href="#cleardscp"><code class="Cm" id="cleardscp">cleardscp</code></a></dt>
+  <dd>Clear diffserv codepoint in the IP header.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="Filter_Commands"><a class="permalink" href="#Filter_Commands">Filter
+  Commands</a></h2>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#filter"><code class="Cm" id="filter">filter</code></a></dt>
+  <dd><var class="Ar">if_name</var> <var class="Ar">class_name</var>
+      [<code class="Cm">name</code> <var class="Ar">fltr_name</var>]
+      [<code class="Cm">ruleno</code> <var class="Ar">num</var>]
+      <var class="Ar">filter_values</var></dd>
+</dl>
+</div>
+<p class="Pp">The <code class="Cm">filter</code> command specifies a filter to
+    classify packets into a scheduling class. A filter specifier determines any
+    statically-defined packet classification rules.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>Name of a network interface (e.g., fxp0).</dd>
+  <dt><var class="Ar">class_name</var></dt>
+  <dd>Name of a class or a conditioner to which matching packets are
+    directed.</dd>
+  <dt><a class="permalink" href="#name"><code class="Cm" id="name">name</code></a></dt>
+  <dd>Add an arbitrary name to the filter for a future reference.</dd>
+  <dt><a class="permalink" href="#ruleno"><code class="Cm" id="ruleno">ruleno</code></a></dt>
+  <dd>Specifies explicit order of filter matching. Filter matching is performed
+      from a filter with a larger ruleno. Default is 0.</dd>
+</dl>
+</div>
+<p class="Pp"><var class="Ar">filter_values</var> should be in the following
+    format:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">filter_values</var>:</dt>
+  <dd><span class="Ad">dst_addr</span> [<code class="Cm">netmask</code>
+      <var class="Ar">mask</var>] <var class="Ar">dport</var>
+      <span class="Ad">src_addr</span> [<code class="Cm">netmask</code>
+      <var class="Ar">mask</var>] <var class="Ar">sport</var>
+      <var class="Ar">proto</var> [<code class="Cm">tos</code>
+      <var class="Ar">value</var> [<code class="Cm">tosmask</code>
+      <var class="Ar">value</var>]] [<code class="Cm">gpi</code>
+      <var class="Ar">value</var>]</dd>
+</dl>
+</div>
+<p class="Pp">Here <span class="Ad">dst_addr</span> and
+    <span class="Ad">src_addr</span> are dotted-decimal addresses of the
+    destination and the source respectively. An address may be followed by
+    <code class="Cm">netmask</code> keyword. <var class="Ar">dport</var> and
+    <var class="Ar">sport</var> are port numbers of the destination and the
+    source respectively. <var class="Ar">proto</var> is a protocol number
+    defined for IP packets (e.g. 6 for TCP). <code class="Cm">tos</code> keyword
+    can be used to specify the type of service field value.
+    <code class="Cm">gpi</code> keyword can be used to specify the Security
+    Parameter Index value for IPsec.</p>
+<p class="Pp">When filter value 0 is used, it is taken as a wildcard.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#filter6"><code class="Cm" id="filter6">filter6</code></a></dt>
+  <dd><var class="Ar">if_name</var> <var class="Ar">class_name</var>
+      [<code class="Cm">name</code> <var class="Ar">fltr_name</var>]
+      [<code class="Cm">ruleno</code> <var class="Ar">num</var>]
+      <var class="Ar">filter6_values</var></dd>
+</dl>
+</div>
+<p class="Pp">The <code class="Cm">filter6</code> command is for IPv6.
+    <var class="Ar">filter6_value</var> should be in the following format:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt>filter6_values:</dt>
+  <dd><span class="Ad">dst_addr</span>[/prefix_len] <var class="Ar">dport</var>
+      <span class="Ad">src_addr</span>[/prefix_len] <var class="Ar">sport</var>
+      <var class="Ar">proto</var> [<code class="Cm">flowlabel</code>
+      <var class="Ar">value</var>] [<code class="Cm">tclass</code>
+      <var class="Ar">value</var> [<code class="Cm">tclassmask</code>
+      <var class="Ar">value</var>]] [<code class="Cm">gpi</code>
+      <var class="Ar">value</var>]</dd>
+</dl>
+</div>
+<p class="Pp">Here <span class="Ad">dst_addr</span> and
+    <span class="Ad">src_addr</span> are IPv6 addresses of the destination and
+    the source respectively. An address may be followed by an optional address
+    prefix length. <var class="Ar">dport</var> and <var class="Ar">sport</var>
+    are port numbers of the destination and the source respectively.
+    <var class="Ar">proto</var> is a protocol number defined for IPv6 packets
+    (e.g. 6 for TCP). <code class="Cm">flowlabel</code> keyword can be used to
+    specify the flowlabel field value. <code class="Cm">tclass</code> keyword
+    can be used to specify the traffic class field value.
+    <code class="Cm">gpi</code> keyword can be used to specify the Security
+    Parameter Index value for IPsec.</p>
+<p class="Pp">When filter value 0 is used, it is taken as a wildcard.</p>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="CBQ_Commands"><a class="permalink" href="#CBQ_Commands">CBQ
+  Commands</a></h2>
+CBQ (Class Based Queueing) achieves both partitioning and sharing of link
+  bandwidth by hierarchically structured classes. Each class has its own queue
+  and is assigned its share of bandwidth. A child class can borrow bandwidth
+  from its parent class as long as excess bandwidth is available.
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface_2"><code class="Cm" id="interface_2">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">tbrsize</code>
+      <var class="Ar">bytes</var>] [<var class="Ar">sched_type</var>]
+      [<code class="Cm">efficient</code>] [<code class="Cm">no-control</code>]
+      [<code class="Cm">no-tbr</code>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>specifies the name of a network interface (e.g., fxp0).</dd>
+  <dt><a class="permalink" href="#bandwidth_2"><code class="Cm" id="bandwidth_2">bandwidth</code></a></dt>
+  <dd>specifies the interface bandwidth in bits per second.</dd>
+  <dt><a class="permalink" href="#tbrsize_2"><code class="Cm" id="tbrsize_2">tbrsize</code></a></dt>
+  <dd>specifies the bucket size of a token bucket regulator in bytes.</dd>
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be either <code class="Cm">cbq</code>,
+      <code class="Cm">cbq-wrr</code> (weighted-round robin) or
+      <code class="Cm">cbq-prr</code> (packet-by-packet round robin).
+      <code class="Cm">cbq</code> is equivalent to
+      <code class="Cm">cbq-wrr</code>.</dd>
+  <dt><a class="permalink" href="#efficient"><code class="Cm" id="efficient">efficient</code></a></dt>
+  <dd>Enables CBQ's link efficiency mode. This means that the scheduler will
+      send a packet from the first overlimit class it encounters of all classes
+      of the link-sharing structure when all classes are overlimit. This will
+      also cause the scheduler to use greater than its assigned bandwidth, if
+      the link is capable of more than the assigned bandwidth. By default, this
+      mode is turned off. By adding the keyword
+      <code class="Cm">efficient</code> to the interface specification line,
+      enables this mode.</dd>
+  <dt><a class="permalink" href="#no-control"><code class="Cm" id="no-control">no-control</code></a></dt>
+  <dd>By default, the control class is automatically created when default class
+      is created and one doesn't exist yet. This option suppresses the behavior
+      on the interface.</dd>
+  <dt><a class="permalink" href="#no-tbr"><code class="Cm" id="no-tbr">no-tbr</code></a></dt>
+  <dd>By default, a token bucket regulator is automatically created on each
+      interface. This option suppresses the behavior on the interface.</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#class_2"><code class="Cm" id="class_2">class</code></a></dt>
+  <dd><var class="Ar">sched_type</var> <var class="Ar">if_name</var>
+      <var class="Ar">class_name</var> <var class="Ar">parent_name</var>
+      [<code class="Cm">admission cntlload|none</code>]
+      [<code class="Cm">priority</code> <var class="Ar">pri</var>]
+      [<code class="Cm">pbandwidth</code> <var class="Ar">percent</var>]
+      [<code class="Cm">exactbandwidth</code> <var class="Ar">bps</var>]
+      [<code class="Cm">borrow</code>] [<code class="Cm">default</code>]
+      [<code class="Cm">control</code>] [<code class="Cm">maxburst</code>
+      <var class="Ar">count</var>] [<code class="Cm">minburst</code>
+      <var class="Ar">count</var>]
+      [<code class="Cm">maxdelay</code>&#x00A0;<var class="Ar">msec</var>]
+      [<code class="Cm">packetsize</code> <var class="Ar">bytes</var>]
+      [<code class="Cm">maxpacketsize</code> <var class="Ar">bytes</var>]
+      [<code class="Cm">red|rio</code>] [<code class="Cm">ecn</code>]
+      [<code class="Cm">flowvalve</code>]
+    [<code class="Cm">cleardscp</code>]</dd>
+</dl>
+</div>
+<p class="Pp">The <code class="Cm">class</code> command specifies a CBQ class.
+    The classes are organized as a hierarchy, and every class, except for the
+    root class, has a parent.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">cbq</code> for a CBQ class.</dd>
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>Interface name. Must correspond to name in interface specification.</dd>
+  <dt><var class="Ar">class_name</var></dt>
+  <dd>Arbitrary name for this class. Must be unique within the class hierarchy
+      for this interface. The name <code class="Cm">ctl_class</code> is a
+      reserved class name.</dd>
+  <dt><a class="permalink" href="#parent_name"><code class="Cm" id="parent_name">parent_name</code></a></dt>
+  <dd>The name of the parent class for this class or
+      <code class="Dv">NULL</code> if this is the root class. Parent class must
+      have been previously defined.</dd>
+  <dt><a class="permalink" href="#admission"><code class="Cm" id="admission">admission</code></a></dt>
+  <dd>The type of admission control and QoS type.
+      <code class="Cm">cntlload</code> is controlled load service for RSVP,
+      otherwise, it should be <code class="Cm">none</code>. The default is
+      <code class="Cm">none</code>.</dd>
+  <dt><a class="permalink" href="#priority"><code class="Cm" id="priority">priority</code></a></dt>
+  <dd>High numbers are higher priority. Max value is 7 and Min value is 0.
+      Default is 1.</dd>
+  <dt><a class="permalink" href="#pbandwidth"><code class="Cm" id="pbandwidth">pbandwidth</code></a></dt>
+  <dd>The percentage of the interface bandwidth allocated to this class.
+      Generally should add up to 100 percent at each level of the class
+      hierarchy, although other amounts can be specified for purposes of
+      experimentation.</dd>
+  <dt><a class="permalink" href="#exactbandwidth"><code class="Cm" id="exactbandwidth">exactbandwidth</code></a></dt>
+  <dd>Specify the bandwidth in bits-per-second instead of
+      <code class="Cm">pbandwidth</code>. Note that the bandwidth allocation of
+      CBQ is not so precise but this is just a way to pass a parameter to CBQ;
+      the user is supposed to know the detailed internals of CBQ.
+      <code class="Cm">pbandwidth</code> is a preferred way to specify the
+      bandwidth of a class.</dd>
+  <dt><a class="permalink" href="#borrow"><code class="Cm" id="borrow">borrow</code></a></dt>
+  <dd>The class can borrow bandwidth from its parent class when this class is
+      overlimit. If this keyword is not present, then no borrowing is done, and
+      the packet is delayed or dropped when the class is overlimit.</dd>
+  <dt><a class="permalink" href="#default"><code class="Cm" id="default">default</code></a></dt>
+  <dd>Specify the default class. When this keyword is present, all packets that
+      do not match some classification criteria are assigned to this class. Must
+      be exactly one class on each interface defined as the default class.</dd>
+  <dt><a class="permalink" href="#control"><code class="Cm" id="control">control</code></a></dt>
+  <dd>Specify the control class. When this keyword is present, the predefined
+      control class packets (RSVP, IGMP, and ICMP) are assigned to this class.
+      Note that when the control class is not specified by the time the default
+      class is created, one is automatically created with default parameters.
+      Thus, if the control class is specified, it must be listed before the
+      default class. Must be exactly one class on each interface defined as the
+      control class.</dd>
+  <dt><a class="permalink" href="#maxburst"><code class="Cm" id="maxburst">maxburst</code></a></dt>
+  <dd>The maximum burst of back-to-back packets allowed in this class. Default
+      is 16 but the default value is automatically reduced to 4 when the class
+      bandwidth is small (about less than 1Mbps).</dd>
+  <dt><a class="permalink" href="#minburst"><code class="Cm" id="minburst">minburst</code></a></dt>
+  <dd>The minimum burst is used to obtain the steady state burst size. It's the
+      parameter to help compute offtime for the class. Offtime is the amount of
+      time a class is to wait between packets. Default is 2.</dd>
+  <dt><a class="permalink" href="#maxdelay"><code class="Cm" id="maxdelay">maxdelay</code></a></dt>
+  <dd>The maxdelay is specified in milliseconds and used to obtain the max queue
+      size of the class. If not specified, the default max queue size (30
+      packets) is used.</dd>
+  <dt><a class="permalink" href="#packetsize"><code class="Cm" id="packetsize">packetsize</code></a></dt>
+  <dd>The average packet size in bytes to be used in CBQ over-/under-limit
+      computations. Default value is MTU of the interface.</dd>
+  <dt><a class="permalink" href="#maxpacketsize"><code class="Cm" id="maxpacketsize">maxpacketsize</code></a></dt>
+  <dd>The maximum packet size in bytes for the class. Default value is MTU of
+      the interface.</dd>
+  <dt><a class="permalink" href="#red_2"><code class="Cm" id="red_2">red</code></a></dt>
+  <dd>enables RED on this class queue.</dd>
+  <dt><a class="permalink" href="#rio_2"><code class="Cm" id="rio_2">rio</code></a></dt>
+  <dd>enables RIO on this class queue.</dd>
+  <dt><a class="permalink" href="#ecn_2"><code class="Cm" id="ecn_2">ecn</code></a></dt>
+  <dd>enables RED/ECN on this class queue.</dd>
+  <dt><a class="permalink" href="#flowvalve"><code class="Cm" id="flowvalve">flowvalve</code></a></dt>
+  <dd>enables RED/flow-valve (a.k.a. red-penalty-box) on this class queue.</dd>
+  <dt><a class="permalink" href="#cleardscp_2"><code class="Cm" id="cleardscp_2">cleardscp</code></a></dt>
+  <dd>clears diffserv codepoint in the IP header.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="HFSC_Commands"><a class="permalink" href="#HFSC_Commands">HFSC
+  Commands</a></h2>
+HFSC (Hierarchical Fair Service Curve) supports both link-sharing and guaranteed
+  real-time services. H-FSC employs a service curve based QoS model, and its
+  unique feature is an ability to decouple delay and bandwidth allocation. HFSC
+  has 2 independent scheduling mechanisms. Real-time scheduling is used to
+  guarantee the delay and the bandwidth allocation at the same time.
+  Hierarchical link-sharing is used to distribute the excess bandwidth. When
+  dequeueing a packet, HFSC always tries real-time scheduling first. If no
+  packet is eligible for real-time scheduling, link-sharing scheduling is
+  performed. HFSC does not use class hierarchy for real-time scheduling.
+  Additionally, an upper-limit service curve can be specified for link-sharing
+  to set the upper limit allowed for the class.
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface_3"><code class="Cm" id="interface_3">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">tbrsize</code>
+      <var class="Ar">bytes</var>] [<var class="Ar">sched_type</var>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>specifies the name of a network interface (e.g., fxp0).</dd>
+  <dt><a class="permalink" href="#bandwidth_3"><code class="Cm" id="bandwidth_3">bandwidth</code></a></dt>
+  <dd>specifies the interface bandwidth in bits per second.</dd>
+  <dt><a class="permalink" href="#tbrsize_3"><code class="Cm" id="tbrsize_3">tbrsize</code></a></dt>
+  <dd>specifies the bucket size of a token bucket regulator in bytes.</dd>
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">hfsc</code> for HFSC.</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#class_3"><code class="Cm" id="class_3">class</code></a></dt>
+  <dd><var class="Ar">sched_type</var> <var class="Ar">if_name</var>
+      <var class="Ar">class_name</var> <var class="Ar">parent_name</var>
+      [<code class="Cm">admission cntlload|none</code>]
+      [[<code class="Cm">sc</code> <var class="Ar">m1 d m2</var>]]
+      [[<code class="Cm">rt</code> <var class="Ar">m1 d m2</var>]]
+      [[<code class="Cm">ls</code> <var class="Ar">m1 d m2</var>]]
+      [[<code class="Cm">ul</code> <var class="Ar">m1 d m2</var>]]
+      [<code class="Cm">pshare</code> <var class="Ar">percent</var>]
+      [<code class="Cm">grate</code> <var class="Ar">bps</var>]
+      [<code class="Cm">bandwidth</code> <var class="Ar">bps</var>]
+      [<code class="Cm">ulimit</code> <var class="Ar">bps</var>]
+      [<code class="Cm">default</code>] [<code class="Cm">qlimit</code>
+      <var class="Ar">count</var>] [<code class="Cm">red|rio</code>]
+      [<code class="Cm">ecn</code>] [<code class="Cm">cleardscp</code>]</dd>
+</dl>
+</div>
+<p class="Pp">The <code class="Cm">class</code> command specifies a HFSC class.
+    The classes are organized as a hierarchy, and every class, except for the
+    root class, has a parent.</p>
+<p class="Pp">Each HFSC class has 2 service curves, the real-time service curve
+    and the link-sharing service curve. Service curves are specified by
+    [<var class="Ar">type</var> <var class="Ar">m1 d m2</var>].
+    <var class="Ar">type</var> should be either <code class="Cm">sc</code>,
+    <code class="Cm">rt</code>, <code class="Cm">ls</code>, or
+    <code class="Cm">ul</code>. <code class="Cm">sc</code> (service curve) is
+    used to set the same values to both real-time and link-sharing service
+    curves. <code class="Cm">rt</code> (real-time) is used to specify the
+    real-time service curve. <code class="Cm">ls</code> (link-sharing) is used
+    to specify the link-sharing service curve. <code class="Cm">ul</code>
+    (upper-limit) is used to specify the upper-limit service curve for
+    link-sharing. <var class="Ar">m1</var> is the slope of the first segment
+    specified in bits-per-second. <var class="Ar">d</var> is the x-projection of
+    the intersection point of the 2 segments specified in milliseconds.
+    <var class="Ar">m2</var> is the slope of the second segment specified in
+    bits-per-second.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">hfsc</code> for a HFSC class.</dd>
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>Interface name. Must correspond to name in interface specification.</dd>
+  <dt><var class="Ar">class_name</var></dt>
+  <dd>Arbitrary name for this class. Must be unique within the class hierarchy
+      for this interface. The name <code class="Cm">root</code> is a reserved
+      class name for the root class. The root class for the interface is
+      automatically created by the <code class="Cm">interface</code>
+    command.</dd>
+  <dt><var class="Ar">parent_name</var></dt>
+  <dd>The name of the parent class for this class. Keyword
+      <code class="Cm">root</code> is used when the parent is the root class.
+      Parent class must have been previously defined.</dd>
+  <dt><a class="permalink" href="#admission_2"><code class="Cm" id="admission_2">admission</code></a></dt>
+  <dd>The type of admission control and QoS type.
+      <code class="Cm">cntlload</code> is controlled load service for RSVP,
+      otherwise, it should be <code class="Cm">none</code>. The default is
+      <code class="Cm">none</code>.</dd>
+  <dt><a class="permalink" href="#pshare"><code class="Cm" id="pshare">pshare</code></a></dt>
+  <dd>Percent of the link share. This specifies a linear link-sharing service
+      curve as a fraction of the link bandwidth. It is a short hand of
+      <code class="Li">[ls 0 0 (link-bandwidth * percent / 100)]</code>.</dd>
+  <dt><a class="permalink" href="#grate"><code class="Cm" id="grate">grate</code></a></dt>
+  <dd>Guaranteed rate. This specifies a linear real-time service curve. It is a
+      short hand of <code class="Li">[rt 0 0 bps]</code>.</dd>
+  <dt><a class="permalink" href="#bandwidth_4"><code class="Cm" id="bandwidth_4">bandwidth</code></a></dt>
+  <dd>This is a short hand of <code class="Li">[sc 0 0 bps]</code>.</dd>
+  <dt><a class="permalink" href="#ulimit"><code class="Cm" id="ulimit">ulimit</code></a></dt>
+  <dd>Upper limit rate. This specifies a upper-limit service curve. It is a
+      short hand of <code class="Li">[ul 0 0 bps]</code>.</dd>
+  <dt><a class="permalink" href="#default_2"><code class="Cm" id="default_2">default</code></a></dt>
+  <dd>Specify the default class. When this keyword is present, all packets that
+      do not match some classification criteria are assigned to this class. Must
+      be exactly one class on each interface defined as the default class.</dd>
+  <dt><a class="permalink" href="#qlimit"><code class="Cm" id="qlimit">qlimit</code></a></dt>
+  <dd>The maximum queue size in number of packets. Default value is 50.</dd>
+  <dt><a class="permalink" href="#red_3"><code class="Cm" id="red_3">red</code></a></dt>
+  <dd>enables RED on this class queue.</dd>
+  <dt><a class="permalink" href="#rio_3"><code class="Cm" id="rio_3">rio</code></a></dt>
+  <dd>enables RIO on this class queue.</dd>
+  <dt><a class="permalink" href="#ecn_3"><code class="Cm" id="ecn_3">ecn</code></a></dt>
+  <dd>enables RED/ECN on this class queue.</dd>
+  <dt><a class="permalink" href="#cleardscp_3"><code class="Cm" id="cleardscp_3">cleardscp</code></a></dt>
+  <dd>clears diffserv codepoint in the IP header.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="PRIQ_Commands"><a class="permalink" href="#PRIQ_Commands">PRIQ
+  Commands</a></h2>
+PRIQ (Priority Queueing) implements a simple priority-based queueing. A higher
+  priority class is always served first. Up to 16 priorities can be used with
+  PRIQ.
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface_4"><code class="Cm" id="interface_4">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">tbrsize</code>
+      <var class="Ar">bytes</var>] [<var class="Ar">sched_type</var>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>specifies the name of a network interface (e.g., fxp0).</dd>
+  <dt><a class="permalink" href="#bandwidth_5"><code class="Cm" id="bandwidth_5">bandwidth</code></a></dt>
+  <dd>specifies the interface bandwidth in bits per second.</dd>
+  <dt><a class="permalink" href="#tbrsize_4"><code class="Cm" id="tbrsize_4">tbrsize</code></a></dt>
+  <dd>specifies the bucket size of a token bucket regulator in bytes.</dd>
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">priq</code> for PRIQ.</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#class_4"><code class="Cm" id="class_4">class</code></a></dt>
+  <dd><var class="Ar">sched_type</var> <var class="Ar">if_name</var>
+      <var class="Ar">class_name</var> <var class="Ar">parent_name</var>
+      [<code class="Cm">priority</code> <var class="Ar">pri</var>]
+      [<code class="Cm">default</code>] [<code class="Cm">qlimit</code>
+      <var class="Ar">count</var>] [<code class="Cm">red|rio</code>]
+      [<code class="Cm">ecn</code>] [<code class="Cm">cleardscp</code>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">priq</code> for a PRIQ class.</dd>
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>Interface name. Must correspond to name in interface specification.</dd>
+  <dt><var class="Ar">class_name</var></dt>
+  <dd>Arbitrary name for this class. Must be unique for this interface.</dd>
+  <dt><var class="Ar">parent_name</var></dt>
+  <dd>Parent class must be <code class="Dv">NULL</code> for PRIQ.</dd>
+  <dt><a class="permalink" href="#priority_2"><code class="Cm" id="priority_2">priority</code></a></dt>
+  <dd>High numbers are higher priority. Max value is 15 and Min value is 0.
+      Default is 0. A higher priority class is always served first in PRIQ.
+      Priority must be unique for the interface.</dd>
+  <dt><a class="permalink" href="#default_3"><code class="Cm" id="default_3">default</code></a></dt>
+  <dd>Specify the default class. When this keyword is present, all packets that
+      do not match some classification criteria are assigned to this class. Must
+      be exactly one class on each interface defined as the default class.</dd>
+  <dt><a class="permalink" href="#qlimit_2"><code class="Cm" id="qlimit_2">qlimit</code></a></dt>
+  <dd>The maximum queue size in number of packets. Default value is 50.</dd>
+  <dt><a class="permalink" href="#red_4"><code class="Cm" id="red_4">red</code></a></dt>
+  <dd>enables RED on this class queue.</dd>
+  <dt><a class="permalink" href="#rio_4"><code class="Cm" id="rio_4">rio</code></a></dt>
+  <dd>enables RIO on this class queue.</dd>
+  <dt><a class="permalink" href="#ecn_4"><code class="Cm" id="ecn_4">ecn</code></a></dt>
+  <dd>enables RED/ECN on this class queue.</dd>
+  <dt><a class="permalink" href="#cleardscp_4"><code class="Cm" id="cleardscp_4">cleardscp</code></a></dt>
+  <dd>clears diffserv codepoint in the IP header.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="WFQ_Commands"><a class="permalink" href="#WFQ_Commands">WFQ
+  Commands</a></h2>
+WFQ (Weighted Fair Queueing) implements a weighted-round robin scheduler for a
+  set of queue. A weight can be assigned to each queue to give a different
+  proportion of the link capacity. A hash function is used to map a flow to one
+  of a set of queues, and thus, it is possible for two different flows to be
+  mapped into the same queue.
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface_5"><code class="Cm" id="interface_5">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">tbrsize</code>
+      <var class="Ar">bytes</var>] [<var class="Ar">sched_type</var>]
+      [<code class="Cm">nqueues</code> <var class="Ar">count</var>]
+      [<code class="Cm">qsize</code> <var class="Ar">bytes</var>]
+      [<code class="Cm">hash</code> <var class="Ar">policy</var>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#if_name"><code class="Cm" id="if_name">if_name</code></a></dt>
+  <dd>specifies the name of a network interface (e.g., fxp0).</dd>
+  <dt><a class="permalink" href="#bandwidth_6"><code class="Cm" id="bandwidth_6">bandwidth</code></a></dt>
+  <dd>specifies the interface bandwidth in bits per second.</dd>
+  <dt><a class="permalink" href="#tbrsize_5"><code class="Cm" id="tbrsize_5">tbrsize</code></a></dt>
+  <dd>specifies the bucket size of a token bucket regulator in bytes.</dd>
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">wfq</code> for WFQ.</dd>
+  <dt><a class="permalink" href="#nqueues"><code class="Cm" id="nqueues">nqueues</code></a></dt>
+  <dd>The number of queues in WFQ. Default value is 256.</dd>
+  <dt><a class="permalink" href="#qsize"><code class="Cm" id="qsize">qsize</code></a></dt>
+  <dd>The size of each queue in number of bytes. Default value is 64K
+    bytes.</dd>
+  <dt><a class="permalink" href="#hash"><code class="Cm" id="hash">hash</code></a></dt>
+  <dd>Type of hash policy to select a queue. <code class="Cm">dstaddr</code>
+      specifies a hashing policy by IP destination address.
+      <code class="Cm">full</code> specifies a hashing policy by IP addresses
+      and ports. <code class="Cm">srcport</code> specifies a hashing policy by
+      IP source port number. <code class="Cm">srcaddr</code> specifies a hashing
+      policy by IP source address. Default is
+    <code class="Cm">dstaddr</code></dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="FIFOQ_Commands"><a class="permalink" href="#FIFOQ_Commands">FIFOQ
+  Commands</a></h2>
+FIFOQ (First-In First-Out Queueing) is a simple tail-drop FIFO queue. FIFOQ is
+  the simplest possible implementation of a queueing discipline in ALTQ, and can
+  be used to compare with other queueing disciplines. FIFOQ can be also used as
+  a template for those who want to write their own queueing disciplines.
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface_6"><code class="Cm" id="interface_6">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">tbrsize</code>
+      <var class="Ar">bytes</var>] [<var class="Ar">sched_type</var>]
+      [<code class="Cm">qlimit</code> <var class="Ar">count</var>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>specifies the name of a network interface (e.g., fxp0).</dd>
+  <dt><a class="permalink" href="#bandwidth_7"><code class="Cm" id="bandwidth_7">bandwidth</code></a></dt>
+  <dd>specifies the interface bandwidth in bits per second.</dd>
+  <dt><a class="permalink" href="#tbrsize_6"><code class="Cm" id="tbrsize_6">tbrsize</code></a></dt>
+  <dd>specifies the bucket size of a token bucket regulator in bytes.</dd>
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">fifoq</code> for FIFOQ.</dd>
+  <dt><a class="permalink" href="#qlimit_3"><code class="Cm" id="qlimit_3">qlimit</code></a></dt>
+  <dd>The maximum queue size in number of packets. Default value is 50.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="RED_Commands"><a class="permalink" href="#RED_Commands">RED
+  Commands</a></h2>
+RED (Random Early Detection) is an implicit congestion notification mechanism
+  that exercises packet dropping or packet marking stochastically according to
+  the average queue length. RED can be viewed as a buffer management mechanism
+  and can be integrated into other packet scheduling schemes.
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#red_5"><code class="Cm" id="red_5">red</code></a></dt>
+  <dd><var class="Ar">min_th</var> <var class="Ar">max_th</var>
+      <var class="Ar">inv_pmax</var></dd>
+</dl>
+</div>
+<p class="Pp">The <code class="Cm">red</code> command sets the default RED
+    parameters. <var class="Ar">min_th</var> and <var class="Ar">max_th</var>
+    are the minimum and the maximum threshold values.
+    <var class="Ar">inv_pmax</var> is the inverse (reciprocal) of the maximum
+    drop probability. For example, 10 means the maximum drop probability of
+    1/10.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface_7"><code class="Cm" id="interface_7">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">tbrsize</code>
+      <var class="Ar">bytes</var>] [<var class="Ar">sched_type</var>]
+      [<code class="Cm">qlimit</code> <var class="Ar">count</var>]
+      [<code class="Cm">packetsize</code> <var class="Ar">bytes</var>]
+      [<code class="Cm">weight</code> <var class="Ar">n</var>]
+      [<code class="Cm">thmin</code> <var class="Ar">n</var>]
+      [<code class="Cm">thmax</code> <var class="Ar">n</var>]
+      [<code class="Cm">invpmax</code> <var class="Ar">n</var>]
+      [<code class="Cm">ecn</code>] [<code class="Cm">flowvalve</code>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>specifies the name of a network interface (e.g., fxp0).</dd>
+  <dt><a class="permalink" href="#bandwidth_8"><code class="Cm" id="bandwidth_8">bandwidth</code></a></dt>
+  <dd>specifies the interface bandwidth in bits per second.</dd>
+  <dt><a class="permalink" href="#tbrsize_7"><code class="Cm" id="tbrsize_7">tbrsize</code></a></dt>
+  <dd>specifies the bucket size of a token bucket regulator in bytes.</dd>
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">red</code> for RED.</dd>
+  <dt><a class="permalink" href="#qlimit_4"><code class="Cm" id="qlimit_4">qlimit</code></a></dt>
+  <dd>The maximum queue size in number of packets. Default value is 60.</dd>
+  <dt><a class="permalink" href="#packetsize_2"><code class="Cm" id="packetsize_2">packetsize</code></a></dt>
+  <dd>The average packet size in number of bytes. This parameter is used to
+      calibrate the idle period. Default value is 1000.</dd>
+  <dt><a class="permalink" href="#weight"><code class="Cm" id="weight">weight</code></a></dt>
+  <dd>The inverse of the weight of EWMA (exponentially weighted moving
+    average).</dd>
+  <dt><a class="permalink" href="#thmin"><code class="Cm" id="thmin">thmin</code></a></dt>
+  <dd>The minimum threshold.</dd>
+  <dt><a class="permalink" href="#thmax"><code class="Cm" id="thmax">thmax</code></a></dt>
+  <dd>The maximum threshold.</dd>
+  <dt><a class="permalink" href="#invpmax"><code class="Cm" id="invpmax">invpmax</code></a></dt>
+  <dd>The inverse of the maximum drop probability.</dd>
+  <dt><a class="permalink" href="#ecn_5"><code class="Cm" id="ecn_5">ecn</code></a></dt>
+  <dd>enables ECN.</dd>
+  <dt><a class="permalink" href="#flowvalve_2"><code class="Cm" id="flowvalve_2">flowvalve</code></a></dt>
+  <dd>enables flowvalve.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="RIO_Commands"><a class="permalink" href="#RIO_Commands">RIO
+  Commands</a></h2>
+ALTQ/RIO has 3 drop precedence levels defined for the Assured Forwarding of
+  DiffServ (RFC2597). Since adaptive flows are likely to stay under the medium
+  drop precedence level under congestion, the medium drop precedence would
+  protect adaptive flows from unadaptive flows.
+<p class="Pp">The original RIO has 2 sets of RED parameters; one for in-profile
+    packets and the other for out-of-profile packets. At the ingress of the
+    network, profile meters tag packets as IN or OUT based on contracted
+    profiles for customers. Inside the network, IN packets receive preferential
+    treatment by the RIO dropper. It is possible to provision the network not to
+    drop IN packets at all by providing enough capacity for the total volume of
+    IN packets. Thus, RIO can be used to provide a service that statistically
+    assures capacity allocated for users. This mechanism can be extended to
+    support an arbitrary number of drop precedence levels. ALTQ supports 3 drop
+    precedence levels.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#rio_5"><code class="Cm" id="rio_5">rio</code></a></dt>
+  <dd><var class="Ar">low_min_th</var> <var class="Ar">low_max_th</var>
+      <var class="Ar">low_inv_pmax</var> <var class="Ar">medium_min_th</var>
+      <var class="Ar">medium_max_th</var> <var class="Ar">medium_inv_pmax</var>
+      <var class="Ar">high_min_th</var> <var class="Ar">high_max_th</var>
+      <var class="Ar">high_inv_pmax</var></dd>
+</dl>
+</div>
+<p class="Pp">The <code class="Cm">rio</code> command sets the default RIO
+    parameters. The parameters are RED parameters for 3 (low, medium, high) drop
+    precedence.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface_8"><code class="Cm" id="interface_8">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">tbrsize</code>
+      <var class="Ar">bytes</var>] [<var class="Ar">sched_type</var>]
+      [<code class="Cm">qlimit</code> <var class="Ar">count</var>]
+      [<code class="Cm">packetsize</code> <var class="Ar">bytes</var>]
+      [<code class="Cm">weight</code> <var class="Ar">n</var>]
+      [<code class="Cm">lo_thmin</code> <var class="Ar">n</var>]
+      [<code class="Cm">lo_thmax</code> <var class="Ar">n</var>]
+      [<code class="Cm">lo_invpmax</code> <var class="Ar">n</var>]
+      [<code class="Cm">med_thmin</code> <var class="Ar">n</var>]
+      [<code class="Cm">med_thmax</code> <var class="Ar">n</var>]
+      [<code class="Cm">med_invpmax</code> <var class="Ar">n</var>]
+      [<code class="Cm">hi_thmin</code> <var class="Ar">n</var>]
+      [<code class="Cm">hi_thmax</code> <var class="Ar">n</var>]
+      [<code class="Cm">hi_invpmax</code> <var class="Ar">n</var>]
+      [<code class="Cm">ecn</code>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>specifies the name of a network interface (e.g., fxp0).</dd>
+  <dt><a class="permalink" href="#bandwidth_9"><code class="Cm" id="bandwidth_9">bandwidth</code></a></dt>
+  <dd>specifies the interface bandwidth in bits per second.</dd>
+  <dt><a class="permalink" href="#tbrsize_8"><code class="Cm" id="tbrsize_8">tbrsize</code></a></dt>
+  <dd>specifies the bucket size of a token bucket regulator in bytes.</dd>
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">rio</code> for RIO.</dd>
+  <dt><a class="permalink" href="#qlimit_5"><code class="Cm" id="qlimit_5">qlimit</code></a></dt>
+  <dd>The maximum queue size in number of packets. Default value is 60.</dd>
+  <dt><a class="permalink" href="#packetsize_3"><code class="Cm" id="packetsize_3">packetsize</code></a></dt>
+  <dd>The average packet size in number of bytes. This parameter is used to
+      calibrate the idle period. Default value is 1000.</dd>
+  <dt><a class="permalink" href="#weight_2"><code class="Cm" id="weight_2">weight</code></a></dt>
+  <dd>The inverse of the weight of EWMA (exponentially weighted moving
+    average).</dd>
+  <dt><a class="permalink" href="#lo_thmin"><code class="Cm" id="lo_thmin">lo_thmin</code></a></dt>
+  <dd>The minimum threshold for low drop precedence.</dd>
+  <dt><a class="permalink" href="#lo_thmax"><code class="Cm" id="lo_thmax">lo_thmax</code></a></dt>
+  <dd>The maximum threshold for low drop precedence.</dd>
+  <dt><a class="permalink" href="#lo_invpmax"><code class="Cm" id="lo_invpmax">lo_invpmax</code></a></dt>
+  <dd>The inverse of the maximum drop probability for low drop precedence.</dd>
+  <dt><a class="permalink" href="#med_thmin"><code class="Cm" id="med_thmin">med_thmin</code></a></dt>
+  <dd>The minimum threshold for medium drop precedence.</dd>
+  <dt><a class="permalink" href="#med_thmax"><code class="Cm" id="med_thmax">med_thmax</code></a></dt>
+  <dd>The maximum threshold for medium drop precedence.</dd>
+  <dt><a class="permalink" href="#med_invpmax"><code class="Cm" id="med_invpmax">med_invpmax</code></a></dt>
+  <dd>The inverse of the maximum drop probability for medium drop
+    precedence.</dd>
+  <dt><a class="permalink" href="#hi_thmin"><code class="Cm" id="hi_thmin">hi_thmin</code></a></dt>
+  <dd>The minimum threshold for high drop precedence.</dd>
+  <dt><a class="permalink" href="#hi_thmax"><code class="Cm" id="hi_thmax">hi_thmax</code></a></dt>
+  <dd>The maximum threshold for high drop precedence.</dd>
+  <dt><a class="permalink" href="#hi_invpmax"><code class="Cm" id="hi_invpmax">hi_invpmax</code></a></dt>
+  <dd>The inverse of the maximum drop probability for high drop precedence.</dd>
+  <dt><a class="permalink" href="#ecn_6"><code class="Cm" id="ecn_6">ecn</code></a></dt>
+  <dd>enables ECN.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="BLUE_Commands"><a class="permalink" href="#BLUE_Commands">BLUE
+  Commands</a></h2>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface_9"><code class="Cm" id="interface_9">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">tbrsize</code>
+      <var class="Ar">bytes</var>] [<var class="Ar">sched_type</var>]
+      [<code class="Cm">qlimit</code> <var class="Ar">count</var>]
+      [<code class="Cm">packetsize</code> <var class="Ar">bytes</var>]
+      [<code class="Cm">maxpmark</code> <var class="Ar">n</var>]
+      [<code class="Cm">holdtime</code> <var class="Ar">usec</var>]
+      [<code class="Cm">ecn</code>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>specifies the name of a network interface (e.g., fxp0).</dd>
+  <dt><a class="permalink" href="#bandwidth_10"><code class="Cm" id="bandwidth_10">bandwidth</code></a></dt>
+  <dd>specifies the interface bandwidth in bits per second.</dd>
+  <dt><a class="permalink" href="#tbrsize_9"><code class="Cm" id="tbrsize_9">tbrsize</code></a></dt>
+  <dd>specifies the bucket size of a token bucket regulator in bytes.</dd>
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">blue</code> for BLUE.</dd>
+  <dt><a class="permalink" href="#qlimit_6"><code class="Cm" id="qlimit_6">qlimit</code></a></dt>
+  <dd>The maximum queue size in number of packets. Default value is 60.</dd>
+  <dt><a class="permalink" href="#packetsize_4"><code class="Cm" id="packetsize_4">packetsize</code></a></dt>
+  <dd>The average packet size in number of bytes. Default value is 1000.</dd>
+  <dt><a class="permalink" href="#maxpmark"><code class="Cm" id="maxpmark">maxpmark</code></a></dt>
+  <dd>specifies the precision of marking probability.</dd>
+  <dt><a class="permalink" href="#holdtime"><code class="Cm" id="holdtime">holdtime</code></a></dt>
+  <dd>specifies the hold time in usec.</dd>
+  <dt><a class="permalink" href="#ecn_7"><code class="Cm" id="ecn_7">ecn</code></a></dt>
+  <dd>enables ECN.</dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="CDNR_Commands"><a class="permalink" href="#CDNR_Commands">CDNR
+  Commands</a></h2>
+The <code class="Cm">conditioner</code> command specifies a diffserv traffic
+  conditioner. A traffic conditioner is not a queueing discipline but a
+  component to meter, mark or drop incoming packets according to some rules.
+<p class="Pp">As opposed to a queueing discipline, a traffic conditioner handles
+    incoming packets at an input interface. If no queueing discipline (e.g.,
+    CBQ) is used for the interface, a null interface command should be used to
+    specify an input network interface.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface_10"><code class="Cm" id="interface_10">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">tbrsize</code>
+      <var class="Ar">bytes</var>]</dd>
+</dl>
+</div>
+<p class="Pp">The <code class="Cm">conditioner</code> command has the following
+    syntax.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#conditioner"><code class="Cm" id="conditioner">conditioner</code></a></dt>
+  <dd><var class="Ar">if_name</var> <var class="Ar">cdnr_name</var>
+      &#x27E8;action&#x27E9;</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>Interface name. Must correspond to name in interface specification.</dd>
+  <dt><var class="Ar">cdnr_name</var></dt>
+  <dd>Arbitrary name for this conditioner. Must be unique for this
+    interface.</dd>
+  <dt><var class="Ar">action</var></dt>
+  <dd>Action of the conditioner.</dd>
+</dl>
+</div>
+<p class="Pp">An action can be a recursively defined action. The following
+    actions are defined.</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#pass"><code class="Cm" id="pass">pass</code></a></dt>
+  <dd>
+    <dl class="Bl-inset Bd-indent">
+      <dt><a class="permalink" href="#pass_2"><code class="Cm" id="pass_2">pass</code></a></dt>
+      <dd>allows the packet to go through without any modification to the
+          packet.</dd>
+    </dl>
+  </dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#drop"><code class="Cm" id="drop">drop</code></a></dt>
+  <dd>
+    <dl class="Bl-inset Bd-indent">
+      <dt><a class="permalink" href="#drop_2"><code class="Cm" id="drop_2">drop</code></a></dt>
+      <dd>rejects the packet. The packet is immediately discarded.</dd>
+    </dl>
+  </dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#mark"><code class="Cm" id="mark">mark</code></a></dt>
+  <dd><var class="Ar">value</var>
+    <dl class="Bl-inset Bd-indent">
+      <dt><a class="permalink" href="#mark_2"><code class="Cm" id="mark_2">mark</code></a></dt>
+      <dd>sets the specified value to the ds field in the IP header. Then, the
+          packet is allowed to go through.</dd>
+    </dl>
+  </dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#tbmeter"><code class="Cm" id="tbmeter">tbmeter</code></a></dt>
+  <dd><var class="Ar">rate depth</var> &#x27E8;in_action&#x27E9;
+      &#x27E8;out_action&#x27E9;
+    <dl class="Bl-inset Bd-indent">
+      <dt><a class="permalink" href="#tbmeter_2"><code class="Cm" id="tbmeter_2">tbmeter</code></a></dt>
+      <dd>is a token bucket meter configured with rate and depth parameters.
+          Rate is token rate in bits-per-second. Depth is bucket depth in KB.
+          When an incoming packet is in profile (available token is more than
+          the packet size), tbmeter takes in_action. Otherwise, tbmeter takes
+          out_action.</dd>
+    </dl>
+  </dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#trtcm"><code class="Cm" id="trtcm">trtcm</code></a></dt>
+  <dd><var class="Ar">cmtd_rate cmtd_depth peak_rate peak_depth</var>
+      &#x27E8;green_action&#x27E9; &#x27E8;yellow_action&#x27E9;
+      &#x27E8;red_action&#x27E9; [<code class="Cm">coloraware|colorblind</code>]
+    <dl class="Bl-inset Bd-indent">
+      <dt><a class="permalink" href="#trtcm_2"><code class="Cm" id="trtcm_2">trtcm</code></a></dt>
+      <dd>is a 2-rate 3 color marker for Assured Forwarding. A trtcm consists of
+          2 token buckets, one for a committed rate and the other for a peak
+          rate. When an incoming packet is in the committed profile, trtcm takes
+          green_action. When the packet is out of the committed profile but in
+          the peak profile, trtcm takes yellow_action. Otherwise, tbtcm takes
+          red_action. A trtcm is either color-aware or color-blind. A
+          color-aware trtcm do not raise the color (ds field value), that is, a
+          yellow packet can be yellow or red but can not be blue. Default is
+          color-blind.</dd>
+    </dl>
+  </dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#tswtcm"><code class="Cm" id="tswtcm">tswtcm</code></a></dt>
+  <dd><var class="Ar">cmtd_rate peak_rate avg_interval</var>
+      &#x27E8;green_action&#x27E9; &#x27E8;yellow_action&#x27E9;
+      &#x27E8;red_action&#x27E9;
+    <dl class="Bl-inset Bd-indent">
+      <dt><a class="permalink" href="#tswtcm_2"><code class="Cm" id="tswtcm_2">tswtcm</code></a></dt>
+      <dd>is a time sliding window 3 color marker for Assured Forwarding. A
+          tswtcm differs from trtcm in that a tswtcm probabilistically marks
+          packets. A tswtcm consists of 2 rates, one for a committed rate and
+          the other for a peak rate. When an incoming packet is in the committed
+          profile, tswtcm takes green_action. When the packet is out of the
+          committed profile but in the peak profile, tswtcm takes yellow_action.
+          Otherwise, tswtcm takes red_action. cmtd_rate and peak_rate are
+          specified in bits per second. avg_interval provides the size of time
+          window for averaging incoming rate, and is specified in milliseconds.
+          500 msec is ok for normal settings.</dd>
+    </dl>
+  </dd>
+</dl>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="JoBS_Commands"><a class="permalink" href="#JoBS_Commands">JoBS
+  Commands</a></h2>
+JoBS (Joint Buffer Management and Scheduling) is a queuing discipline that can
+  enforce any feasible mix of absolute and proportional guarantees on packet
+  losses, packet delays, and throughput, for classes of traffic, on a per-hop
+  basis. No admission control is performed, thus if the set of service
+  guarantees becomes infeasible, some service guarantees may be relaxed.
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#interface_11"><code class="Cm" id="interface_11">interface</code></a></dt>
+  <dd><var class="Ar">if_name</var> [<code class="Cm">bandwidth</code>
+      <var class="Ar">bps</var>] [<code class="Cm">qlimit</code>
+      <var class="Ar">count</var>] [<code class="Cm">separate</code>]
+      [<code class="Cm">tbrsize</code> <var class="Ar">bytes</var>]
+      [<var class="Ar">sched_type</var>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>specifies the name of a network interface (e.g., fxp0).</dd>
+  <dt><a class="permalink" href="#bandwidth_11"><code class="Cm" id="bandwidth_11">bandwidth</code></a></dt>
+  <dd>specifies the interface bandwidth in bits per second.</dd>
+  <dt><a class="permalink" href="#qlimit_7"><code class="Cm" id="qlimit_7">qlimit</code></a></dt>
+  <dd>specifies the maximum queue size in number of packets.</dd>
+  <dt><a class="permalink" href="#separate"><code class="Cm" id="separate">separate</code></a></dt>
+  <dd>specifies that classes have independent buffers. The default is to have a
+      shared buffer for all classes. If this option is specified, qlimit applies
+      to each independent buffer.</dd>
+  <dt><a class="permalink" href="#tbrsize_10"><code class="Cm" id="tbrsize_10">tbrsize</code></a></dt>
+  <dd>specifies the bucket size of a token bucket regulator in bytes.</dd>
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">jobs</code> for JoBS.</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#class_5"><code class="Cm" id="class_5">class</code></a></dt>
+  <dd><var class="Ar">sched_type</var> <var class="Ar">if_name</var>
+      <var class="Ar">class_name</var> <var class="Ar">parent_name</var>
+      [<code class="Cm">priority</code> <var class="Ar">pri</var>]
+      [<code class="Cm">default</code>] [<code class="Cm">adc</code>
+      <var class="Ar">microsecs</var>] [<code class="Cm">alc</code>
+      <var class="Ar">fraction</var>] [<code class="Cm">arc</code>
+      <var class="Ar">bps</var>] [<code class="Cm">rdc</code>
+      <var class="Ar">prop</var>] [<code class="Cm">rlc</code>
+      <var class="Ar">prop</var>]</dd>
+</dl>
+</div>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><var class="Ar">sched_type</var></dt>
+  <dd>must be <code class="Cm">jobs</code> for a JoBS class.</dd>
+  <dt><var class="Ar">if_name</var></dt>
+  <dd>Interface name. Must correspond to name in interface specification.</dd>
+  <dt><var class="Ar">class_name</var></dt>
+  <dd>Arbitrary name for this class. Must be unique for this interface.</dd>
+  <dt><var class="Ar">parent_name</var></dt>
+  <dd>Parent class must be <code class="Dv">NULL</code> for JoBS.</dd>
+  <dt><a class="permalink" href="#priority_3"><code class="Cm" id="priority_3">priority</code></a></dt>
+  <dd>Priority index used for proportional differentiation. Max value is 15 and
+      Min value is 0. Default is 0. Priority must be unique for the
+    interface.</dd>
+  <dt><a class="permalink" href="#default_4"><code class="Cm" id="default_4">default</code></a></dt>
+  <dd>Specify the default class. When this keyword is present, all packets that
+      do not match some classification criteria are assigned to this class. Must
+      be exactly one class on each interface defined as the default class.</dd>
+  <dt><a class="permalink" href="#adc"><code class="Cm" id="adc">adc</code></a></dt>
+  <dd>Specifies an upper bound on delays for that class (in microseconds). A
+      value of -1 will indicate the absence of delay bound. By default, no delay
+      bound is offered.</dd>
+  <dt><a class="permalink" href="#alc"><code class="Cm" id="alc">alc</code></a></dt>
+  <dd>Specifies a upper bound on loss rate for that class (in fraction of 1, for
+      instance a 1% loss rate bound will be expressed as 0.01). A value of -1
+      will indicate the absence of loss rate bound. By default, no loss rate
+      bound is offered.</dd>
+  <dt><a class="permalink" href="#arc"><code class="Cm" id="arc">arc</code></a></dt>
+  <dd>Specifies a lower bound on the throughput received by that class (in bits
+      per second). A value of -1 will indicate the absence of throughput bound.
+      By default, no throughput bound is offered.</dd>
+  <dt><a class="permalink" href="#rdc"><code class="Cm" id="rdc">rdc</code></a></dt>
+  <dd>Specifies a proportional delay differentiation factor between that class
+      and the class with the successive priority index. For instance, for
+      priority 1, an rdc of 2 specifies that the delays of packets marked as
+      class 2 will roughly be twice the delays of packets marked as class 1. A
+      value of -1 indicates the absence of proportional differentiation on that
+      class. Note that class N if N is the maximum priority should have a dummy
+      coefficient different from -1 if proportional delay differentiation is
+      desired on Class N. By default, no proportional delay differentiation is
+      offered.</dd>
+  <dt><a class="permalink" href="#rlc"><code class="Cm" id="rlc">rlc</code></a></dt>
+  <dd>Specifies a proportional loss differentiation factor between that class
+      and the class with the successive priority index. For instance, for
+      priority 1, an rlc of 2 specifies that the loss rate of packets marked as
+      class 2 will roughly be twice the loss rate of packets marked as class 1.
+      A value of -1 indicates the absence of proportional differentiation on
+      that class. Note that class N if N is the maximum priority should have a
+      dummy coefficient different from -1 if proportional loss differentiation
+      is desired on Class N. By default, no proportional loss differentiation is
+      offered.</dd>
+</dl>
+</div>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<section class="Ss">
+<h2 class="Ss" id="CBQ_Example"><a class="permalink" href="#CBQ_Example">CBQ
+  Example</a></h2>
+<div class="Bd">
+<pre>
+#
+# cbq configuration for vx0 (10Mbps ether)
+# give at least 40% to TCP
+# limit HTTP from network 133.138.1.0 up to 10%, use RED.
+# other traffic goes into default class
+#
+interface vx0 bandwidth 10M cbq
+#
+class cbq vx0 root_class NULL priority 0 pbandwidth 100
+class cbq vx0 def_class root_class borrow pbandwidth 95 default
+class cbq vx0 tcp_class def_class borrow pbandwidth  40
+        filter vx0 tcp_class 0 0 0 0 6
+class cbq vx0 csl_class tcp_class pbandwidth  10   red
+        filter vx0 csl_class 0 0 133.138.1.0 netmask 0xffffff00 80 6
+        filter vx0 csl_class 133.138.1.0 netmask 0xffffff00 0 0 80 6
+#
+# sample filter6 command
+#
+                filter6 vx0 csl_class ::0 0 2001:db8:0:123::/64 80 6
+</pre>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="HFSC_Example"><a class="permalink" href="#HFSC_Example">HFSC
+  Example</a></h2>
+<div class="Bd">
+<pre>
+#
+# hfsc configuration for hierarchical sharing
+#
+interface pvc0 bandwidth 45M hfsc
+#
+# (10% of the bandwidth share goes to the default class)
+class hfsc pvc0 def_class root pshare 10 default
+#
+#          bandwidth share    guaranteed rate
+#    CMU:       45%             15Mbps
+#    PITT:      45%             15Mbps
+#
+class hfsc pvc0 cmu  root pshare 45 grate 15M
+class hfsc pvc0 pitt root pshare 45 grate 15M
+#
+# CMU      bandwidth share    guaranteed rate
+#    CS:        20%             10Mbps
+#    other:     20%              5Mbps
+#
+class hfsc pvc0 cmu_other cmu  pshare 20 grate 10M
+        filter pvc0 cmu_other   0 0 128.2.0.0   netmask 0xffff0000 0 0
+class hfsc pvc0 cmu_cs    cmu  pshare 20 grate  5M
+        filter pvc0 cmu_cs      0 0 128.2.242.0 netmask 0xffffff00 0 0
+#
+# PITT     bandwidth share    guaranteed rate
+#    CS:        20%             10Mbps
+#    other:     20%              5Mbps
+#
+class hfsc pvc0 pitt_other pitt  pshare 20 grate 10M
+        filter pvc0 pitt_other  0 0 136.142.0.0  netmask 0xffff0000 0 0
+class hfsc pvc0 pitt_cs    pitt  pshare 20 grate  5M
+        filter pvc0 pitt_cs     0 0 136.142.79.0 netmask 0xffffff00 0 0
+</pre>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="HFSC_Example_(simpler_one_with_ulimit)"><a class="permalink" href="#HFSC_Example_(simpler_one_with_ulimit)">HFSC
+  Example (simpler one with ulimit)</a></h2>
+<div class="Bd">
+<pre>
+#
+interface fxp0 bandwidth 90M hfsc
+# reserve 20% for default class
+class hfsc fxp0 def_class root pshare 20 default
+# shared class for TCP and UDP
+class hfsc fxp0 shared_class root bandwidth 72M
+# shared class for all TCP
+class hfsc fxp0 tcp_shared shared_class bandwidth 40M ulimit 60M
+# generic tcp
+class hfsc fxp0 tcp_class tcp_shared bandwidth 15M ulimit 50M
+	filter fxp0 tcp_class 0 0 0 0 6
+# http
+class hfsc fxp0 http_class tcp_shared bandwidth 25M ulimit 40M
+	filter fxp0 http_class 0 80 0 0 6
+	filter fxp0 http_class 0 0 0 80 6
+# udp
+class hfsc fxp0 udp_class shared_class bandwidth 15M ulimit 20M
+	filter fxp0 udp_class 0 0 0 0 17
+</pre>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="PRIQ_Example"><a class="permalink" href="#PRIQ_Example">PRIQ
+  Example</a></h2>
+<div class="Bd">
+<pre>
+#
+# priq configuration for fxp0 (100Mbps ether)
+#     icmp: high priority
+#     tcp:  medium priority
+#     others: low priority
+#
+interface fxp0 bandwidth 100M priq
+#
+class priq fxp0 high_class NULL priority 2
+        filter fxp0 high_class 0 0 0 0 1
+class priq fxp0 med_class NULL priority 1
+        filter fxp0 med_class 0 0 0 0 6
+class priq fxp0 low_class NULL priority 0 default
+</pre>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="WFQ_Example"><a class="permalink" href="#WFQ_Example">WFQ
+  Example</a></h2>
+<div class="Bd">
+<pre>
+interface pvc0 bandwidth 134000000 wfq
+</pre>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="FIFOQ_Example"><a class="permalink" href="#FIFOQ_Example">FIFOQ
+  Example</a></h2>
+<div class="Bd">
+<pre>
+interface rl0 bandwidth 10M fifoq
+</pre>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="Conditioner_Example"><a class="permalink" href="#Conditioner_Example">Conditioner
+  Example</a></h2>
+<div class="Bd">
+<pre>
+#
+interface fxp0
+#
+# a simple dropper
+# discard all packets from 192.168.0.83
+#
+conditioner fxp0 dropper &lt;drop&gt;
+        filter fxp0 dropper 0 0 192.168.0.83 0 0
+
+#
+# EF conditioner
+# mark EF to all packets from 192.168.0.117
+#
+conditioner pvc1 ef_cdnr &lt;tbmeter 6M 64K &lt;mark 0xb8&gt;&lt;drop&gt;&gt;
+        filter fxp0 ef_cdnr 0 0 192.168.0.117 0 0
+
+#
+# AF1x conditioner
+# mark AF1x to packets from 192.168.0.178
+#       AF11 (low drop precedence):    less than 3Mbps
+#       AF12 (medium drop precedence): more than 3Mbps and less than 10Mbps
+#       AF13 (high drop precedence):   more than 10Mbps
+#
+conditioner fxp0 af1x_cdnr &lt;trtcm 3M 32K 10M 64K &lt;mark 0x28&gt;&lt;mark 0x30&gt;&lt;mark 0x38&gt;&gt;
+        filter fxp0 af1x_cdnr 0 0 192.168.0.178 0 0
+</pre>
+</div>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html8/altqd.html">altqd(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+This man page is incomplete. For more information read the source.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">July 14, 2021</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

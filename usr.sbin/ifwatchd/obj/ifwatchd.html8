@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: ifwatchd.8,v 1.29 2019/02/17 20:50:25 gutteridge Exp $
+  
+   Copyright (c) 2001-2003 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Martin Husemann <martin@NetBSD.org>.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>IFWATCHD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">IFWATCHD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">IFWATCHD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">ifwatchd</code> &#x2014;
+<div class="Nd">watch for addresses added to or deleted from interfaces and call
+  up/down-scripts for them</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">ifwatchd</code></td>
+    <td>[<code class="Fl">-hiqv</code>] [<code class="Fl">-A</code>
+      <var class="Ar">arrival-script</var>] [<code class="Fl">-c</code>
+      <var class="Ar">carrier-script</var>] [<code class="Fl">-D</code>
+      <var class="Ar">departure-script</var>] [<code class="Fl">-d</code>
+      <var class="Ar">down-script</var>] [<code class="Fl">-u</code>
+      <var class="Ar">up-script</var>] [<code class="Fl">-n</code>
+      <var class="Ar">no-carrier-script</var>]
+      <var class="Ar">ifname(s)</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">ifwatchd</code> is used to monitor dynamic interfaces (for
+  example PPP interfaces) for address changes, and to monitor static interfaces
+  for carrier changes. Sometimes these interfaces are accompanied by a daemon
+  program, which can take care of running any necessary scripts (like
+  <a class="Xr" href="../html8/pppd.html">pppd(8)</a>), but sometimes the
+  interfaces run completely autonomously (like
+  <a class="Xr" href="../html4/pppoe.html">pppoe(4)</a>).
+<p class="Pp"><code class="Nm">ifwatchd</code> provides a generic way to watch
+    these types of changes. It works by monitoring the routing socket and
+    interpreting &#x2018;<code class="Li">RTM_NEWADDR</code>&#x2019; (address
+    added), &#x2018;<code class="Li">RTM_DELADDR</code>&#x2019; (address
+    deleted) and &#x2018;<code class="Li">RTM_IFINFO</code>&#x2019; (carrier
+    detect or loss of carrier) messages. It does not need special privileges to
+    do this. The scripts called for up or down events are run with the same user
+    id as <code class="Nm">ifwatchd</code> is run.</p>
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#A"><code class="Fl" id="A">-A</code></a>
+    <var class="Ar">arrival-script</var></dt>
+  <dd>Specify the command to invoke on arrival of new interfaces (like PCMCIA
+      cards).</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>
+    <var class="Ar">carrier-script</var></dt>
+  <dd>Specify the command to invoke when the carrier status transitions from no
+      carrier to carrier.</dd>
+  <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a>
+    <var class="Ar">departure-script</var></dt>
+  <dd>Specify the command to invoke when an interface departs (for example a
+      PCMCIA card is removed.)</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">down-script</var></dt>
+  <dd>Specify the command to invoke on &#x201C;interface down&#x201D; events
+      (or: deletion of an address from an interface).</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a></dt>
+  <dd>Show the synopsis.</dd>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a></dt>
+  <dd>Inhibit a call to the up-script on startup for all watched interfaces
+      already marked up. If this option is not given,
+      <code class="Nm">ifwatchd</code> will check all watched interfaces on
+      startup whether they are already marked up and, if they are, call the
+      up-script with appropriate parameters. Additionally, if the interface is
+      up and has a link, <code class="Nm">ifwatchd</code> will run the carrier
+      script.
+    <p class="Pp">Since ifwatchd typically is started late in the system boot
+        sequence, some of the monitored interfaces may already have come up when
+        it finally starts, but their up-scripts have not been called. By default
+        <code class="Nm">ifwatchd</code> calls them on startup to account for
+        this (and make the scripts easier.)</p>
+  </dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a>
+    <var class="Ar">no-carrier-script</var></dt>
+  <dd>Specify the command to invoke when the carrier status transitions from
+      carrier to no carrier.</dd>
+  <dt><a class="permalink" href="#q"><code class="Fl" id="q">-q</code></a></dt>
+  <dd>Be quiet and don't log non-error messages to syslog.</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a>
+    <var class="Ar">up-script</var></dt>
+  <dd>Specify the command to invoke on &#x201C;interface up&#x201D; events (or:
+      addition of an address to an interface).</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Run in verbose debug mode and do not detach from the controlling terminal.
+      Output verbose progress messages and flag errors ignored during normal
+      operation. <i class="Em">You do not want to use this option in</i>
+      <span class="Pa">/etc/rc.conf</span>!</dd>
+  <dt><var class="Ar">ifname(s)</var></dt>
+  <dd>The name of the interface to watch. Multiple interfaces may be specified.
+      Events for other interfaces are ignored.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<div class="Bd Bd-indent">
+<pre>
+# ifwatchd -u /etc/ppp/ip-up -d /etc/ppp/ip-down pppoe0
+</pre>
+</div>
+<p class="Pp">If your pppoe0 interface is your main connection to the internet,
+    the typical use of the up/down scripts is to add and remove a default route.
+    This is an example for an up script doing this:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+#! /bin/sh
+/sbin/route add default $5
+/sbin/route add -inet6 default fe80::2 -iface ifp $1
+</pre>
+</div>
+<p class="Pp">As described below the fifth command line parameter will contain
+    the peer address of the pppoe link. The corresponding ip-down script is:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+#! /bin/sh
+/sbin/route delete default $5
+/sbin/route delete -inet6 default fe80::2
+</pre>
+</div>
+<p class="Pp">Note that this is not a good idea if you have pppoe0 configured to
+    connect only on demand (via the link1 flag), but works well for all
+    permanent connected cases. Use</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+! /sbin/route add default -iface 0.0.0.1
+</pre>
+</div>
+<p class="Pp">in your <span class="Pa">/etc/ifconfig.pppoe0</span> file in the
+    on-demand case.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="PARAMETERS_PASSED_TO_SCRIPTS"><a class="permalink" href="#PARAMETERS_PASSED_TO_SCRIPTS">PARAMETERS
+  PASSED TO SCRIPTS</a></h1>
+The invoked scripts get passed these parameters:
+<dl class="Bl-tag">
+  <dt><var class="Ar">ifname</var></dt>
+  <dd>The name of the interface this change is for (this allows to share the
+      same script for multiple interfaces watched and dispatching on the
+      interface name in the script).</dd>
+  <dt><var class="Ar">tty</var></dt>
+  <dd>Dummy parameter for compatibility with
+      <a class="Xr" href="../html8/pppd.html">pppd(8)</a> which will always be
+      <i class="Em">/dev/null</i>.</dd>
+  <dt><var class="Ar">speed</var></dt>
+  <dd>Dummy parameter for compatibility with
+      <a class="Xr" href="../html8/pppd.html">pppd(8)</a> which will always be
+      <i class="Em">9600</i>.</dd>
+  <dt><var class="Ar">address</var></dt>
+  <dd>The new address if this is an up event, or the no longer valid old address
+      if this is a down event.
+    <p class="Pp">The format of the address depends on the address family, for
+        IPv4 it is the usual dotted quad notation, for IPv6 the colon separated
+        standard notation.</p>
+  </dd>
+  <dt><var class="Ar">destination</var></dt>
+  <dd>For point to point interfaces, this is the remote address of the
+      interface. For other interfaces it is the broadcast address.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ERRORS"><a class="permalink" href="#ERRORS">ERRORS</a></h1>
+The program logs to the syslog daemon as facility &#x201C;daemon&#x201D;. For
+  detailed debugging use the <code class="Fl">-v</code> (verbose) option.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/pppoe.html">pppoe(4)</a>,
+  <a class="Xr" href="../html4/route.html">route(4)</a>,
+  <a class="Xr" href="../html5/ifconfig.if.html">ifconfig.if(5)</a>,
+  <a class="Xr" href="../html8/rc.d.html">rc.d(8)</a>,
+  <a class="Xr" href="../html8/route.html">route(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">ifwatchd</code> utility appeared in <span class="Ux">NetBSD
+  1.6</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The program was written by <span class="An">Martin Husemann</span>
+  &#x27E8;martin@NetBSD.org&#x27E9;.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="CAVEATS"><a class="permalink" href="#CAVEATS">CAVEATS</a></h1>
+Due to the nature of the program a lot of stupid errors can not easily be caught
+  in advance without removing the provided facility for advanced uses. For
+  example typing errors in the interface name can not be detected by checking
+  against the list of installed interfaces, because it is possible for a pcmcia
+  card with the name given to be inserted later.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 17, 2019</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

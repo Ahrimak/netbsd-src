@@ -1,0 +1,1108 @@
+/*	$NetBSD: menus.mi,v 1.29 2023/12/17 18:46:42 martin Exp $	*/
+
+/*-
+ * Copyright (c) 2003 The NetBSD Foundation, Inc.
+ * All rights reserved.
+ *
+ * This code is derived from software contributed to The NetBSD Foundation
+ * by David Laight.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ * Menu system definitions -- machine and language independent
+ *
+ * Some menus may be called directly in the code rather than via the 
+ * menu system.
+ *
+ *  This file must be first in the sed command line.
+ *
+ */
+
+{
+#include <stdio.h>
+#include <time.h>
+#include <curses.h>
+#include "defs.h"
+#include "md.h"
+#include "msg_defs.h"
+#include "menu_defs.h"
+
+static menudesc menu_def[];
+
+static void
+expand_option_text(menudesc *menu, void *arg, int sel)
+{
+	arg_replace *ar = arg;
+	struct menu_ent *opt = &menu->opts[sel];
+
+	if (menu->opts[sel].opt_exp_name)
+		return;	/* has already been expanded */
+
+	opt->opt_exp_name =
+	    str_arg_subst(MSG_XLAT(opt->opt_name), ar->argc, ar->argv);
+}
+
+void
+expand_all_option_texts(menudesc *menu, void *arg)
+{
+	arg_replace *ar = arg;
+	const char *title;
+	int i;
+
+	if (menu->title != NULL && menu->exp_title == NULL) {
+		title = MSG_XLAT(menu->title);
+		if (needs_expanding(title, ar->argc)) {
+			menu->exp_title = str_arg_subst(title,
+			    ar->argc, ar->argv);
+		}
+	}
+	for (i = 0; i < menu->numopts; i++) {
+		const char *t = MSG_XLAT(menu->opts[i].opt_name);
+
+		if (t == NULL) continue;
+
+		if (needs_expanding(t, ar->argc))
+			expand_option_text(menu, arg, i);
+	}
+}
+
+/*
+ * Re-create the menu window with heigh/width updated to current state.
+ */
+void
+resize_menu_height(menudesc *m)
+{
+
+	if (m->mw == NULL)
+		return;
+
+	wclear(m->mw);
+	if (m->sv_mw) {
+		overwrite(m->sv_mw, m->mw);
+		delwin(m->sv_mw);
+		m->sv_mw = NULL;
+	}
+	wnoutrefresh(m->mw);
+	delwin(m->mw);	 
+	m->mw = NULL;
+}
+
+static void
+src_legend(menudesc *menu, const char *legend, const char *text)
+{
+        wprintw(menu->mw, "%-35s %.50s", MSG_XLAT(legend), MSG_XLAT(text));
+}
+
+static void
+src_prompt(const char *prompt, char *buf, size_t size)
+{
+	msg_prompt_win(prompt, -1, 12, 0, 0, buf, buf, size);
+}
+
+static void
+remove_sub_menu(int menuID)
+{
+
+	for (size_t i = 0; i < DYN_MENU_START; i++) {
+		for (int j = 0; j < menu_def[i].numopts; j++) {
+			if ((menu_def[i].opts[j].opt_flags & OPT_SUB)
+			    && menu_def[i].opts[j].opt_menu == menuID) {
+
+				for (int k = j + 1; k < menu_def[i].numopts;
+				    k++) {
+					menu_def[i].opts[k-1] =
+					    menu_def[i].opts[k];
+				}
+				menu_def[i].numopts--;
+				return;
+
+			}
+		}
+	}
+}
+
+#ifndef NO_PARTMAN
+static void
+remove_menu_option(int menuID, const char *option)
+{
+
+	for (int j = 0; j < menu_def[menuID].numopts; j++) {
+		if (menu_def[menuID].opts[j].opt_name == option) {
+			for (int k = j + 1; k < menu_def[menuID].numopts;
+			    k++) {
+				menu_def[menuID].opts[k-1] =
+				    menu_def[menuID].opts[k];
+			}
+			menu_def[menuID].numopts--;
+			return;
+
+		}
+	}
+}
+#endif
+
+void
+remove_color_options()
+{
+	/*
+	 * Current terminal type does not support colors, so remove all
+	 * menu entries (actually that is: Utils/Color Scheme) that do not
+	 * make any sense in this case.
+	 */
+	remove_sub_menu(MENU_colors);
+}
+
+#ifndef NO_PARTMAN
+void
+remove_raid_options()
+{
+	/*
+	 * No raidframe available, remove the following menu entries:
+	 */
+	remove_menu_option(MENU_pmdiskentry, MSG_fmtasraid);
+	remove_menu_option(MENU_pmpartentry, MSG_fmtasraid);
+}
+
+void
+remove_lvm_options()
+{
+	/*
+	 * No LVM available, remove the following menu entries:
+	 */
+	remove_menu_option(MENU_pmdiskentry, MSG_fmtaslvm);
+	remove_menu_option(MENU_pmpartentry, MSG_fmtaslvm);
+}
+
+void
+remove_cgd_options()
+{
+	/*
+	 * No CGD available, remove the following menu entries:
+	 */
+	remove_menu_option(MENU_pmdiskentry, MSG_encrypt);
+	remove_menu_option(MENU_pmpartentry, MSG_encrypt);
+}
+#endif
+
+}
+
+default y=12, no exit, scrollable;
+
+allow dynamic menus;
+allow dynamic messages;
+allow expand;
+
+error action {
+	fprintf (stderr, "Could not initialize menu system, please check "
+	    "your terminal type.\n");
+	exit(4);
+};
+
+/*
+ * Called with arg = struct single_part_fs_edit*
+ */
+menu mountoptions, title MSG_toggle, y=5, x=30, exitstring MSG_unchanged;
+	/*
+	 *  XXX - enable / disable options depending on FS type in
+	 *  display action
+	*/
+	option "log", exit, action
+		{ struct single_part_fs_edit *edit = arg;
+		  edit->pset->infos[edit->index].mountflags ^= PUIMNT_LOG; };
+	option "async", exit, action
+		{ struct single_part_fs_edit *edit = arg;
+		  edit->pset->infos[edit->index].mountflags ^= PUIMNT_ASYNC; };
+	option "noatime", exit, action
+		{ struct single_part_fs_edit *edit = arg;
+		  edit->pset->infos[edit->index].mountflags ^= PUIMNT_NOATIME; };
+	option "nodev", exit, action
+		{ struct single_part_fs_edit *edit = arg;
+		  edit->pset->infos[edit->index].mountflags ^= PUIMNT_NODEV; };
+	option "nodevmtime", exit, action
+		{ struct single_part_fs_edit *edit = arg;
+		  edit->pset->infos[edit->index].mountflags ^= PUIMNT_NODEVMTIME; };
+	option "noexec", exit, action
+		{ struct single_part_fs_edit *edit = arg;
+		  edit->pset->infos[edit->index].mountflags ^= PUIMNT_NOEXEC; };
+	option "nosuid", exit, action
+		{ struct single_part_fs_edit *edit = arg;
+		  edit->pset->infos[edit->index].mountflags ^= PUIMNT_NOSUID; };
+	option "noauto", exit, action
+		{ struct single_part_fs_edit *edit = arg;
+		  edit->pset->infos[edit->index].mountflags ^= PUIMNT_NOAUTO; };
+
+menu netbsd, title MSG_NetBSD_VERSION_Install_System, y=-1,
+    exit, exitstring MSG_Exit_Install_System;
+	display action  { toplevel(); };
+	option MSG_Install_NetBSD_to_hard_disk,
+		action { do_install(); };
+	option MSG_Upgrade_NetBSD_on_a_hard_disk,
+		action { do_upgrade(); };
+	option MSG_Re_install_sets_or_install_additional_sets,
+		action { do_reinstall_sets(); };
+	option MSG_Reboot_the_computer, exit,
+		action (endwin) { system("/sbin/reboot -q"); };
+	option MSG_Utility_menu, sub menu utility;
+	option MSG_Config_menu, action { do_configmenu(NULL); };
+
+menu utility, title MSG_NetBSD_VERSION_Utilities, exit,
+		exitstring MSG_exit_menu_generic;
+	display action  { toplevel(); };
+	option MSG_Run_bin_sh,
+		action (endwin) { system("/bin/sh -i -E"); };
+	option MSG_Set_timezone, 
+		action { set_timezone(); };
+	option MSG_Configure_network,
+		action {
+			extern int network_up;
+			network_up = 0;
+			config_network(1);
+		};
+	option MSG_Partition_a_disk,
+		action {
+#ifndef NO_PARTMAN
+			partman_go = 1;
+			partman(NULL);
+#endif
+		};
+	option MSG_Logging_functions, action { do_logging(); };
+	option MSG_Color_scheme, sub menu colors;
+	option MSG_Halt_the_system, exit,
+		action (endwin) { system("/sbin/halt -q"); };
+
+menu colors, title MSG_Color_scheme, exit,
+		exitstring MSG_exit_menu_generic;
+	option MSG_White_on_black, action { do_coloring(COLOR_WHITE,COLOR_BLACK); };
+	option MSG_Black_on_white, action { do_coloring(COLOR_BLACK,COLOR_WHITE); };
+	option MSG_White_on_blue,  action { do_coloring(COLOR_WHITE,COLOR_BLUE); };
+	option MSG_Green_on_black, action { do_coloring(COLOR_GREEN,COLOR_BLACK); };
+
+
+menu yesno, y=-10;
+	display action { arg_rv *p = arg;
+		menu->title = p->arg ? p->arg : MSG_yes_or_no; };
+	option MSG_Yes, exit, action  { ((arg_rv*)arg)->rv = 1; };
+	option MSG_No,  exit, action  { ((arg_rv*)arg)->rv = 0; };
+
+menu noyes, y=-10;
+	display action { arg_rv *p = arg;
+		menu->title = p->arg ? p->arg : MSG_yes_or_no; };
+	option MSG_No,  exit, action  { ((arg_rv*)arg)->rv = 0; };
+	option MSG_Yes, exit, action  { ((arg_rv*)arg)->rv = 1; };
+
+menu ok, no shortcut, y=-10;
+	display action { menu->title = arg; };
+	option MSG_Hit_enter_to_continue, exit;
+
+menu sizechoice, sub menu, y=0, title MSG_Choose_your_size_specifier;
+	display action {
+		if (sizemult == pm->current_cylsize)
+			menu->cursel = 2;
+		else if (sizemult == 1)
+			menu->cursel = 3;
+		else if (sizemult == (GIG/pm->sectorsize))
+			menu->cursel = 0;
+		else
+			menu->cursel = 1; };
+	option MSG_Gigabytes, exit, action
+		{ set_sizemult(GIG, pm->sectorsize); };
+	option MSG_Megabytes, exit, action
+		{ set_sizemult(MEG, pm->sectorsize); };
+	option MSG_Cylinders, exit, action
+		{ set_sizemult(pm->current_cylsize*pm->sectorsize, pm->sectorsize); };
+	option MSG_Sectors, exit, action
+		{ set_sizemult(pm->sectorsize, pm->sectorsize); };
+
+menu ptnsize_replace_existing_partition, sub menu, y=0,
+	title MSG_ptnsize_replace_existing;
+	display action { menu->cursel = 1; };
+	option MSG_Yes, exit, action { *((int*)arg) = 1; };
+	option MSG_cancel, exit, action { *((int*)arg) = 0; };
+
+menu distmedium, title MSG_Select_medium, y=-5;
+	option MSG_cdrom,     exit, action { *(int *)arg = get_via_cdrom(); };
+	option MSG_http,      exit, action { *(int *)arg = get_via_ftp(XFER_HTTP); };
+	option MSG_ftp,	      exit, action { *(int *)arg = get_via_ftp(XFER_FTP); };
+	option MSG_nfs,	      exit, action { *(int *)arg = get_via_nfs(); };
+	option MSG_floppy,    exit, action { *(int *)arg = get_via_floppy(); };
+	option MSG_local_fs,  exit, action { *(int *)arg = get_via_localfs(); };
+	option MSG_local_dir, exit, action { *(int *)arg = get_via_localdir();};
+	option MSG_Skip_set,  exit, action { *(int *)arg = SET_SKIP; };
+	option MSG_Skip_group,exit, action { *(int *)arg = SET_SKIP_GROUP; };
+	option MSG_Abandon,   exit, action { *(int *)arg = SET_ABANDON; };
+
+menu distset, title MSG_Select_your_distribution, exit,
+	    no default exit, exitstring MSG_Abandon;
+	display action { msg_display (MSG_distset); };
+	option MSG_Full_installation, exit, action { *(int *)arg = 1; init_set_status(0);  };
+	option MSG_Full_installation_nox, exit, action { *(int *)arg = 1; init_set_status(SFLAG_NOX); };
+	option MSG_Minimal_installation, exit, action { *(int *)arg = 1; init_set_status(SFLAG_MINIMAL); };
+	option MSG_Custom_installation, exit, action { *(int *)arg = 1; init_set_status(SFLAG_MINIMAL); customise_sets(); };
+
+menu ftpsource, y=-4, x=0, w=70, no box, no clear,
+	    exitstring MSG_Get_Distribution;
+	display action {
+		msg_display_subst(MSG_ftpsource, 2, "." SETS_TAR_SUFF,
+		    url_proto((uintptr_t)((arg_rv*)arg)->arg));
+	    };
+	option {src_legend(menu, MSG_Host, ftp.xfer_host[
+		XFER_HOST((uintptr_t)((arg_rv*)arg)->arg)]);},
+		action { src_prompt(MSG_Host, ftp.xfer_host[
+		XFER_HOST((uintptr_t)((arg_rv*)arg)->arg)],
+		sizeof ftp.xfer_host[XFER_HOST(
+		(uintptr_t)((arg_rv*)arg)->arg)]); };
+	option {src_legend(menu, MSG_Base_dir, ftp.dir);},
+		action { src_prompt(MSG_Base_dir, ftp.dir, sizeof ftp.dir); };
+	option {src_legend(menu, MSG_Set_dir_bin, set_dir_bin);},
+		action { src_prompt(MSG_Set_dir_bin, set_dir_bin, sizeof set_dir_bin); };
+	option {src_legend(menu, MSG_Set_dir_src, set_dir_src);},
+		action { src_prompt(MSG_Set_dir_src, set_dir_src, sizeof set_dir_src); };
+	option {src_legend(menu, MSG_Dist_postfix, dist_postfix);},
+		action { src_prompt(MSG_Dist_postfix, dist_postfix, sizeof dist_postfix); };
+	option {src_legend(menu, MSG_User, ftp.user);},
+		action { src_prompt(MSG_User, ftp.user, sizeof ftp.user);
+			ftp.pass[0] = 0;
+		};
+	option {src_legend(menu, MSG_Password,
+		    strcmp(ftp.user, "ftp") == 0 || ftp.pass[0] == 0
+			? ftp.pass : msg_string(MSG_hidden));},
+		action { if (strcmp(ftp.user, "ftp") == 0)
+			src_prompt(MSG_email, ftp.pass, sizeof ftp.pass);
+		  else {
+			msg_prompt_noecho(MSG_Password, "",
+					ftp.pass, sizeof ftp.pass);
+		  }
+		};
+	option {src_legend(menu, MSG_Proxy, ftp.proxy);},
+		action { src_prompt(MSG_Proxy, ftp.proxy, sizeof ftp.proxy);
+		  if (strcmp(ftp.proxy, "") == 0) {
+			unsetenv("ftp_proxy");
+			unsetenv("http_proxy");
+		  } else {
+			setenv("ftp_proxy", ftp.proxy, 1);
+			setenv("http_proxy", ftp.proxy, 1);
+		  }
+		};
+	option {src_legend(menu, MSG_Xfer_dir, xfer_dir);},
+		action { src_prompt(MSG_Xfer_dir, xfer_dir, sizeof xfer_dir); };
+	option {src_legend(menu, MSG_delete_xfer_file,
+			clean_xfer_dir ? MSG_Yes : MSG_No);},
+		action {clean_xfer_dir = ask_yesno(MSG_delete_xfer_file); };
+	option MSG_Configure_network,
+		action {
+			extern int network_up;
+			network_up = 0;
+			config_network(1);
+		};
+	option MSG_exit_menu_generic, exit, action { ((arg_rv*)arg)->rv = SET_RETRY; };
+
+
+menu nfssource, y=-4, x=0, w=70, no box, no clear,
+	    exitstring MSG_Get_Distribution;
+	display action { const char suff[] = "." SETS_TAR_SUFF;
+		msg_display_subst(MSG_nfssource, 1, &suff); };
+	option {src_legend(menu, MSG_Host, nfs_host);},
+		action { src_prompt(MSG_Host, nfs_host, sizeof nfs_host); };
+	option {src_legend(menu, MSG_Base_dir, nfs_dir);},
+		action { src_prompt(MSG_Base_dir, nfs_dir, sizeof nfs_dir); };
+	option {src_legend(menu, MSG_Set_dir_bin, set_dir_bin);},
+		action { src_prompt(MSG_Set_dir_bin, set_dir_bin, sizeof set_dir_bin); };
+	option {src_legend(menu, MSG_Set_dir_src, set_dir_src);},
+		action { src_prompt(MSG_Set_dir_src, set_dir_src, sizeof set_dir_src); };
+	option {src_legend(menu, MSG_Dist_postfix, dist_postfix);},
+		action { src_prompt(MSG_Dist_postfix, dist_postfix, sizeof dist_postfix); };
+	option MSG_Configure_network,
+		action {
+			extern int network_up;
+			network_up = 0;
+			config_network(1);
+		};
+	option MSG_exit_menu_generic, exit, action { *((int*)arg) = SET_RETRY; };
+
+menu fdremount, title MSG_What_do_you_want_to_do;
+	option MSG_Try_again, exit, action { *(int *)arg = SET_CONTINUE; };
+	option MSG_Set_finished, exit, action { *(int *)arg = SET_OK; };
+	option MSG_Abort_fetch, exit, action { *(int *)arg = SET_RETRY; };
+
+menu fdok, title MSG_What_do_you_want_to_do;
+	option MSG_OK, exit, action { *(int *)arg = SET_CONTINUE; };
+	option MSG_Set_finished, exit, action { *(int *)arg = SET_OK; };
+	option MSG_Abort_fetch, exit, action { *(int *)arg = SET_RETRY; };
+
+menu fd_type, title MSG_fd_type, y=16;
+	option "msdos", exit, action { fd_type = "msdos"; };
+	option "ffs",   exit, action { fd_type = "ffs"; };
+
+menu floppysource, y=-4, x=0, w=70, no box, no clear, exitstring MSG_Continue;
+	display action { msg_display(MSG_floppysource); };
+	option {src_legend(menu, MSG_Device, fd_dev);},
+		action { src_prompt(MSG_dev, fd_dev, sizeof fd_dev); };
+	option {src_legend(menu, MSG_fd_type, fd_type);}, sub menu fd_type;
+	option {src_legend(menu, MSG_Xfer_dir, xfer_dir);},
+		action { src_prompt(MSG_Xfer_dir, xfer_dir, sizeof xfer_dir); };
+	option {src_legend(menu, MSG_delete_xfer_file,
+			clean_xfer_dir ? MSG_Yes : MSG_No);},
+		action {clean_xfer_dir = ask_yesno(MSG_delete_xfer_file); };
+	option MSG_exit_menu_generic, exit, action { *((int*)arg) = SET_RETRY; };
+
+menu cdromsource, y=-4, x=0, w=70, no box, no clear, exitstring MSG_Continue;
+	display action { const char suff[] = "." SETS_TAR_SUFF;
+		msg_display_add_subst(MSG_cdromsource, 1, &suff); };
+	option {src_legend(menu, MSG_Device, cdrom_dev);},
+		action { src_prompt(MSG_dev, cdrom_dev, sizeof cdrom_dev); };
+	option {src_legend(menu, MSG_Set_dir_bin, set_dir_bin);},
+		action { src_prompt(MSG_Set_dir_bin, set_dir_bin, sizeof set_dir_bin); };
+	option {src_legend(menu, MSG_Set_dir_src, set_dir_src);},
+		action { src_prompt(MSG_Set_dir_src, set_dir_src, sizeof set_dir_src); };
+	option {src_legend(menu, MSG_Dist_postfix, dist_postfix);},
+		action { src_prompt(MSG_Dist_postfix, dist_postfix, sizeof dist_postfix); };
+	option MSG_abort_install, exit, action { *((int*)arg) = SET_ABANDON; };
+	option MSG_source_sel_retry, exit, action { *((int*)arg) = SET_RETRY; };
+
+menu localfssource, y=-4, x=0, w=70, no box, no clear, exitstring MSG_Continue;
+	display action { const char suff[] = "." SETS_TAR_SUFF;
+		msg_display_subst(MSG_localfssource, 1, &suff); };
+	option {src_legend(menu, MSG_Device, localfs_dev);},
+		action { src_prompt(MSG_dev, localfs_dev, sizeof localfs_dev);};
+	option {src_legend(menu, MSG_File_system, localfs_fs);},
+		action { src_prompt(MSG_filesys, localfs_fs, sizeof localfs_fs); };
+	option {src_legend(menu, MSG_Base_dir, localfs_dir);},
+		action { src_prompt(MSG_Base_dir, localfs_dir, sizeof localfs_dir);};
+	option {src_legend(menu, MSG_Set_dir_bin, set_dir_bin);},
+		action { src_prompt(MSG_Set_dir_bin, set_dir_bin, sizeof set_dir_bin); };
+	option {src_legend(menu, MSG_Set_dir_src, set_dir_src);},
+		action { src_prompt(MSG_Set_dir_src, set_dir_src, sizeof set_dir_src); };
+	option {src_legend(menu, MSG_Dist_postfix, dist_postfix);},
+		action { src_prompt(MSG_Dist_postfix, dist_postfix, sizeof dist_postfix); };
+	option MSG_exit_menu_generic, exit, action { *((int*)arg) = SET_RETRY; };
+
+menu localdirsource, y=-4, x=0, w=70, no box, no clear, exitstring MSG_Continue;
+	display action { const char suff[] = "." SETS_TAR_SUFF;
+		msg_display_subst(MSG_localdir, 1, &suff); };
+	option {src_legend(menu, MSG_Base_dir, localfs_dir);},
+		action { src_prompt(MSG_Base_dir, localfs_dir, 60); };
+	option {src_legend(menu, MSG_Set_dir_bin, set_dir_bin);},
+		action { src_prompt(MSG_Set_dir_bin, set_dir_bin, 60); };
+	option {src_legend(menu, MSG_Set_dir_src, set_dir_src);},
+		action { src_prompt(MSG_Set_dir_src, set_dir_src, 60); };
+	option {src_legend(menu, MSG_Dist_postfix, dist_postfix);},
+		action { src_prompt(MSG_Dist_postfix, dist_postfix, 60); };
+	option MSG_exit_menu_generic, exit, action { *((int*)arg) = SET_RETRY; };
+
+menu namesrv6, title MSG_Select_DNS_server;
+	option "google-public-dns-a.google.com (IPv4)", exit, action
+		{
+#ifdef INET6
+		  strlcpy(net_namesvr, "8.8.8.8",
+		      sizeof(net_namesvr));
+		  *((int*)arg) = 1;
+#else
+		  *((int*)arg) = 0;
+#endif
+		}; 
+	option "google-public-dns-b.google.com (IPv4)", exit, action
+		{
+#ifdef INET6
+		  strlcpy(net_namesvr, "8.8.4.4",
+		      sizeof(net_namesvr));
+		  *((int*)arg) = 1;
+#else
+		  *((int*)arg) = 0;
+#endif
+		}; 
+	option "google-public-dns-a.google.com (IPv6)", exit, action
+		{
+#ifdef INET6
+		  strlcpy(net_namesvr, "2001:4860:4860::8888",
+		      sizeof(net_namesvr));
+		  *((int*)arg) = 1;
+#else
+		  *((int*)arg) = 0;
+#endif
+		}; 
+	option "google-public-dns-b.google.com (IPv6)", exit, action
+		{
+#ifdef INET6
+		  strlcpy(net_namesvr, "2001:4860:4860::8844",
+		      sizeof(net_namesvr));
+		  *((int*)arg) = 1;
+#else
+		  *((int*)arg) = 0;
+#endif
+		}; 
+	option MSG_other, exit, action
+		{ *((int*)arg) = 0; };
+
+menu rootsh, title MSG_Root_shell, no clear;
+	option "/bin/sh",  exit, action {*(const char **)arg = "/bin/sh";}; 
+	option "/bin/ksh", exit, action {*(const char **)arg = "/bin/ksh";};
+	option "/bin/csh", exit, action {*(const char **)arg = "/bin/csh";};
+
+menu zeroconf, title "Zeroconf", no clear;
+	option "run mdnsd only", exit, action {*(const char **)arg = "mdnsd";};
+	option "run mdnsd and resolve local names", exit, action {*(const char **) arg = "mdnsd+nsswitch";};
+	option "do not run mdnsd", exit, action {*(const char **)arg = "No";};
+
+menu binpkg, y=-4, x=0, w=70, no box, no clear,
+	    exitstring MSG_Install_pkgin;
+	display action { msg_display(MSG_pkgpath); };
+	option {src_legend(menu, MSG_Host,
+		pkg.xfer_host[XFER_HOST(pkg.xfer)]);},
+		action { src_prompt(MSG_Host,
+		pkg.xfer_host[XFER_HOST(pkg.xfer)],
+		sizeof pkg.xfer_host[XFER_HOST(pkg.xfer)]); };
+	option {src_legend(menu, MSG_Base_dir, pkg.dir);},
+		action { src_prompt(MSG_Base_dir, pkg.dir, sizeof pkg.dir); };
+	option {src_legend(menu, MSG_Pkg_dir, pkg_dir);},
+		action { src_prompt(MSG_Pkg_dir, pkg_dir, sizeof pkg_dir); };
+	option {src_legend(menu, MSG_User, pkg.user);},
+		action { src_prompt(MSG_User, pkg.user, sizeof pkg.user);
+			pkg.pass[0] = 0;
+		};
+	option {src_legend(menu, MSG_Password,
+		    strcmp(pkg.user, "ftp") == 0 || pkg.pass[0] == 0
+			? pkg.pass : msg_string(MSG_hidden));},
+		action { if (strcmp(pkg.user, "ftp") == 0)
+			src_prompt(MSG_email, pkg.pass, sizeof pkg.pass);
+		  else {
+			msg_prompt_noecho(MSG_Password, "",
+					pkg.pass, sizeof pkg.pass);
+		  }
+		};
+	option {src_legend(menu, MSG_Proxy, pkg.proxy);},
+		action { src_prompt(MSG_Proxy, pkg.proxy, sizeof pkg.proxy);
+		  if (strcmp(pkg.proxy, "") == 0) {
+			unsetenv("ftp_proxy");
+			unsetenv("http_proxy");
+		  } else {
+			setenv("ftp_proxy", pkg.proxy, 1);
+			setenv("http_proxy", pkg.proxy, 1);
+		  }
+		};
+	option {src_legend(menu, "Additional packages", (char*)(((arg_rv*)arg)->arg)); }, /*TODO*/
+		action { src_prompt("Additional packages", (char*)(((arg_rv*)arg)->arg),
+			 sizeof(char) * STRSIZE); };
+	option MSG_Configure_network,
+		action {
+			extern int network_up;
+			network_up = 0;
+			config_network(1);
+			mnt_net_config();
+		};
+	option {src_legend(menu, MSG_transfer_method, url_proto(pkg.xfer));},
+		action { pkg.xfer = (pkg.xfer+1) % (XFER_MAX+1); };
+	option MSG_quit_pkgs_install, exit, action { ((arg_rv*)arg)->rv = SET_SKIP; };
+
+menu pkgsrc, y=-4, x=0, w=70, no box, no clear,
+	    exit, exitstring MSG_Install_pkgsrc;
+	display action { msg_display(MSG_pkgsrc); };
+	option {src_legend(menu, MSG_Host, pkgsrc.xfer_host[
+		XFER_HOST(pkgsrc.xfer)]);},
+		action { src_prompt(MSG_Host,
+			pkgsrc.xfer_host[XFER_HOST(pkgsrc.xfer)],
+			sizeof pkgsrc.xfer_host[XFER_HOST(pkgsrc.xfer)]); };
+	option {src_legend(menu, MSG_Pkgsrc_dir, pkgsrc_dir);},
+		action { src_prompt(MSG_Pkgsrc_dir, pkgsrc_dir, sizeof pkgsrc_dir); };
+	option {src_legend(menu, MSG_User, pkgsrc.user);},
+		action { src_prompt(MSG_User, pkgsrc.user, sizeof pkgsrc.user);
+			pkgsrc.pass[0] = 0;
+		};
+	option {src_legend(menu, MSG_Password,
+		    strcmp(pkgsrc.user, "ftp") == 0 || pkgsrc.pass[0] == 0
+			? pkgsrc.pass : msg_string(MSG_hidden));},
+		action { if (strcmp(pkgsrc.user, "ftp") == 0)
+			src_prompt(MSG_email, pkgsrc.pass, sizeof pkgsrc.pass);
+		  else {
+			msg_prompt_noecho(MSG_Password, "",
+					pkgsrc.pass, sizeof pkgsrc.pass);
+		  }
+		};
+	option {src_legend(menu, MSG_Proxy, pkgsrc.proxy);},
+		action { src_prompt(MSG_Proxy, pkgsrc.proxy, sizeof pkgsrc.proxy);
+		  if (strcmp(pkgsrc.proxy, "") == 0) {
+			unsetenv("ftp_proxy");
+			unsetenv("http_proxy");
+		  } else {
+			setenv("ftp_proxy", pkgsrc.proxy, 1);
+			setenv("http_proxy", pkgsrc.proxy, 1);
+		  }
+		};
+	option {src_legend(menu, MSG_Xfer_dir, xfer_dir);},
+		action { src_prompt(MSG_Xfer_dir, xfer_dir, sizeof xfer_dir); };
+	option {src_legend(menu, MSG_delete_xfer_file,
+			clean_xfer_dir ? MSG_Yes : MSG_No);},
+		action {clean_xfer_dir = ask_yesno(MSG_delete_xfer_file); };
+	option {src_legend(menu, MSG_transfer_method, url_proto(pkgsrc.xfer));},
+		action { pkgsrc.xfer = (pkgsrc.xfer+1) % (XFER_MAX+1); };
+	option MSG_quit_pkgsrc, exit, action { *((int*)arg) = SET_SKIP;};
+
+menu usersh, title MSG_User_shell, no clear;
+	option "/bin/sh",  exit, action { ushell = "/bin/sh";}; 
+	option "/bin/ksh", exit, action { ushell = "/bin/ksh";};
+	option "/bin/csh", exit, action { ushell = "/bin/csh";};
+
+menu convertscheme, title MSG_cvtscheme_hdr;
+	option MSG_cvtscheme_keep,		exit, action { *(int*)arg = 0; };
+	option MSG_cvtscheme_delete,		exit, action { *(int*)arg = 1; };
+	option MSG_cvtscheme_convert,		exit, action { *(int*)arg = 2; };
+	option MSG_cvtscheme_abort,		exit, action { *(int*)arg = 3; };
+
+
+menu reedit, title MSG_reeditpart, y=-10;
+	expand action { expand_all_option_texts(menu, arg); };
+	option MSG_reedit_partitions, exit,
+	    action  {((arg_rep_int*)arg)->rv = 1;};
+	option MSG_use_partitions_anyway, exit,
+	    action  {((arg_rep_int*)arg)->rv = 2;};
+	option MSG_abort_installation,       exit,
+	    action  {((arg_rep_int*)arg)->rv = 0;};
+/*	$NetBSD: menus.pm,v 1.3 2020/01/09 13:22:30 martin Exp $	*/
+/*	NetBSD: menus.mi,v 1.14 2018/09/11 08:05:18 martin Exp 		*/
+
+/*-
+ * Copyright (c) 2003 The NetBSD Foundation, Inc.
+ * All rights reserved.
+ *
+ * This code is derived from software contributed to The NetBSD Foundation
+ * by David Laight.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/* Menu system definitions -- extended partitioning */
+
+/* arg is a struct part_entry* */
+menu pmdiskentry, x=50, y=5, exit, default exit;
+	display action { pmdiskentry_enable(menu, arg); };
+	option MSG_edit_parts, exit, action { pm_edit_partitions(arg); };
+	option MSG_switch_parts, exit, action {
+		struct pm_devs *my_pm = pm_from_pe(arg);
+		const char *err;
+
+		if (!convert_scheme(my_pm, false, &err))
+			err_msg_win(err);
+		else
+			pm_partusage(my_pm, -1, 1);
+	};
+	option MSG_fmtasraid, exit, action
+	{
+		pm_whole_disk(arg, SY_NEWRAID);
+	};
+	option MSG_fmtaslvm, exit, action
+	{
+		part_id new_part;
+
+		new_part = pm_whole_disk(arg, SY_NEWLVM);
+		if (new_part != NO_PART)
+			pm_set_lvmpv(pm_from_pe(arg), new_part, true);
+	};
+	option MSG_encrypt, exit, action
+	{
+		part_id new_part;
+		new_part = pm_whole_disk(arg, SY_NEWCGD);
+		if (new_part != NO_PART)
+			 pm_cgd_edit_new(pm_from_pe(arg), new_part);
+	};
+	option MSG_erase,		next menu shred_modes;
+	option MSG_undo,		exit, action {
+				/* label_read(); */ pm->unsaved = 0;
+				pm_partusage(pm, -1, 1);
+	};
+	option MSG_unconfig,	exit, action {
+				if (pm_unconfigure(pm) == 0)
+					pm_partusage(pm, -1, 1);
+	};
+
+/* arg is a struct part_entry* */
+menu pmpartentry, x=50, y=5, exit, default exit;
+	option MSG_edit, exit, action
+	{
+		struct part_entry *cur_pe = arg;
+		pm->unsaved = 1;
+		pm_editpart(cur_pe->id);
+		pm_partusage(pm, cur_pe->id, 1);
+	};
+	option MSG_fmtasraid, exit, action {
+		if (pm->no_part) {
+			hit_enter_to_continue(NULL, MSG_notsupported);
+			return -1;
+		}
+		struct part_entry *cur_pe = arg;
+		pm->unsaved = 1;
+		pm_partusage(pm, cur_pe->id, 1);
+		pm_setfstype(pm, cur_pe->id, FS_RAID, 0);
+	};
+	option MSG_fmtaslvm, exit, action {
+		if (pm->no_part) {
+			hit_enter_to_continue(NULL, MSG_notsupported);
+			return -1;
+		}
+		struct part_entry *cur_pe = arg;
+		pm->unsaved = 1;
+		pm_partusage(pm, cur_pe->id, 1);
+		pm_setfstype(pm, cur_pe->id, FS_BSDFFS, 2);
+		pm_set_lvmpv(pm, cur_pe->id, true);
+	};
+	option MSG_encrypt, exit, action {
+		if (pm->no_part) {
+			hit_enter_to_continue(NULL, MSG_notsupported);
+			return -1;
+		}
+		struct part_entry *cur_pe = arg;
+		pm->unsaved = 1;
+		pm_partusage(pm, cur_pe->id, 1);
+		pm_setfstype(pm, cur_pe->id, FS_CGD, 0);
+		pm_cgd_edit_old(cur_pe);
+	};
+	option MSG_erase, next menu shred_modes;
+	option MSG_doumount, exit, action {
+		struct part_entry *cur_pe = arg;
+		pm_umount(pm, cur_pe->id);
+	};
+	option MSG_Delete_partition, exit, action {
+		struct part_entry *cur_pe = arg;
+		pm->unsaved = 1;
+		pm_partusage(pm, cur_pe->id, 1);
+		if (pm->no_part)
+			pm_unconfigure(pm);
+		else
+			pm_setfstype(pm, cur_pe->id, FS_UNUSED, 0);
+	};
+
+/* arg is a struct part_entry* */
+menu shred_modes, x=50, y=5, exit, default exit;
+	option MSG_fillzeros, exit,
+		action { pm_shred(arg, SHRED_ZEROS); };
+	option MSG_fillrandom,	exit,
+		action { pm_shred(arg, SHRED_RANDOM); };
+
+/* arg is a int pointer for the requested raid level */
+menu raidlevel;
+	option MSG_raid0, exit, action { *(int *)arg = 0; };
+	option MSG_raid1, exit, action { *(int *)arg = 1; };
+	option MSG_raid4, exit, action { *(int *)arg = 4; };
+	option MSG_raid5, exit, action { *(int *)arg = 5; };
+
+/* arg is a const char ** set to the selected encryption type */
+menu cgd_enctype;
+	option "aes-xts", exit, action { *(const char**)arg = "aes-xts"; };
+	option "aes-cbc", exit, action { *(const char**)arg = "aes-cbc"; };
+	option "3des-cbc", exit, action { *(const char**)arg = "3des-cbc"; };
+	option "blowfish-cbc", exit, action
+				{ *(const char**)arg = "blowfish-cbc"; };
+
+/* arg is a const char ** set to the requested iv type */
+menu cgd_ivtype;
+	option "encblkno1", exit, action { *(const char**)arg = "encblkno1"; };
+	option "encblkno8", exit, action { *(const char**)arg = "encblkno8"; };
+
+/* arg is const char ** set to the key gen type */
+menu cgd_keygentype;
+	option "pkcs5_pbkdf2/sha1", exit, action
+				 { *(const char**)arg = "pkcs5_pbkdf2/sha1"; };
+	option "pkcs5_pbkdf2", exit, action
+				{ *(const char**)arg = "pkcs5_pbkdf2"; };
+	option "storedkey", exit, action
+				{ *(const char**)arg = "storedkey"; };
+	option "randomkey", exit, action
+				{ *(const char**)arg = "randomkey"; };
+	option "urandomkey", exit, action
+				{ *(const char**)arg = "urandomkey"; };
+	option "shell_cmd", exit, action
+				{ *(const char**)arg = "shell_cmd"; };
+
+/* art is a const char ** set to the requested verification type */
+menu cgd_verifytype;
+	option "none",		exit, action { *(const char**)arg = "none"; };
+	option "disklabel",	exit, action { *(const char**)arg = "disklabel"; };
+	option "MBR",		exit, action { *(const char**)arg = "mbr"; };
+	option "GPT",		exit, action { *(const char**)arg = "gpt"; };
+	option "ffs",		exit, action { *(const char**)arg = "ffs"; };
+	option "re-enter",	exit, action { *(const char**)arg = "re-enter"; };
+/*	$NetBSD: menus.entropy,v 1.3 2023/12/17 18:46:42 martin Exp $	*/
+
+/*-
+ * Copyright (c) 2003 The NetBSD Foundation, Inc.
+ * All rights reserved.
+ *
+ * This code is derived from software contributed to The NetBSD Foundation
+ * by David Laight.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/* Menu system definitions -- entropy setup */
+
+/* arg is an int*, returning a magic value for the selected menu option */
+menu not_enough_entropy, title MSG_not_enough_entropy, y=-1, no box, clear,
+    exit, exitstring MSG_continue_without_entropy;
+	option MSG_entropy_add_manually, exit,
+	    action { *((int*)arg) = 1; };
+	option MSG_entropy_download_seed, exit,
+	    action { *((int*)arg) = 2; };
+	option MSG_entropy_download_raw, exit,
+	    action { *((int*)arg) = 3; };
+	option MSG_entropy_retry, exit,
+	    action { *((int*)arg) = 4; };
+
+
+/* arg is an int*, returning a magic value for the selected menu option */
+menu entropy_select_file, title MSG_entropy_select_file, y=-5, box,
+    exit, exitstring MSG_cancel;
+	option MSG_entropy_add_download_http, exit,
+	    action { *((int*)arg) = 1; };
+	option MSG_entropy_add_download_ftp, exit,
+	    action { *((int*)arg) = 2; };
+	option MSG_entropy_add_nfs, exit,
+	    action { *((int*)arg) = 3; };
+	option MSG_entropy_add_local, exit,
+	    action { *((int*)arg) = 4; };
+
+
+/* arg is an int*, set to SET_RETRY when the menu is aborted */
+menu entropy_nfssource, y=-5, x=0, w=70, no box, no clear,
+	    exitstring MSG_load_entropy;
+	option {src_legend(menu, MSG_Host, nfs_host);},
+		action { src_prompt(MSG_Host, nfs_host, sizeof nfs_host); };
+	option {src_legend(menu, MSG_Base_dir, nfs_dir);},
+		action { src_prompt(MSG_Base_dir, nfs_dir, sizeof nfs_dir); };
+	option {src_legend(menu, MSG_entropy_file, entropy_file);},
+		action { src_prompt(MSG_set_entropy_file, entropy_file, sizeof entropy_file); };
+	option MSG_cancel, exit,
+		action { *((int*)arg) = SET_RETRY; };
+
+
+/* arg is an arg_rv*, pointing to a struct ftpinfo and a return value */
+menu entropy_ftpsource, y=-4, x=0, w=70, no box, no clear,
+	exitstring MSG_download_entropy;
+	option {src_legend(menu, MSG_Host,
+			((struct ftpinfo*)((arg_rv*)arg)->arg)->xfer_host[
+			XFER_HOST(((struct ftpinfo*)
+			((arg_rv*)arg)->arg)->xfer)]);},
+		action { struct ftpinfo *fpi = (struct ftpinfo*)((arg_rv*)arg)->arg;
+			src_prompt(MSG_Host,
+			fpi->xfer_host[XFER_HOST(fpi->xfer)],
+			sizeof fpi->xfer_host[XFER_HOST(fpi->xfer)]); };
+	option {src_legend(menu, MSG_entropy_path_and_file, entropy_file);},
+		action { src_prompt(MSG_entropy_path_and_file,
+			entropy_file, sizeof entropy_file); };
+	option {src_legend(menu, MSG_User,
+			((struct ftpinfo*)((arg_rv*)arg)->arg)->user);},
+		action { struct ftpinfo *fpi = (struct ftpinfo*)((arg_rv*)arg)->arg;
+			src_prompt(MSG_User, fpi->user, sizeof fpi->user);
+			fpi->pass[0] = 0;
+		};
+	option {src_legend(menu, MSG_Password,
+		    strcmp(((struct ftpinfo*)((arg_rv*)arg)->arg)->user,
+		        "ftp") == 0 ||
+			((struct ftpinfo*)((arg_rv*)arg)->arg)->pass[0] == 0
+			? ((struct ftpinfo*)((arg_rv*)arg)->arg)->pass
+			: msg_string(MSG_hidden));},
+		action { struct ftpinfo *fpi = (struct ftpinfo*)((arg_rv*)arg)->arg;
+			if (strcmp(fpi->user, "ftp") == 0)
+			src_prompt(MSG_email, fpi->pass, sizeof fpi->pass);
+		  else {
+			msg_prompt_noecho(MSG_Password, "",
+					fpi->pass, sizeof fpi->pass);
+		  }
+		};
+	option {src_legend(menu, MSG_Proxy,
+		    ((struct ftpinfo*)((arg_rv*)arg)->arg)->proxy);},
+		action { struct ftpinfo *fpi = (struct ftpinfo*)((arg_rv*)arg)->arg;
+			src_prompt(MSG_Proxy, fpi->proxy, sizeof fpi->proxy);
+			if (strcmp(fpi->proxy, "") == 0) {
+				unsetenv("ftp_proxy");
+				unsetenv("http_proxy");
+			} else {
+				setenv("ftp_proxy", fpi->proxy, 1);
+				setenv("http_proxy", fpi->proxy, 1);
+			}
+		};
+	option MSG_cancel, exit, action { ((arg_rv*)arg)->rv = SET_RETRY; };
+
+
+/* arg is an int*, set to SET_RETRY when the menu is aborted */
+menu entropy_localfs, y=-4, x=0, w=70, no box, no clear,
+		 exitstring MSG_load_entropy;
+	display action { msg_display(MSG_entropy_localfs); };
+	option {src_legend(menu, MSG_Device, localfs_dev);},
+		action { src_prompt(MSG_dev, localfs_dev, sizeof localfs_dev);};
+	option {src_legend(menu, MSG_File_system, localfs_fs);},
+		action { src_prompt(MSG_filesys, localfs_fs, sizeof localfs_fs); };
+	option {src_legend(menu, MSG_entropy_path_and_file, entropy_file);},
+		action { src_prompt(MSG_entropy_path_and_file, entropy_file, sizeof entropy_file);};
+	option MSG_cancel, exit, action { *((int*)arg) = SET_RETRY; };
+
+/*	$NetBSD: menus.md,v 1.3 2019/11/16 18:08:59 martin Exp $	*/
+
+/*
+ * Copyright 1997 Piermont Information Systems Inc.
+ * All rights reserved.
+ *
+ * Written by Philip A. Nelson for Piermont Information Systems Inc.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of Piermont Information Systems Inc. may not be used to endorse
+ *    or promote products derived from this software without specific prior
+ *    written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY PIERMONT INFORMATION SYSTEMS INC. ``AS IS''
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL PIERMONT INFORMATION SYSTEMS INC. BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/* Menu definitions for sysinst. i386 version, machine dependent. */
+
+menu getboottype, title MSG_Bootblocks_selection, y=10, exit, no clear,
+	exitstring MSG_Continue;
+	display action { msg_display(MSG_getboottype);
+		switch (((struct x86_boot_params *)arg)->bp_consdev) {
+		default:
+		case 0:
+			msg_display_add(MSG_console_PC);
+			break;
+		case 1: case 2: case 3: case 4:
+			if (menu->cursel == 0)
+			    menu->cursel = ((struct x86_boot_params *)arg)->bp_consdev;
+			msg_fmt_display_add(MSG_console_com, "%u%u",
+			    ((struct x86_boot_params *)arg)->bp_consdev - 1,
+			    ((struct x86_boot_params *)arg)->bp_conspeed);
+			break;
+		case ~0:
+			msg_display_add(MSG_console_unchanged);
+			break;
+		}};
+	option MSG_Use_normal_bootblocks, exit, action
+	    {((struct x86_boot_params *)arg)->bp_consdev = 0; m->cursel = 7;};
+	option MSG_Use_serial_com0, action
+	    {((struct x86_boot_params *)arg)->bp_consdev = 1; m->cursel = 5;};
+	option MSG_Use_serial_com1, action
+	    {((struct x86_boot_params *)arg)->bp_consdev = 2; m->cursel = 5;};
+	option MSG_Use_serial_com2, action
+	    {((struct x86_boot_params *)arg)->bp_consdev = 3; m->cursel = 5;};
+	option MSG_Use_serial_com3, action
+	    {((struct x86_boot_params *)arg)->bp_consdev = 4; m->cursel = 5;};
+	option MSG_serial_baud_rate, sub menu consolebaud;
+	option MSG_Use_existing_bootblocks, exit, action
+	    {((struct x86_boot_params *)arg)->bp_consdev = ~0; m->cursel = 7;};
+
+menu consolebaud, title MSG_serial_baud_rate, x=40, y=13;
+	display action {
+		switch (((struct x86_boot_params *)arg)->bp_conspeed) {
+		default:
+		case   9600: menu->cursel = 0; break;
+		case  19200: menu->cursel = 1; break;
+		case  38400: menu->cursel = 2; break;
+		case  57600: menu->cursel = 3; break;
+		case 115200: menu->cursel = 4; break;
+		case      0: menu->cursel = 5; break;
+		}};
+	option "9600", exit, action
+	    {((struct x86_boot_params *)arg)->bp_conspeed = 9600;};
+	option "19200", exit, action
+	    {((struct x86_boot_params *)arg)->bp_conspeed = 19200;};
+	option "38400", exit, action
+	    {((struct x86_boot_params *)arg)->bp_conspeed = 38400;};
+	option "57600", exit, action
+	    {((struct x86_boot_params *)arg)->bp_conspeed = 57600;};
+	option "115200", exit, action
+	    {((struct x86_boot_params *)arg)->bp_conspeed = 115200;};
+	option "BIOS", exit, action
+	    {((struct x86_boot_params *)arg)->bp_conspeed = 0;};
+
+menu biosonematch, y=-1;
+	option MSG_This_is_the_correct_geometry, exit, action { };
+	option MSG_Set_the_geometry_by_hand, exit, action
+	    {*(void **)arg = NULL;};
+
+menu biosmultmatch;
+	option MSG_Use_one_of_these_disks, exit, action {
+		int sel;
+		char res[4];
+
+		do {
+			strcpy(res, "0");
+			msg_prompt_win(MSG_pickdisk, -1, -1, 0, 0,
+					res, res, sizeof res);
+			sel = atoi(res);
+		} while (sel < 0 || sel >= *(int *)arg);
+		*(int *)arg = sel;
+	};
+	option MSG_Set_the_geometry_by_hand, exit, action {
+		*(int *)arg = -1;
+	};

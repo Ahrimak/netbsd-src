@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: service.8,v 1.6 2023/03/14 21:50:25 uwe Exp $
+  
+   Copyright (c) 2009 Douglas Barton
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>SERVICE(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">SERVICE(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">SERVICE(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">service</code> &#x2014;
+<div class="Nd">run or list system services</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">service</code></td>
+    <td>[<code class="Fl">-elv</code>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">service</code></td>
+    <td>[<code class="Fl">-ev</code>] <var class="Ar">rc_script_name</var>
+      [<var class="Ar">rc_script_name</var> <var class="Ar">...</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">service</code></td>
+    <td>[<code class="Fl">-v</code>] <var class="Ar">rc_script_name
+      action</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">service</code> command is a simple interface to the
+  services startup system.
+<p class="Pp">Its purpose is to list the services or invoke actions on them as
+    provided by the <a class="Xr" href="../html8/rc.d.html">rc.d(8)</a> scripts.
+    When used to invoke <span class="Pa">rc.d</span> scripts,
+    <code class="Nm">service</code> will set the same environment that is used
+    at boot time.</p>
+<p class="Pp">The options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#e"><code class="Fl" id="e">-e</code></a></dt>
+  <dd>List services that are enabled. The list of scripts is compiled using
+      <a class="Xr" href="../html8/rcorder.html">rcorder(8)</a> the same way as
+      is done in <a class="Xr" href="../html8/rc.html">rc(8)</a>; each script is
+      first checked for an <code class="Dv">rcvar</code> assignment and if
+      present, checked to see if it is enabled. If one or more
+      <var class="Ar">rc_script_name</var> are specified, only those are
+      checked. The <var class="Ar">rc_script_name</var> arguments are always
+      specified without a path prefix.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a></dt>
+  <dd>List all files in <span class="Pa">/etc/rc.d</span> (the default of
+      <code class="Ev">rc_directories</code> as defined in
+      <a class="Xr" href="../html5/rc.conf.html">rc.conf(5)</a>). A script will
+      be listed unless it has the <code class="Dv">nostart</code> keyword
+      enabled. Scripts are listed in the order the <span class="Pa">rc.d</span>
+      system runs them at system boot time.</dd>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a></dt>
+  <dd>Report what <code class="Dv">rc_directories</code> are defined or in which
+      directory the <span class="Pa">rc.d</span> script was found when an
+      <var class="Ar">action</var> is invoked.</dd>
+</dl>
+<p class="Pp">The <code class="Fl">-e</code> and <code class="Fl">-l</code>
+    options are mutually exclusive. Only one of those may be used.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+When used to invoke <span class="Pa">rc.d</span> scripts, the
+  <code class="Nm">service</code> command sets
+  <a class="Xr" href="../html2/umask.html">umask(2)</a> to
+  <code class="Li">022</code>, <code class="Ev">HOME</code> to
+  <span class="Pa">/</span>, and <code class="Ev">PATH</code> to
+  <code class="Li">/sbin:/bin:/usr/sbin:/usr/bin</code> which is how they are
+  set in <span class="Pa">/etc/rc</span> at boot time. The
+  <var class="Ar">action</var> is typically one of
+  <code class="Cm">start</code>, <code class="Cm">restart</code>, or
+  <code class="Cm">status</code>, but can be any other argument supported by the
+  <var class="Fa">rc_script_name</var>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXIT_STATUS"><a class="permalink" href="#EXIT_STATUS">EXIT
+  STATUS</a></h1>
+<code class="Nm">service</code> exits with status 0 when successful, status 1
+  when <code class="Fl">-e</code> was given and no enabled script was found, or
+  when an <var class="Ar">action</var> is to be performed, but the
+  <var class="Ar">rc_script_name</var> given does not exist, or status &gt;1 if
+  another error occurs.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+These are typical usages of the <code class="Nm">service</code> command:
+<div class="Bd Pp">
+<pre>
+# service sshd restart
+Stopping sshd.
+Starting sshd.
+</pre>
+</div>
+<div class="Bd Pp">
+<pre>
+$ service -v inetd status
+inetd is located in /etc/rc.d
+inetd is running as pid 1713.
+</pre>
+</div>
+<div class="Bd Pp">
+<pre>
+$ if service -e inetd &gt;/dev/null; then echo inetd is enabled; fi
+inetd is enabled
+</pre>
+</div>
+<div class="Bd Pp">
+<pre>
+$ if service -e foobar &gt;/dev/null; then echo foobar is enabled; fi
+</pre>
+</div>
+<div class="Bd Pp">
+<pre>
+$ service -ve ccd motd hostapd my_pkg
+rc_directories is /etc/rc.d /usr/pkg/etc/rc.d
+/etc/rc.d/ccd
+/usr/pkg/etc/rc.d/my_pkg
+/etc/rc.d/motd
+</pre>
+</div>
+<p class="Pp">In the last example,
+    <a class="Xr" href="../html8/hostapd.html">hostapd(8)</a> was apparently
+    left disabled and the additional directory
+    <span class="Pa">/usr/pkg/etc/rc.d</span> was configured by redefining the
+    variable <code class="Dv">rc_directories</code> in
+    <span class="Pa">rc.conf</span>; further, <code class="Li">my_pkg=yes</code>
+    must have also been set.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html5/rc.conf.html">rc.conf(5)</a>,
+  <a class="Xr" href="../html8/rc.html">rc(8)</a>,
+  <a class="Xr" href="../html8/rcorder.html">rcorder(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">service</code> utility first appeared in
+  <span class="Ux">NetBSD 7.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+Written for <span class="Ux">FreeBSD</span> by <span class="An">Douglas
+  Barton</span>
+  &lt;<a class="Mt" href="mailto:dougb@FreeBSD.org">dougb@FreeBSD.org</a>&gt;.
+<p class="Pp">Adapted and extended to <span class="Ux">NetBSD</span> by
+    <span class="An">Adrian Steinmann</span>
+    &lt;<a class="Mt" href="mailto:ast@marabu.ch">ast@marabu.ch</a>&gt;.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">March 12, 2023</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

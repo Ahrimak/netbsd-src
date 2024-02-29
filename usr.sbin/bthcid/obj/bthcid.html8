@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: bthcid.8,v 1.11 2017/12/21 12:25:03 wiz Exp $
+  
+   Copyright (c) 2006 Itronix Inc.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. The name of Itronix Inc. may not be used to endorse
+      or promote products derived from this software without specific
+      prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY ITRONIX INC. ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL ITRONIX INC. BE LIABLE FOR ANY
+   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+   ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+  
+   Copyright (c) 2001-2002 Maksim Yevmenkin <m_evmenkin@yahoo.com>
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+   $Id: bthcid.8,v 1.11 2017/12/21 12:25:03 wiz Exp $
+   $FreeBSD: src/usr.sbin/bluetooth/hcsecd/hcsecd.8,v 1.6 2006/02/11 15:36:37 markus Exp $
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>BTHCID(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">BTHCID(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">BTHCID(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">bthcid</code> &#x2014;
+<div class="Nd">Bluetooth Link Key/PIN Code Manager</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">bthcid</code></td>
+    <td>[<code class="Fl">-fn</code>] [<code class="Fl">-d</code>
+      <var class="Ar">device</var>] [<code class="Fl">-m</code>
+      <var class="Ar">mode</var>] [<code class="Fl">-s</code>
+      <var class="Ar">socket_name</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">bthcid</code></td>
+    <td>[<code class="Fl">-h</code>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">bthcid</code> daemon handles Link Key and PIN code requests
+  for Bluetooth devices. It opens a raw HCI socket and listens for the following
+  HCI events.
+<p class="Pp"></p>
+<dl class="Bl-tag Bl-compact">
+  <dt><a class="permalink" href="#Link_Key_Request"><code class="Dv" id="Link_Key_Request">Link_Key_Request</code></a></dt>
+  <dd><code class="Nm">bthcid</code> scans the
+      <span class="Pa">/var/db/bthcid.keys</span> file for a cached link key
+      matching the remote device BD_ADDR and, if found, the
+      <code class="Dv">Link_Key_Request_Reply</code> will be sent back to the
+      device, otherwise the
+      <code class="Dv">Link_Key_Request_Negative_Reply</code> will be sent.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#Link_Key_Notification"><code class="Dv" id="Link_Key_Notification">Link_Key_Notification</code></a></dt>
+  <dd>When a new link key is created by the device, it will be cached for future
+      use in the <span class="Pa">/var/db/bthcid.keys</span> link keys file,
+      which will be created if it does not already exist.
+    <p class="Pp"></p>
+  </dd>
+  <dt><a class="permalink" href="#PIN_Code_Request"><code class="Dv" id="PIN_Code_Request">PIN_Code_Request</code></a></dt>
+  <dd>The <code class="Nm">bthcid</code> daemon checks its PIN cache for a
+      matching remote device entry. If no PIN is found, the
+      <code class="Nm">bthcid</code> daemon will send a message to any PIN
+      clients that have registered, with the device details and a timeout value.
+      When no clients are available or the timeout has expired,
+      <code class="Nm">bthcid</code> will send a
+      <code class="Dv">PIN_Code_Request_Negative_Reply</code> back to the
+      device. When a PIN is found, or if a client responds within the timeout
+      period, a <code class="Dv">PIN_Code_Request_Reply</code> will be sent back
+      to the device.
+    <p class="Pp">PINs received from clients will be cached for 5 minutes until
+        used, and may be added to the cache prior to pairing with the
+        <a class="Xr" href="../html1/btpin.html">btpin(1)</a> utility.</p>
+  </dd>
+</dl>
+<p class="Pp">Some of the functionality of <code class="Nm">bthcid</code> can be
+    handled by the Bluetooth controller directly, and cached Link Keys may be
+    examined, deleted or moved to device storage using the
+    <a class="Xr" href="../html1/btkey.html">btkey(1)</a> program.</p>
+<p class="Pp">The command line options are as follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">device</var></dt>
+  <dd>Specify the local Bluetooth device address. The default is
+    BDADDR_ANY.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a></dt>
+  <dd>Run in foreground (do not detach).</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a></dt>
+  <dd>Display usage message and exit.</dd>
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a></dt>
+  <dd>Specify the file mode access bits for the PIN client socket. The default
+      is to allow readwrite access to user and group (0660).</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Do not listen for PIN clients.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a>
+    <var class="Ar">socket_name</var></dt>
+  <dd>Specify the socket name to listen on for PIN clients. The default path is
+      <span class="Pa">/var/run/bthcid</span>.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag Bl-compact">
+  <dt><span class="Pa">/var/db/bthcid.keys</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/var/run/bthcid</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+  <dt><span class="Pa">/var/run/bthcid.pid</span></dt>
+  <dd style="width: auto;">&#x00A0;</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/btkey.html">btkey(1)</a>,
+  <a class="Xr" href="../html1/btpin.html">btpin(1)</a>,
+  <a class="Xr" href="../html4/bluetooth.html">bluetooth(4)</a>,
+  <a class="Xr" href="../html8/btconfig.html">btconfig(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">bthcid</code> daemon first appeared in
+  <span class="Ux">FreeBSD 5.3</span> as <code class="Ic">hcsecd</code>. It was
+  ported to <span class="Ux">NetBSD 4.0</span> with its present name and
+  extended to support PIN clients by <span class="An">Iain Hibbert</span> under
+  the sponsorship of Itronix, Inc.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">Maksim Yevmenkin</span>
+  &lt;<a class="Mt" href="mailto:m_evmenkin@yahoo.com">m_evmenkin@yahoo.com</a>&gt;
+<br/>
+<span class="An">Iain Hibbert</span>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">September 29, 2006</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: sunlabel.8,v 1.9 2017/07/03 21:35:32 wiz Exp $
+  
+   Copyright (c) 2002 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   This code is derived from software contributed to The NetBSD Foundation
+   by Thomas Klausner.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>SUNLABEL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">SUNLABEL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">SUNLABEL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">sunlabel</code> &#x2014;
+<div class="Nd">read or modify a SunOS disk label</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">sunlabel</code></td>
+    <td>[<code class="Fl">-mnqs</code>] <var class="Ar">device</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">sunlabel</code> reads or modifies a SunOS disk label on
+  <var class="Ar">device</var>, which is used by the PROM on
+  <span class="Ux">NetBSD</span>/sparc hardware to find partitions to boot from.
+  <code class="Nm">sunlabel</code> only reads/writes the first 512 bytes of
+  <var class="Ar">device</var>.
+<p class="Pp">The supported options are:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#m"><code class="Fl" id="m">-m</code></a></dt>
+  <dd>Ignore an incorrect magic number in the disk label.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Synthesize a new label rather than reading what is there.</dd>
+  <dt><a class="permalink" href="#q"><code class="Fl" id="q">-q</code></a></dt>
+  <dd>Quiet mode - don't print unnecessary babble (currently this suppresses the
+      &#x201C;sunlabel&gt;&#x201D; prompt).</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Ignore checksum errors when reading the label.</dd>
+</dl>
+</div>
+<p class="Pp">Note that <code class="Fl">-m</code> is dangerous, especially when
+    combined with <code class="Fl">-s</code>, since it will then happily believe
+    whatever garbage it may find in the label. When using these flags, all
+    values should be checked carefully, both those printed by
+    <code class="Ic">L</code> and the partition table printed by
+    <code class="Ic">P</code>.</p>
+<p class="Pp"><code class="Nm">sunlabel</code> prints a prompt
+    &#x201C;sunlabel&gt;&#x201D; and expects commands. The following commands
+    are understood:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt>?</dt>
+  <dd>Show a short help message.</dd>
+  <dt><a class="permalink" href="#_abcdefghijklmnop_"><code class="Ic" id="_abcdefghijklmnop_">[abcdefghijklmnop]</code></a>
+    <var class="Ar">&lt;cylno&gt;</var> <var class="Ar">&lt;size&gt;</var></dt>
+  <dd>Change partition (see below).</dd>
+  <dt><a class="permalink" href="#L"><code class="Ic" id="L">L</code></a></dt>
+  <dd>Print label, except for the partition table.</dd>
+  <dt><a class="permalink" href="#P"><code class="Ic" id="P">P</code></a></dt>
+  <dd>Print the partition table.</dd>
+  <dt><a class="permalink" href="#Q"><code class="Ic" id="Q">Q</code></a></dt>
+  <dd>Quit program (error if no write since last change).</dd>
+  <dt><a class="permalink" href="#Q!"><code class="Ic" id="Q!">Q!</code></a></dt>
+  <dd>Quit program (unconditionally) [EOF also quits].</dd>
+  <dt><a class="permalink" href="#S"><code class="Ic" id="S">S</code></a></dt>
+  <dd>Set label in the kernel (orthogonal to <code class="Ic">W</code>).</dd>
+  <dt><a class="permalink" href="#V"><code class="Ic" id="V">V</code></a>
+    <var class="Ar">&lt;name&gt;</var> <var class="Ar">&lt;value&gt;</var></dt>
+  <dd>Change a non-partition label value.</dd>
+  <dt><a class="permalink" href="#W"><code class="Ic" id="W">W</code></a></dt>
+  <dd>Write (possibly modified) label out.</dd>
+</dl>
+</div>
+<p class="Pp">The <code class="Ic">a</code> through <code class="Ic">p</code>
+    commands will accept, for the <var class="Ar">&lt;size&gt;</var> parameter,
+    the <var class="Ar">nnn/nnn/nnn</var> syntax used by SunOS 4.x
+    <code class="Ic">format</code>. (For those not familiar with this syntax,
+    <var class="Ar">a/b/c</var> means <var class="Ar">a</var> cylinders +
+    <var class="Ar">b</var> tracks + <var class="Ar">c</var> sectors. For
+    example, if the disk has 16 tracks of 32 sectors,
+    <var class="Ar">3/4/5</var> means (3*16*32)+(4*32)+5=1669. This calculation
+    always uses the <var class="Ar">nsect</var> and <var class="Ar">ntrack</var>
+    values as printed by the <code class="Ic">L</code> command; in particular,
+    if they are zero (which they will initially be if <code class="Fl">-n</code>
+    is used), this syntax is not very useful. Some additional strings are
+    accepted. For the <var class="Ar">&lt;cylno&gt;</var> parameter,
+    &#x201C;end-X&#x201D; (where <var class="Ar">X</var> is a partition letter)
+    indicates that the partition should start with the first free cylinder after
+    partition <var class="Ar">X</var>; &#x201C;start-X&#x201D; indicates that
+    the partition should start at the same place as partition
+    <var class="Ar">X</var>. For the <var class="Ar">&lt;size&gt;</var>
+    parameter, &#x201C;end-X&#x201D; indicates that the partition should end at
+    the same place as partition <var class="Ar">X</var> (even if partition
+    <var class="Ar">X</var> ends partway through a cylinder);
+    &#x201C;start-X&#x201D; indicates that the partition should end with the
+    last cylinder before partition <var class="Ar">X</var>; and
+    &#x201C;size-X&#x201D; means that the partition's size should exactly match
+    partition <var class="Ar">X</var><span class="No">'s</span> size.</p>
+<p class="Pp">Note that <code class="Nm">sunlabel</code> supports 16 partitions.
+    SunOS supports only 8. Labels written by <code class="Nm">sunlabel</code>,
+    when partitions <var class="Ar">i</var> through <var class="Ar">p</var> are
+    all set <var class="Ar">offset=0 size=0</var>, are identical to Sun labels.
+    If any of the &#x201C;extended&#x201D; partitions are nontrivial,
+    information about them is tucked into some otherwise unused space in the Sun
+    label format.</p>
+<p class="Pp">The <code class="Ic">V</code> command changes fields printed by
+    the <code class="Ic">L</code> command. For example, if the
+    <code class="Ic">L</code> command prints</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+ascii: ST15230N cyl 5657 alt 2 hd 19 sec 78
+rpm: 0          pcyl: 0         apc: 0          obs1: 0
+obs2: 0         intrlv: 1       ncyl: 5657      acyl: 0
+nhead: 19       nsect: 78       obs3: 0         obs4: 0
+</pre>
+</div>
+<p class="Pp">then <code class="Ic">V</code> <var class="Ar">ncyl 6204</var>
+    would set the <var class="Ar">ncyl</var> value to 6204, or
+    <code class="Ic">V</code> <var class="Ar">ascii Seagate ST15230N cyl 5657 hd
+    19 sec varying</var> would set the ascii-label string to that string.
+    <code class="Nm">sunlabel</code> performs very few consistency checks on the
+    values you supply, and the ones it does perform never generate errors, only
+    warnings.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<span class="An">der Mouse</span>
+  &lt;<a class="Mt" href="mailto:mouse@rodents.montreal.qc.ca">mouse@rodents.montreal.qc.ca</a>&gt;
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+It may be that the space in the label where the information for the extended
+  partitions is saved is used by SunOS.
+<p class="Pp">Not very many consistency checks are done on the
+    <code class="Ic">V</code> arguments, and those only produce warnings.</p>
+<p class="Pp"><span class="Ux">NetBSD</span> doesn't support 16 partitions in a
+    Sun disk label yet.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">December 21, 2002</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

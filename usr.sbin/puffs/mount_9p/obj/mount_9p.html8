@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: mount_9p.8,v 1.17 2022/02/11 14:10:12 uwe Exp $
+  
+   Copyright (c) 2007 Antti Kantee.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>MOUNT_9P(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MOUNT_9P(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">MOUNT_9P(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">mount_9p</code> &#x2014;
+<div class="Nd">mount a file server using the 9P resource sharing protocol</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">mount_9p</code></td>
+    <td>[<code class="Fl">-46Csu</code>] [<code class="Fl">-o</code>
+      <var class="Ar">options</var>] [<code class="Fl">-p</code>
+      <var class="Ar">port</var>]
+      [<var class="Ar">user</var><code class="Li">@</code>]<var class="Ar">host</var>[<code class="Li">:</code><var class="Ar">path</var>]
+      <var class="Ar">mount_point</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">mount_9p</code></td>
+    <td><code class="Fl">-c</code> [<code class="Fl">-Csu</code>]
+      [<code class="Fl">-o</code> <var class="Ar">options</var>]
+      <var class="Ar">device</var> <var class="Ar">mount_point</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">mount_9p</code> program is used to mount a file hierarchy
+  served with the Plan 9 resource sharing protocol 9P. After the file system is
+  mounted, the files on the remote <var class="Ar">host</var> will be accessed
+  using the credentials of the user named <var class="Ar">user</var> and
+  whatever UID the user happens to have on the remote server. If
+  <var class="Ar">path</var> is supplied, it is used as the mount rootpath on
+  the remote host. <var class="Ar">path</var> must be an absolute path.
+<p class="Pp">The host name may be optionally enclosed in square brackets. This
+    is required when using numeric IPv6 addresses as they contain colons as part
+    of their syntax.</p>
+<p class="Pp">The <code class="Fl">-c</code> option enables to mount a file
+    system exported by a VM host through a character device file
+    <var class="Ar">device</var> backed by the
+    <a class="Xr" href="../html4/vio9p.html">vio9p(4)</a> driver. See
+    <a class="Xr" href="../html4/vio9p.html">vio9p(4)</a> for more
+  information.</p>
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#4"><code class="Fl" id="4">-4</code></a></dt>
+  <dd>Forces <code class="Nm">mount_9p</code> to use IPv4 addresses only.</dd>
+  <dt><a class="permalink" href="#6"><code class="Fl" id="6">-6</code></a></dt>
+  <dd>Forces <code class="Nm">mount_9p</code> to use IPv6 addresses only.</dd>
+  <dt><a class="permalink" href="#C"><code class="Fl" id="C">-C</code></a></dt>
+  <dd>Permit the kernel to cache pathname components. By default every time the
+      kernel does a lookup for a component name, the file server will be
+      consulted.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>Interpret <var class="Ar">special</var> as a device name. See
+      <a class="Xr" href="../html4/vio9p.html">vio9p(4)</a>.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">options</var></dt>
+  <dd>Mount options. See documentation for the <code class="Fl">-o</code> option
+      to <a class="Xr" href="../html8/mount.html">mount(8)</a>.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a>
+    <var class="Ar">port</var></dt>
+  <dd>Use the specified TCP port. By default <code class="Nm">mount_9p</code>
+      uses port 564 (<code class="Li">9pfs</code>). Another useful port is 6666
+      (<code class="Li">styx</code>), used by Inferno operating system.</dd>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+  <dd>Run in the foreground. Useful for debugging.</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a></dt>
+  <dd>Use 9P2000.u protocol that includes extensions to better support Unix
+      environments.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html3/puffs.html">puffs(3)</a>,
+  <a class="Xr" href="../html4/puffs.html">puffs(4)</a>,
+  <a class="Xr" href="../html4/vio9p.html">vio9p(4)</a>,
+  <a class="Xr" href="../html8/mount.html">mount(8)</a>
+<p class="Pp"><cite class="Rs"><span class="RsT">9P: The Simple Distributed File
+    System from Bell Labs</span>,
+    <a class="RsU" href="http://9p.cat-v.org/">http://9p.cat-v.org/</a>.</cite></p>
+<p class="Pp"><cite class="Rs"><span class="RsT">RFC and standards documents
+    relating the 9P protocol</span>,
+    <a class="RsU" href="http://ericvh.github.io/9p-rfc/">http://ericvh.github.io/9p-rfc/</a>.</cite></p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">mount_9p</code> utility first appeared in
+  <span class="Ux">NetBSD 5.0</span>.
+<p class="Pp">Experimental 9P2000.u support appeared in <span class="Ux">NetBSD
+    9.0</span>.</p>
+<p class="Pp">The <a class="Xr" href="../html4/vio9p.html">vio9p(4)</a> support
+    appeared in <span class="Ux">NetBSD 10.0</span>.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="CAVEATS"><a class="permalink" href="#CAVEATS">CAVEATS</a></h1>
+Authentication is not supported.
+<p class="Pp">Permissions are not handled well.</p>
+<p class="Pp">Error code handling is missing for 9P2000.</p>
+<p class="Pp">9P2000.u support doesn't use extension fields.</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">February 10, 2022</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

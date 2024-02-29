@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: certctl.8,v 1.3 2023/10/11 15:28:05 riastradh Exp $
+  
+   Copyright (c) 2023 The NetBSD Foundation, Inc.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+   ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>CERTCTL(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">CERTCTL(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">CERTCTL(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">certctl</code> &#x2014;
+<div class="Nd">configure OpenSSL certificate trust anchors</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">certctl</code></td>
+    <td>[<code class="Fl">-nv</code>] [<code class="Fl">-C</code>
+      <var class="Ar">config</var>] [<code class="Fl">-c</code>
+      <var class="Ar">certsdir</var>] [<code class="Fl">-u</code>
+      <var class="Ar">distrustdir</var>] <var class="Ar">cmd</var>
+      [<var class="Ar">args...</var>]</td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">certctl</code></td>
+    <td>[<var class="Ar">options</var>] <code class="Cm">list</code></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">certctl</code></td>
+    <td>[<var class="Ar">options</var>] <code class="Cm">rehash</code></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">certctl</code></td>
+    <td>[<var class="Ar">options</var>] <code class="Cm">trust</code>
+      <var class="Ar">cert</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">certctl</code></td>
+    <td>[<var class="Ar">options</var>] <code class="Cm">untrust</code>
+      <var class="Ar">cert</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">certctl</code></td>
+    <td>[<var class="Ar">options</var>] <code class="Cm">untrusted</code></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">certctl</code> utility manages certificates used by
+  OpenSSL-based applications as trust anchors for certificate validation in TLS
+  or other purposes, for example by
+  <a class="Xr" href="../html1/ftp.html">ftp(1)</a> in HTTPS.
+  <code class="Nm">certctl</code> allows configuring the set of certificates and
+  persistently excluding individual certificates.
+<p class="Pp">For trust anchors to validate TLS certificates, OpenSSL
+    applications typically use a directory at
+    <span class="Pa">/etc/openssl/certs</span> of hashed certificates in PEM
+    format, with names like <span class="Pa">3513523f.0</span> used for lookup;
+    see
+  <a class="Xr" href="../html1/openssl_rehash.html">openssl_rehash(1)</a>.</p>
+<p class="Pp"><code class="Nm">certctl</code> scans all directories in the
+    certificate search path specified by the configuration file
+    <var class="Ar">config</var> (default:
+    <span class="Pa">/etc/openssl/certs.conf</span>) for files called
+    <span class="Pa">*.cer</span>, <span class="Pa">*.crt</span>, or
+    <span class="Pa">*.pem</span> in PEM format, and keeps
+    <var class="Ar">certsdir</var> (default:
+    <span class="Pa">/etc/openssl/certs</span>) populated with:</p>
+<ul class="Bl-dash">
+  <li>symlinks to the original files in the certificate search path, for
+      applications that scan a directory for all files matching
+      <span class="Pa">*.cer</span>, <span class="Pa">*.crt</span>, or
+      <span class="Pa">*.pem</span>;</li>
+  <li>hashed symlinks as in
+      <a class="Xr" href="../html1/openssl_rehash.html">openssl_rehash(1)</a>;
+      and</li>
+  <li>a single-file bundle <span class="Pa">ca-certificates.crt</span>
+      concatenating all the certificates in PEM format.</li>
+</ul>
+<p class="Pp"><code class="Nm">certctl</code> will exclude from
+    <var class="Ar">certsdir</var> any certificates that have been marked
+    untrustworthy with <code class="Nm">certctl</code>
+    <code class="Cm">untrust</code>, which are persistently maintained in the
+    private state directory <var class="Ar">distrustdir</var> (default:
+    <span class="Pa">/etc/openssl/untrusted</span>).</p>
+<p class="Pp"><code class="Nm">certctl</code> treats
+    <var class="Ar">config</var> and <var class="Ar">distrustdir</var> as
+    configuration, and treats <var class="Ar">certsdir</var> strictly as a cache
+    that can be safely deleted and rebuilt with <code class="Nm">certctl</code>
+    <code class="Cm">rehash</code>. <code class="Nm">certctl</code> can also be
+    instructed not to touch <var class="Ar">certsdir</var> at all by putting
+    <code class="Cm">manual</code> in <var class="Ar">config</var>.</p>
+<section class="Ss">
+<h2 class="Ss" id="Commands"><a class="permalink" href="#Commands">Commands</a></h2>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#list"><code class="Cm" id="list">list</code></a></dt>
+  <dd>List absolute paths to trusted certificates.
+      <code class="Nm">certctl</code> <code class="Cm">rehash</code> will
+      populate <var class="Ar">certsdir</var> with these. Paths are printed one
+      per line, encoded in <a class="Xr" href="../html1/vis.html">vis(1)</a>
+      format to escape any shell metacharacters.</dd>
+  <dt><a class="permalink" href="#rehash"><code class="Cm" id="rehash">rehash</code></a></dt>
+  <dd>Populate <var class="Ar">certsdir</var> with all trusted certificates,
+      excluding any from <code class="Nm">certctl</code>
+      <code class="Cm">untrust</code>.</dd>
+  <dt><a class="permalink" href="#trust"><code class="Cm" id="trust">trust</code></a>
+    <var class="Ar">cert</var></dt>
+  <dd>Allow <var class="Ar">cert</var> to be included in
+      <var class="Ar">certsdir</var> if it is in the certificate search path,
+      and rehash to make it effective immediately. In other words, reverse the
+      persistent effect of <code class="Nm">certctl</code>
+      <code class="Cm">untrust</code> <var class="Ar">cert</var>.
+    <p class="Pp"><var class="Ar">cert</var> must be the full absolute path to a
+        certificate that has been excluded by <code class="Nm">certctl</code>
+        <code class="Cm">untrust</code> <var class="Ar">cert</var>.</p>
+    <p class="Pp">This does not add a new certificate which is not in the search
+        path. To do that, you can create a directory to hold it and put that
+        directory in the search path.</p>
+  </dd>
+  <dt><a class="permalink" href="#untrust"><code class="Cm" id="untrust">untrust</code></a>
+    <var class="Ar">cert</var></dt>
+  <dd>Persistently prevent <var class="Ar">cert</var> from being included in
+      <var class="Ar">certsdir</var>, and rehash to make it effective
+      immediately.
+    <p class="Pp"><var class="Ar">cert</var> must be the full absolute path to a
+        certificate that is in the certificate search path.</p>
+  </dd>
+  <dt><a class="permalink" href="#untrusted"><code class="Cm" id="untrusted">untrusted</code></a></dt>
+  <dd>List absolute paths to certificates that have been excluded by
+      <code class="Nm">certctl</code> <code class="Cm">untrust</code>.
+      <code class="Nm">certctl</code> <code class="Cm">rehash</code> will not
+      put these in <var class="Ar">certsdir</var>. Paths are printed one per
+      line, encoded in <a class="Xr" href="../html1/vis.html">vis(1)</a> format
+      to escape any shell metacharacters.</dd>
+</dl>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="Configuration_file"><a class="permalink" href="#Configuration_file">Configuration
+  file</a></h2>
+The configuration file is a plain text file of lines separated by US-ASCII line
+  feeds.
+<p class="Pp">The first line must be:</p>
+<div class="Bd Bd-indent"><code class="Li">netbsd-certctl 20230816</code></div>
+<p class="Pp">Lines with only whitespace, or whitespace followed by the comment
+    character &#x2018;<code class="Li">#</code>&#x2019; are ignored. Each line
+    has a directive and arguments separated by whitespace, and may be extended
+    by &#x2018;<code class="Li">\</code>&#x2019; to continuation lines.</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#path"><code class="Cm" id="path">path</code></a>
+    <var class="Ar">dir</var></dt>
+  <dd>Add <var class="Ar">dir</var> to the certificate search path.
+      <var class="Ar">dir</var> must be an absolute pathname,
+      <a class="Xr" href="../html3/vis.html">vis(3)</a>-encoded if it has any
+      characters outside the class
+      &#x2018;<code class="Li">a-zA-Z0-9,.:=/+-</code>&#x2019;.
+    <p class="Pp">All certificates must have unique base names across all
+        directories in the certificate search path.</p>
+  </dd>
+  <dt><a class="permalink" href="#manual"><code class="Cm" id="manual">manual</code></a></dt>
+  <dd>Manual override. If specified, <code class="Nm">certctl</code> will
+      <i class="Em">not</i> modify <var class="Ar">certsdir</var>, but may still
+      check consistency of the configuration when run, and
+      <code class="Nm">certctl</code> <code class="Cm">untrust</code> and
+      <code class="Nm">certctl</code> <code class="Cm">trust</code> will still
+      update <var class="Ar">distrustdir</var>.</dd>
+</dl>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag">
+  <dt><span class="Pa">/etc/openssl/certs</span></dt>
+  <dd>Default directory of hashed TLS CA certificates.</dd>
+  <dt><span class="Pa">/etc/openssl/certs/ca-certificates.crt</span></dt>
+  <dd>Default single-file TLS CA certificate bundle.</dd>
+  <dt><span class="Pa">/etc/openssl/certs.conf</span></dt>
+  <dd>Default configuration file for TLS CA certificates.</dd>
+  <dt><span class="Pa">/etc/openssl/untrusted</span></dt>
+  <dd>Default <var class="Ar">distrustdir</var> directory of excluded TLS CA
+      certificates.</dd>
+  <dt><span class="Pa">/usr/share/certs/mozilla/all</span></dt>
+  <dd>All root CA certificates published by Mozilla, including untrustworthy
+      certificates.</dd>
+  <dt><span class="Pa">/usr/share/certs/mozilla/code</span></dt>
+  <dd>All root CA certificates published by Mozilla for use in
+    code-signing.</dd>
+  <dt><span class="Pa">/usr/share/certs/mozilla/email</span></dt>
+  <dd>All root CA certificates published by Mozilla for use in email
+      authentication.</dd>
+  <dt><span class="Pa">/usr/share/certs/mozilla/server</span></dt>
+  <dd>All root CA certificates published by Mozilla for use in TLS server
+      authentication.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+Example configuration file (<span class="Pa">/etc/openssl/certs.conf</span>):
+<div class="Bd Pp Bd-indent">
+<pre>
+netbsd-certctl 20230816
+
+# Blank lines and comments are ignored.
+# Comments begin with a `#' sign.
+
+# Gather certificates from files called *.cer, *.crt, and *.pem
+# under these directories.
+path /usr/share/certs/mozilla/server
+path /usr/pkg/share/chromium-cacerts
+path /etc/openssl/certs.local
+
+# If the next line is uncommented, certctl(8) will decline to
+# touch /etc/openssl/certs.
+#manual
+</pre>
+</div>
+<p class="Pp">Exclude a certificate:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+$ certctl untrust /usr/share/certs/mozilla/server/GTS_Root_R1.pem
+</pre>
+</div>
+<p class="Pp">There is no need to run <code class="Nm">certctl</code>
+    <code class="Cm">rehash</code> explicitly after
+    <code class="Nm">certctl</code> <code class="Cm">untrust</code>, but if you
+    do, the setting will persist.</p>
+<p class="Pp">Rebuild the hashed certificate cache at
+    <span class="Pa">/etc/myapplication/certs</span> from
+    <span class="Pa">/etc/myapplication/certs.conf</span> and
+    <span class="Pa">/etc/myapplication/untrusted</span>:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+$ certctl -c /etc/myapplication/certs \
+        -C /etc/myapplication/certs.conf \
+        -u /etc/myapplication/untrusted
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
+The <code class="Nm">certctl</code> utility exits&#x00A0;0 on success,
+  and&#x00A0;&gt;0 if an error occurs.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="COMPATIBILITY"><a class="permalink" href="#COMPATIBILITY">COMPATIBILITY</a></h1>
+The <code class="Nm">certctl</code> utility is mostly compatible with a utility
+  of the same name in <span class="Ux">FreeBSD</span>. Differences:
+<ol class="Bl-enum">
+  <li><span class="Ux">FreeBSD</span> <code class="Nm">certctl</code> supports
+      destdir/metalog handling; <span class="Ux">NetBSD</span>
+      <code class="Nm">certctl</code> does not.</li>
+  <li><span class="Ux">FreeBSD</span> <code class="Nm">certctl</code> treats
+      <span class="Pa">/etc/ssl/certs</span> and
+      <span class="Pa">/etc/ssl/untrusted</span> both as configuration
+      <i class="Em">and</i> as caches; <span class="Ux">NetBSD</span>
+      <code class="Nm">certctl</code> treats
+      <span class="Pa">/etc/openssl/certs.conf</span> and
+      <span class="Pa">/etc/openssl/untrusted</span> as configuration, and
+      treats <span class="Pa">/etc/openssl/certs</span> strictly as a cache.
+      <span class="Ux">FreeBSD</span> <code class="Nm">certctl</code> will
+      forget any <code class="Nm">certctl</code> <code class="Cm">untrust</code>
+      settings on <code class="Nm">certctl</code>
+      <code class="Cm">rehash</code>, but <span class="Ux">NetBSD</span>
+      <code class="Nm">certctl</code> will remember them.</li>
+  <li><span class="Ux">FreeBSD</span> <code class="Nm">certctl</code> takes
+      configuration through environment variables;
+      <span class="Ux">NetBSD</span> <code class="Nm">certctl</code> takes
+      configuration through a file and command-line arguments.</li>
+</ol>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/openssl.html">openssl(1)</a>,
+  <a class="Xr" href="../html1/openssl_rehash.html">openssl_rehash(1)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+<code class="Nm">certctl</code> first appeared in <span class="Ux">NetBSD
+  10.0</span>. A utility of the same name previously appeared in
+  <span class="Ux">FreeBSD 12.2</span>.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">August 16, 2023</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

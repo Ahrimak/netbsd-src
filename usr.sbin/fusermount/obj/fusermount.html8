@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   $NetBSD: fusermount.8,v 1.4 2007/12/02 21:22:03 wiz Exp $ */
+  
+   Copyright (c) 2007 Alistair Crooks.  All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. The name of the author may not be used to endorse or promote
+      products derived from this software without specific prior written
+      permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
+   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+   GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+   WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>FUSERMOUNT(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">FUSERMOUNT(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">FUSERMOUNT(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">fusermount</code> &#x2014;
+<div class="Nd">manage librefuse mount items</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">fusermount</code></td>
+    <td>[<code class="Fl">-chpVx</code>] [<code class="Fl">-d</code>
+      <var class="Ar">name</var>] <var class="Ar">refuseoptions</var></td>
+  </tr>
+</table>
+<br/>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">fusermount</code></td>
+    <td><code class="Fl">-u</code> <var class="Ar">mountpoint(s)</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">fusermount</code> utility acts as a frontend to the
+  <a class="Xr" href="../html3/refuse.html">refuse(3)</a> library, allowing
+  mounting and unmounting of refuse-based file systems.
+<p class="Pp">There are essentially two forms of the
+    <code class="Nm">fusermount</code> command. The first, and default option,
+    is to mount a refuse-based file system. By using the
+    <code class="Fl">-u</code> argument, the file system can be unmounted.</p>
+<p class="Pp">The arguments to <code class="Nm">fusermount</code> are as
+    follows:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+  <dd>Set a flag to enable kernel caching of files. At present this option has
+      no effect.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>
+    <var class="Ar">name</var></dt>
+  <dd>Make the name argument appear as the file system name in
+      <a class="Xr" href="../html8/mount.html">mount(8)</a> and
+      <a class="Xr" href="../html1/df.html">df(1)</a> output.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a></dt>
+  <dd>Print a usage message and exit.</dd>
+  <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a></dt>
+  <dd>Check the file permissions. At present this option has no effect.</dd>
+  <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a></dt>
+  <dd>Display the <code class="Nm">fusermount</code> version on stdout, and then
+      exit successfully.</dd>
+  <dt><a class="permalink" href="#x"><code class="Fl" id="x">-x</code></a></dt>
+  <dd>Allow mortal (non-root) users to access the file system. At present, this
+      option has no effect.</dd>
+</dl>
+<p class="Pp">The <code class="Nm">fusermount</code> utility is included mainly
+    for compatibility reasons, since some file systems demand its existence.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXIT_STATUS"><a class="permalink" href="#EXIT_STATUS">EXIT
+  STATUS</a></h1>
+<code class="Nm">fusermount</code> returns 0 for successful operation, or
+  non-zero if one of the operations did not complete successfully.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+The command
+<div class="Bd Bd-indent"><code class="Li">fusermount -d ntfs-3g unused
+  mount.ntfs-3g ntfs.img /mnt</code></div>
+will mount the file <span class="Pa">ntfs.img</span> on the directory
+  <span class="Pa">/mnt</span>. Please note the <span class="Pa">unused</span>
+  argument in the command, which is necessary for compatibility with other
+  implementations of the <code class="Nm">fusermount</code> command.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/df.html">df(1)</a>,
+  <a class="Xr" href="../html3/puffs.html">puffs(3)</a>,
+  <a class="Xr" href="../html3/refuse.html">refuse(3)</a>,
+  <a class="Xr" href="../html8/mount.html">mount(8)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+The <code class="Nm">fusermount</code> utility first appeared in
+  <span class="Ux">NetBSD 5.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The <code class="Nm">fusermount</code> utility was written by
+  <span class="An">Alistair Crooks</span> &#x27E8;agc@NetBSD.org&#x27E9;.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">June 11, 2007</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

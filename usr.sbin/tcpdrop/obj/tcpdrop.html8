@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   	$NetBSD: tcpdrop.8,v 1.1 2007/06/25 23:34:52 christos Exp $
+  
+   Copyright (c) 1989, 1993
+  	The Regents of the University of California.  All rights reserved.
+  
+   This code is derived from software contributed to Berkeley by
+   Herb Hasler and Rick Macklem at The University of Guelph.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. Neither the name of the University nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+  
+  	$OpenBSD: tcpdrop.8,v 1.6 2006/01/03 14:52:17 jmc Exp $
+  
+   Copyright (c) 2004 Markus Friedl <markus@openbsd.org>
+  
+   Permission to use, copy, modify, and distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
+  
+   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+   WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+   MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+   ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>TCPDROP(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">TCPDROP(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">TCPDROP(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">tcpdrop</code> &#x2014;
+<div class="Nd">drop a TCP connection</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">tcpdrop</code></td>
+    <td><var class="Ar">laddr</var> <var class="Ar">lport</var>
+      <var class="Ar">faddr</var> <var class="Ar">fport</var></td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">tcpdrop</code> command drops the TCP connection specified
+  by the local address <var class="Ar">laddr</var>, port
+  <var class="Ar">lport</var> and the foreign address
+  <var class="Ar">faddr</var>, port <var class="Ar">fport</var>. Addresses and
+  ports can be specified by name or numeric value.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+If a connection to <a class="Xr" href="../html8/httpd.html">httpd(8)</a> is
+  causing congestion on a network link, one can drop the TCP session in charge:
+<div class="Bd Pp Bd-indent">
+<pre>
+$ fstat | grep 'httpd.*internet.*&lt;--'
+www      httpd      21307    3* internet stream tcp \
+	0xd1007ca8 192.168.5.41:80 &lt;-- 192.168.5.1:26747
+</pre>
+</div>
+<p class="Pp">The following command will drop the connection:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+# tcpdrop 192.168.5.41 80 192.168.5.1 26747
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html1/fstat.html">fstat(1)</a>,
+  <a class="Xr" href="../html1/netstat.html">netstat(1)</a>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">June 23, 2007</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

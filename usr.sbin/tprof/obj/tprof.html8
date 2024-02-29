@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: tprof.8,v 1.30 2023/04/18 00:21:23 gutteridge Exp $
+  
+   Copyright (c)2011 YAMAMOTO Takashi,
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+  
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>TPROF(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">TPROF(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">TPROF(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">tprof</code> &#x2014;
+<div class="Nd">record tprof profiling samples</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">tprof</code></td>
+    <td><var class="Ar">op</var> [<var class="Ar">arguments</var>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">tprof</code> tool can be used to monitor hardware events
+  (PMCs) during the execution of certain commands.
+<p class="Pp">The <code class="Nm">tprof</code> utility makes the kernel driver
+    start profiling, executes the specified command, keeps recording samples
+    from the kernel driver until the command finishes, and reports statistics to
+    the standard error.</p>
+<p class="Pp">The <a class="Xr" href="../html4/tprof.html">tprof(4)</a> pseudo
+    driver and a suitable backend should be loaded beforehand.</p>
+<p class="Pp">The <code class="Nm">tprof</code> utility accepts the following
+    options. The first argument, <var class="Ar">op</var>, specifies the action
+    to take. Valid actions are:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#list"><code class="Cm" id="list">list</code></a></dt>
+  <dd>Display the following information:
+    <ul class="Bl-bullet Bl-compact">
+      <li>a list of performance counter events available on the system</li>
+      <li>the maximum number of counters that can be used simultaneously</li>
+      <li>the default counter for <code class="Cm">monitor</code> and
+          <code class="Cm">top</code> commands</li>
+    </ul>
+  </dd>
+  <dt><a class="permalink" href="#monitor"><code class="Cm" id="monitor">monitor</code></a>
+    [<code class="Fl">-e</code>
+    <var class="Ar">name</var>[<code class="Cm">:</code><var class="Ar">option</var>][<code class="Cm">,</code><var class="Ar">scale</var>]]
+    [<code class="Fl">-e</code> <var class="Ar">...</var>]
+    [<code class="Fl">-o</code> <var class="Ar">outfile</var>]
+    <var class="Ar">command</var></dt>
+  <dd>Monitor the execution of <var class="Ar">command</var>. The
+      <var class="Ar">name</var> specifies the event to count; it must be taken
+      from the list of available events. <var class="Ar">option</var> specifies
+      the source of the event; it must be a combination of
+      <code class="Cm">u</code> (userland) and <code class="Cm">k</code>
+      (kernel). If omitted, it is assumed that both are specified. Multiple
+      <code class="Fl">-e</code> arguments can be specified. If none of the
+      <code class="Fl">-e</code> arguments are specified, the CPU's default
+      counter is used.
+    <p class="Pp"><var class="Ar">scale</var> specifies the ratio of the speed
+        to the cycle counter, or the counter until overflow. The counter reset
+        value on overflow used for profiling is calculated from the speed of the
+        cycle counter by default, but for some events this value may be too
+        large (counter increasing too slowly) to be sufficient for profiling.
+        For example, to specify an event that increases about 1000 times slower
+        than the cycle counter, specify &#x2018;<code class="Li">-e
+        event,1000</code>&#x2019;. Also, if &#x2018;<code class="Li">-e
+        event,=200</code>&#x2019; is specified, profiling is performed every
+        time the counter is increased by 200.</p>
+    <p class="Pp">The collected samples are written into the file
+        <var class="Ar">outfile</var> if specified. The default is
+        <span class="Pa">tprof.out</span>.</p>
+  </dd>
+  <dt><a class="permalink" href="#count"><code class="Cm" id="count">count</code></a>
+    <code class="Fl">-e</code>
+    <var class="Ar">name</var>[<code class="Cm">:</code><var class="Ar">option</var>]
+    [<code class="Fl">-e</code> <var class="Ar">...</var>]
+    [<code class="Fl">-i</code> <var class="Ar">interval</var>]
+    <var class="Ar">command</var></dt>
+  <dd>Same as <code class="Cm">monitor</code>, but does not do any profiling,
+      only outputs counters every <var class="Ar">interval</var> second.</dd>
+  <dt><a class="permalink" href="#analyze"><code class="Cm" id="analyze">analyze</code></a>
+    [<code class="Fl">-CkLPs</code>] [<code class="Fl">-p</code>
+    <var class="Ar">pid</var>] <var class="Ar">file</var></dt>
+  <dd>Analyze the samples produced by a previous run of
+      <code class="Nm">tprof</code>, stored in <var class="Ar">file</var>, and
+      generate a plain text representation of them.
+    <dl class="Bl-tag">
+      <dt><a class="permalink" href="#C"><code class="Fl" id="C">-C</code></a></dt>
+      <dd>Don't distinguish CPUs. All samples are treated as its CPU number is
+          0.</dd>
+      <dt><a class="permalink" href="#k"><code class="Fl" id="k">-k</code></a></dt>
+      <dd>Kernel only. Ignore samples for userland code.</dd>
+      <dt><a class="permalink" href="#L"><code class="Fl" id="L">-L</code></a></dt>
+      <dd>Don't distinguish LWPs. All samples are treated as its LWP ID is
+        0.</dd>
+      <dt><a class="permalink" href="#P"><code class="Fl" id="P">-P</code></a></dt>
+      <dd>Don't distinguish processes. All samples are treated as its PID is
+        0.</dd>
+      <dt><a class="permalink" href="#p"><code class="Fl" id="p">-p</code></a>
+        <var class="Ar">pid</var></dt>
+      <dd>Process only samples for the process with PID
+          <var class="Ar">pid</var> and ignore the rest.</dd>
+      <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a></dt>
+      <dd>Per symbol.</dd>
+    </dl>
+  </dd>
+  <dt><a class="permalink" href="#top"><code class="Cm" id="top">top</code></a>
+    [<code class="Fl">-acu</code>] [<code class="Fl">-e</code>
+    <var class="Ar">name</var>[<code class="Cm">,</code><var class="Ar">scale</var>]]
+    [<code class="Fl">-e</code> <var class="Ar">...</var>]
+    [<code class="Fl">-i</code> <var class="Ar">interval</var>]</dt>
+  <dd>Displays profiling results in real-time. <var class="Ar">name</var>
+      specifies the name of the event to count.
+    <dl class="Bl-tag">
+      <dt><a class="permalink" href="#a"><code class="Fl" id="a">-a</code></a></dt>
+      <dd>Starts in accumulation mode. The display is updated every
+          <var class="Ar">interval</var> second, but the values are
+          accumulative.</dd>
+      <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a></dt>
+      <dd>Show the delta of the event counters.</dd>
+      <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>
+        <var class="Ar">interval</var></dt>
+      <dd>Set the update interval in seconds. The default value is 1.</dd>
+      <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a></dt>
+      <dd>Userland processes are also included in the profiling.</dd>
+    </dl>
+    <p class="Pp">While <code class="Nm">tprof</code> <var class="Ar">top</var>
+        is running, it accepts commands from the terminal. These commands are
+        currently recognized:</p>
+    <dl class="Bl-tag">
+      <dt>&#x27E8;<code class="Ic">a</code>&#x27E9;</dt>
+      <dd>toggle accumurative mode.</dd>
+      <dt>&#x27E8;<code class="Ic">c</code>&#x27E9;</dt>
+      <dd>shows/hides the event counters.</dd>
+      <dt>&#x27E8;<code class="Ic">q</code>&#x27E9;</dt>
+      <dd>quit <code class="Nm">tprof</code>.</dd>
+      <dt>&#x27E8;<code class="Ic">z</code>&#x27E9;</dt>
+      <dd>clear accumulated data.</dd>
+    </dl>
+  </dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+The following command profiles the system during 20 seconds and writes the
+  samples into the file <span class="Pa">myfile.out</span>.
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li"># tprof monitor -e llc-misses:k -o
+  myfile.out sleep 20</code></div>
+<p class="Pp">The following command displays the results of the sampling.</p>
+<p class="Pp"></p>
+<div class="Bd Bd-indent"><code class="Li"># tprof analyze
+  myfile.out</code></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SUPPORT"><a class="permalink" href="#SUPPORT">SUPPORT</a></h1>
+The following CPU models are supported:
+<ul class="Bl-dash Bd-indent Bl-compact">
+  <li>ARMv7</li>
+  <li>ARMv8</li>
+  <li>x86 AMD Family 10h</li>
+  <li>x86 AMD Family 15h</li>
+  <li>x86 AMD Family 17h</li>
+  <li>x86 AMD Family 19h</li>
+  <li>x86 Intel Generic (all Intel CPUs)</li>
+  <li>x86 Intel Skylake, Kabylake and Cometlake</li>
+  <li>x86 Intel Silvermont/Airmont</li>
+  <li>x86 Intel Goldmont</li>
+  <li>x86 Intel Goldmont Plus</li>
+</ul>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
+The <code class="Nm">tprof</code> utility reports the following statistics about
+  the activities of the <a class="Xr" href="../html4/tprof.html">tprof(4)</a>
+  pseudo driver.
+<dl class="Bl-tag">
+  <dt>sample</dt>
+  <dd>The number of samples collected and prepared for userland
+    consumption.</dd>
+  <dt>overflow</dt>
+  <dd>The number of samples dropped because the per-CPU buffer was full.</dd>
+  <dt>buf</dt>
+  <dd>The number of buffers successfully prepared for userland consumption.</dd>
+  <dt>emptybuf</dt>
+  <dd>The number of buffers which have been dropped because they were
+    empty.</dd>
+  <dt>dropbuf</dt>
+  <dd>The number of buffers dropped because the number of buffers kept in the
+      kernel exceeds the limit.</dd>
+  <dt>dropbuf_samples</dt>
+  <dd>The number of samples dropped because the buffers containing the samples
+      were dropped.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/tprof.html">tprof(4)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+The <code class="Nm">tprof</code> utility was written by
+  <span class="An">YAMAMOTO Takashi</span>. It was revamped by
+  <span class="An">Maxime Villard</span> in 2018, and by <span class="An">Ryo
+  Shimizu</span> in 2022.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="CAVEATS"><a class="permalink" href="#CAVEATS">CAVEATS</a></h1>
+The contents and representation of recorded samples are undocumented and will
+  likely be changed for future releases of <span class="Ux">NetBSD</span> in an
+  incompatible way.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">April 17, 2023</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>

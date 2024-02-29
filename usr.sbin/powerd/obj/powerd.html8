@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+  	$NetBSD: powerd.8,v 1.26 2017/02/21 15:15:19 abhinav Exp $
+  
+   Copyright (c) 2003 Wasabi Systems, Inc.
+   All rights reserved.
+  
+   Written by Jason R. Thorpe for Wasabi Systems, Inc.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. All advertising materials mentioning features or use of this software
+      must display the following acknowledgement:
+  	This product includes software developed for the NetBSD Project by
+  	Wasabi Systems, Inc.
+   4. The name of Wasabi Systems, Inc. may not be used to endorse
+      or promote products derived from this software without specific prior
+      written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY WASABI SYSTEMS, INC. ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL WASABI SYSTEMS, INC
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../style.css" type="text/css" media="all"/>
+  <title>POWERD(8)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">POWERD(8)</td>
+    <td class="head-vol">System Manager's Manual</td>
+    <td class="head-rtitle">POWERD(8)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">powerd</code> &#x2014;
+<div class="Nd">power management daemon for sysmon</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">powerd</code></td>
+    <td>[<code class="Fl">-dn</code>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">powerd</code> acts upon power management events posted by the
+  kernel's power management facility. When events are posted,
+  <code class="Nm">powerd</code> translates the event into a script name and a
+  list of arguments. <code class="Nm">powerd</code> then runs the script in
+  order to implement the power management policy defined by the system
+  administrator.
+<p class="Pp">The following options are available:</p>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a></dt>
+  <dd>Enable debugging mode. Verbose messages and all messages intended for
+      <a class="Xr" href="../html8/syslog.html">syslog(8)</a> will be sent to
+      stderr, and <code class="Nm">powerd</code> will stay in the foreground of
+      the controlling terminal.</dd>
+  <dt><a class="permalink" href="#n"><code class="Fl" id="n">-n</code></a></dt>
+  <dd>Prevent execution of power management scripts.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="CONFIGURATION_SCRIPTS"><a class="permalink" href="#CONFIGURATION_SCRIPTS">CONFIGURATION
+  SCRIPTS</a></h1>
+All configuration of <code class="Nm">powerd</code> is encapsulated into scripts
+  that are run when power management events occur. The daemon will look for the
+  scripts from the directory <span class="Pa">/etc/powerd/scripts</span>.
+<p class="Pp">Configuration scripts are run synchronously;
+    <code class="Nm">powerd</code> will start the script and wait for its
+    completion before it handles the next event.</p>
+<p class="Pp">Configuration scripts are called with different arguments,
+    depending on the script class. These classes are described in the following
+    sections.</p>
+<section class="Ss">
+<h2 class="Ss" id="POWER_SWITCH_SCRIPTS"><a class="permalink" href="#POWER_SWITCH_SCRIPTS">POWER
+  SWITCH SCRIPTS</a></h2>
+Power switch scripts are called when a state change event occurs on a power
+  switch device. Power switch scripts are called with two arguments: the device
+  with which the event is associated, and the event type.
+<p class="Pp">The following power switch script names are defined:</p>
+<dl class="Bl-tag">
+  <dt><i class="Em">power_button</i></dt>
+  <dd>This script is called when an event occurs on a power button device.</dd>
+  <dt><i class="Em">reset_button</i></dt>
+  <dd>This script is called when an event occurs on a reset button device.</dd>
+  <dt><i class="Em">sleep_button</i></dt>
+  <dd>This script is called when an event occurs on a sleep button device.</dd>
+  <dt><i class="Em">lid_switch</i></dt>
+  <dd>This script is called when an event occurs on a lid switch device.</dd>
+  <dt><i class="Em">acadapter</i></dt>
+  <dd>This script is called when an online or offline event occurs on an AC
+      adapter device.</dd>
+  <dt><i class="Em">hotkey_button</i></dt>
+  <dd>This script is called when an event occurs on a hotkey button device.</dd>
+</dl>
+<p class="Pp">The following events are defined for power switch devices:</p>
+<dl class="Bl-tag">
+  <dt><i class="Em">pressed</i></dt>
+  <dd>The button was pressed, the lid was closed, or the AC adapter was
+      connected.</dd>
+  <dt><i class="Em">released</i></dt>
+  <dd>The button was released, the lid was opened, or the AC adapter was
+      disconnected. Note that power and sleep button devices usually do not post
+      this type of event.</dd>
+</dl>
+<p class="Pp">The following is an example of how a power button script might be
+    invoked when a power button is pressed by the operator:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+/etc/powerd/scripts/power_button acpibut0 pressed
+</pre>
+</div>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="ENVSYS_SCRIPTS"><a class="permalink" href="#ENVSYS_SCRIPTS">ENVSYS
+  SCRIPTS</a></h2>
+<a class="Xr" href="../html4/envsys.html">envsys(4)</a> scripts are called when
+  a condition was triggered in a sensor. These scripts are called with three
+  arguments: the device associated, the event type, and the sensor's name. The
+  <b class="Sy">sensor_drive</b> and the <b class="Sy">sensor_battery</b>
+  scripts uses a fourth argument: state description.
+<p class="Pp">The following envsys script names are defined:</p>
+<dl class="Bl-tag">
+  <dt><i class="Em">sensor_battery</i></dt>
+  <dd>This script is called when an event occurs on a battery sensor
+      (Wh/Ah/Battery state).</dd>
+  <dt><i class="Em">sensor_drive</i></dt>
+  <dd>This script is called when an event occurs on a drive sensor.</dd>
+  <dt><i class="Em">sensor_fan</i></dt>
+  <dd>This script is called when an event occurs on a fan sensor.</dd>
+  <dt><i class="Em">sensor_indicator</i></dt>
+  <dd>This script is called when an event occurs on a indicator/integer
+    sensor.</dd>
+  <dt><i class="Em">sensor_power</i></dt>
+  <dd>This script is called when an event occurs on a power sensor
+    (W/Ampere).</dd>
+  <dt><i class="Em">sensor_resistance</i></dt>
+  <dd>This script is called when an event occurs on a resistance sensor
+    (Ohm).</dd>
+  <dt><i class="Em">sensor_temperature</i></dt>
+  <dd>This script is called when an event occurs on a temperature sensor.</dd>
+  <dt><i class="Em">sensor_voltage</i></dt>
+  <dd>This script is called when an event occurs on a voltage sensor.</dd>
+</dl>
+<p class="Pp">The following events are defined for fan, indicator, power,
+    resistance, temperature, and voltage sensors:</p>
+<dl class="Bl-tag">
+  <dt><i class="Em">critical</i></dt>
+  <dd>A critical condition was triggered.</dd>
+  <dt><i class="Em">critical-under</i></dt>
+  <dd>A critical under condition was triggered.</dd>
+  <dt><i class="Em">critical-over</i></dt>
+  <dd>A critical over condition was triggered.</dd>
+  <dt><i class="Em">warning-under</i></dt>
+  <dd>A warning under condition was triggered.</dd>
+  <dt><i class="Em">warning-over</i></dt>
+  <dd>A warning over condition was triggered.</dd>
+</dl>
+<p class="Pp">The following event is defined for all scripts, but it is only
+    sent if any of the previous events has been previously sent:</p>
+<dl class="Bl-tag">
+  <dt><i class="Em">normal</i></dt>
+  <dd>A normal state/capacity/condition was triggered.</dd>
+</dl>
+<p class="Pp">The following events are defined only for battery sensors:</p>
+<dl class="Bl-tag">
+  <dt><i class="Em">user-capacity</i></dt>
+  <dd>Capacity dropped below the limit set by the user.</dd>
+  <dt><i class="Em">low-power</i></dt>
+  <dd>System is running in low power. This implies that the AC adapter is
+      disconnected and all batteries are in critical or low capacity. The script
+      shutdowns the system gracefully by default.</dd>
+</dl>
+<p class="Pp">The following events are defined for drive and battery
+  sensors:</p>
+<dl class="Bl-tag">
+  <dt><i class="Em">state-changed</i></dt>
+  <dd>The state of the sensor has been changed and it is not in the normal
+      state.</dd>
+</dl>
+<p class="Pp">The following is an example of how a temperature sensor script
+    might be invoked when a critical over condition is triggered:</p>
+<div class="Bd Pp Bd-indent">
+<pre>
+/etc/powerd/scripts/sensor_temperature lm0 critical-over &quot;CPU Temp&quot;
+</pre>
+</div>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="../html4/acpi.html">acpi(4)</a>,
+  <a class="Xr" href="../html4/acpiacad.html">acpiacad(4)</a>,
+  <a class="Xr" href="../html4/acpibut.html">acpibut(4)</a>,
+  <a class="Xr" href="../html4/acpilid.html">acpilid(4)</a>,
+  <a class="Xr" href="../html4/envsys.html">envsys(4)</a>,
+  <a class="Xr" href="../html4/i386/apm.html">i386/apm(4)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="HISTORY"><a class="permalink" href="#HISTORY">HISTORY</a></h1>
+<code class="Nm">powerd</code> first appeared in <span class="Ux">NetBSD
+  2.0</span>. Support to handle
+  <a class="Xr" href="../html4/envsys.html">envsys(4)</a> events appeared in
+  <span class="Ux">NetBSD 5.0</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<code class="Nm">powerd</code> was written by <span class="An">Jason R.
+  Thorpe</span> &#x27E8;thorpej@wasabisystems.com&#x27E9; and contributed by
+  Wasabi Systems, Inc.
+<br/>
+<span class="An">Juan Romero Pardines</span> added support to handle
+  <a class="Xr" href="../html4/envsys.html">envsys(4)</a> events.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+Due to its synchronous nature <code class="Nm">powerd</code> cannot be trusted
+  to handle events within a certain time.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">December 15, 2010</td>
+    <td class="foot-os">NetBSD 10.99</td>
+  </tr>
+</table>
+</body>
+</html>
